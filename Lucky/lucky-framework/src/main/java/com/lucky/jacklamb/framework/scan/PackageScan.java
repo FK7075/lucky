@@ -22,7 +22,12 @@ public class PackageScan extends Scan {
 
 	public PackageScan(Class<?> applicationBootClass) throws URISyntaxException {
 		super(applicationBootClass);
-		projectPath=applicationBootClass.getResource("").toURI().getPath();
+		if(applicationBootClass==null){
+			projectPath=PackageScan.class.getClassLoader().getResource("").toURI().getPath();
+		}else {
+			projectPath=applicationBootClass.getResource("").toURI().getPath();
+		}
+
 		if(projectPath.endsWith("/classes/")) {
 			projectPath=projectPath.substring(0,projectPath.length()-8);
 		}else if(projectPath.endsWith("/test-classes/")) {
