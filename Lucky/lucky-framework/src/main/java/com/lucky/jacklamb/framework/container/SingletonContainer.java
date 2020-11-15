@@ -2,6 +2,8 @@ package com.lucky.jacklamb.framework.container;
 
 import com.lucky.jacklamb.framework.exception.LuckyBeanCreateException;
 import com.lucky.jacklamb.framework.uitls.reflect.AnnotationUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
  * @date 2020/11/14 1:12 下午
  */
 public class SingletonContainer implements Map<String, Module> {
+
+    private static final Logger log= LogManager.getLogger(SingletonContainer.class);
 
     /** 单例池*/
     private Map<String,Module> singletonPool=new ConcurrentHashMap<>(256);
@@ -49,7 +53,9 @@ public class SingletonContainer implements Map<String, Module> {
     @Override
     public Module put(String key, Module value) {
         if(containsKey(key)){
-            throw new LuckyBeanCreateException("ID为\""+key+"\"的组件已经存在，无法重复创建！");
+            LuckyBeanCreateException lex = new LuckyBeanCreateException("ID为\"" + key + "\"的组件已经存在，无法重复创建！");
+            log.error(lex);
+            throw lex;
         }
         return singletonPool.put(key, value);
     }

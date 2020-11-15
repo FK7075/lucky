@@ -1,9 +1,6 @@
 package com.lucky.jacklamb.framework.container.factory;
 
-import com.lucky.jacklamb.framework.annotation.Component;
-import com.lucky.jacklamb.framework.annotation.Controller;
-import com.lucky.jacklamb.framework.annotation.Repository;
-import com.lucky.jacklamb.framework.annotation.Service;
+import com.lucky.jacklamb.framework.annotation.*;
 import com.lucky.jacklamb.framework.uitls.base.Assert;
 import com.lucky.jacklamb.framework.uitls.base.BaseUtils;
 import com.lucky.jacklamb.framework.uitls.reflect.AnnotationUtils;
@@ -20,7 +17,7 @@ import java.util.List;
 public class BeanNamer implements Namer {
 
     private Class<? extends Annotation>[] COMPONENT_ANNOTATION=
-            new Class[]{Component.class, Controller.class, Repository.class, Service.class};
+            new Class[]{Component.class, Controller.class, Repository.class, Service.class, Configuration.class};
 
     @Override
     public String getBeanName(Class<?> beanClass) {

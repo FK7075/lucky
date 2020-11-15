@@ -63,4 +63,22 @@ public abstract class Assert {
     public static boolean isEmptyMap(Map map){
         return map==null||map.isEmpty();
     }
+
+    public static boolean strEndsWith(String str,String[] suffix){
+        for (String s : suffix) {
+            if(str.endsWith(s)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean strStartsWith(String str,String[] prefix){
+        for (String s : prefix) {
+            if(str.startsWith(s)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

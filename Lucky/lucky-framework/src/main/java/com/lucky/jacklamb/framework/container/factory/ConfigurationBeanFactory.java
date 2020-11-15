@@ -12,10 +12,10 @@ import java.util.Set;
  */
 public class ConfigurationBeanFactory extends IOCBeanFactory{
 
-    private Set<Class<?>> configurationClassSet;
+    private List<Module> configurationBeans;
 
-    public ConfigurationBeanFactory(Set<Class<?>> configurationClassSet) {
-        this.configurationClassSet = configurationClassSet;
+    public ConfigurationBeanFactory(List<Module> configurationBeans) {
+        this.configurationBeans = configurationBeans;
     }
 
     @Override

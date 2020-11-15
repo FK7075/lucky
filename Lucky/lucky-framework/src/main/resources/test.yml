@@ -1,0 +1,24 @@
+#---
+mytest: &my
+  test1: &test 001
+  test2: 002
+  list:
+    - one
+    - two
+    - 3
+    - fo
+
+jack:
+  int: 1
+  string: string
+  array: [ooo,kkk,ppp]
+  ok: *test
+  <<: *my
+
+test: 9
+one:
+  - 90
+  - pl
+  - lo
+  - 09
+jii: jijo;
