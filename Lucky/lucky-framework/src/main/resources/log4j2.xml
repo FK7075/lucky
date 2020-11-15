@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="OFF">
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%highlight{%d{yyyy-MM-dd HH:mm:ss.SSS}}{INFO=White} %highlight{%-5level}%highlight{%5X{pid}}{INFO=Magenta} --- %highlight{[%15.15t]}{INFO=White} %highlight{%-40.40c}{INFO=cyan}  : %msg%n"/>
+        </Console>
+    </appenders>
+    <loggers>
+        <root level="info">
+            <appender-ref ref="Console"/>
+        </root>
+    </loggers>
+</configuration>
