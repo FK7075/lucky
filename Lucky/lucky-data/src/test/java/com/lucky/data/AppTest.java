@@ -1,8 +1,11 @@
-package com.lucky.jacklamb;
+package com.lucky.data;
 
+import static org.junit.Assert.assertTrue;
+
+import com.lucky.data.pojo.User;
+import com.lucky.framework.annotation.Autowired;
+import com.lucky.framework.annotation.LuckyApplicationTest;
 import com.lucky.framework.junit.LuckyRunner;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -12,13 +15,13 @@ import org.junit.runner.RunWith;
 @RunWith(LuckyRunner.class)
 public class AppTest {
 
-    private static final Logger log= LogManager.getLogger(AppTest.class);
-
+    @Autowired
+    User user;
     /**
      * Rigorous Test :-)
      */
     @Test
     public void shouldAnswerWithTrue() {
-        log.info("ok");
+        System.out.println(user);
     }
 }

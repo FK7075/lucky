@@ -1,24 +1,25 @@
-#---
-mytest: &my
-  test1: &test 001
-  test2: 002
-  list:
-    - one
-    - two
-    - 3
-    - fo
+server:
+  port: 8081
 
-jack:
-  int: 1
-  string: string
-  array: [ooo,kkk,ppp]
-  ok: *test
-  <<: *my
+lucky:
+  jdbc:
+    dbname1:
+      url: jdbc:postgresql://192.168.0.123:5432/jiangsuTest?currentSchema=jiangsulocation
+      driver-class-name: com.mysql.jdbc.Driver
+      username: root
+      password: 123456
+      log: true
+    dbname2:
+      url: jdbc:postgresql://192.168.0.123:5432/jiangsuTest?currentSchema=jiangsulocation
+      driver-class-name: com.mysql.jdbc.Driver
+      username: root
+      password: 123456
+      log: true
+  data:
+    redis:
+      dbnumber: 0
+      host: 127.0.0.1
+      port: 6379
+      password: ~
+      timeout: 1000*60*2
 
-test: 9
-one:
-  - 90
-  - pl
-  - lo
-  - 09
-jii: jijo;
