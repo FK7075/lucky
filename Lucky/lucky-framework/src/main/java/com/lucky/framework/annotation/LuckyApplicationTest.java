@@ -12,5 +12,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface LuckyApplicationTest {
 
-    Class<?> rootClass();
+    Class<?> rootClass() default Void.class;
 }

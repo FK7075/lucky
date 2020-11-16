@@ -19,7 +19,9 @@ public class LuckyJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 		if(!AnnotationUtils.isExist(testClass, LuckyApplicationTest.class)){
 			new AutoScanApplicationContext();
 		}else{
-			new AutoScanApplicationContext(AnnotationUtils.get(testClass, LuckyApplicationTest.class).rootClass());
+			Class<?> aClass = AnnotationUtils.get(testClass, LuckyApplicationTest.class).rootClass();
+			aClass=aClass==Void.class?testClass:aClass;
+			new AutoScanApplicationContext(aClass);
 		}
 
 	}
