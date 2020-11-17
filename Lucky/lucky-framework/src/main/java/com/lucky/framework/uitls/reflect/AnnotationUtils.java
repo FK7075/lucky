@@ -369,4 +369,29 @@ public abstract class AnnotationUtils {
         return list.get(0);
     }
 
+    /**
+     * 判断Method是否被注解数组中的其中一个标注
+     *  1.没有被任意一个标注（异常）
+     *  2.被其中一个标注
+     *  3.被其中多个注解标注 （异常）
+     * @param method 待判断的Method
+     * @param annClassArray 注解数组
+     * @return
+     */
+    public static Annotation getByArray(Method method,Class<? extends Annotation>[] annClassArray){
+        List<Annotation> list=new ArrayList<>();
+        for (Class<? extends Annotation> annClass : annClassArray) {
+            if(isExist(method,annClass)){
+                list.add(get(method,annClass));
+            }
+        }
+        if(list.isEmpty()){
+
+        }
+        if(list.size()!=1){
+
+        }
+        return list.get(0);
+    }
+
 }

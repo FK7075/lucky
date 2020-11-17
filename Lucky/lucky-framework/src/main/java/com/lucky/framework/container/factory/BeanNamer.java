@@ -24,14 +24,21 @@ public class BeanNamer implements Namer {
         Annotation annotation = AnnotationUtils.getByArray(beanClass, COMPONENT_ANNOTATION);
         String id = (String) AnnotationUtils.getValue(annotation, "id");
         String value= (String) AnnotationUtils.getValue(annotation,"value");
+        if(annotation instanceof Controller){
+            if(!Assert.isBlankString(id)){
+                return id;
+            }
+            return getDefBeanName(beanClass);
+        }
         if(!Assert.isBlankString(id)){
             return id;
         }
         if(!Assert.isBlankString(value)){
             return value;
         }
-        return BaseUtils.lowercaseFirstLetter(beanClass.getSimpleName());
+        return getDefBeanName(beanClass);
     }
+
 
     @Override
     public String getBeanType(Class<?> beanClass) {
@@ -43,5 +50,9 @@ public class BeanNamer implements Namer {
 
         }
         return components.get(0).type();
+    }
+
+    protected String getDefBeanName(Class<?> beanClass){
+        return BaseUtils.lowercaseFirstLetter(beanClass.getSimpleName());
     }
 }
