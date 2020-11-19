@@ -56,7 +56,7 @@ public @interface Controller {
 	 * 指定一些合法访问的ip段，来自其他ip地址的请求将会被拒绝
 	 * @return
 	 */
-	String[] ipSection() default "";
+	String[] ipSection() default {};
 	
 //	/**
 //	 * 指定对Controller中所有方法的返回值处理策略<br>

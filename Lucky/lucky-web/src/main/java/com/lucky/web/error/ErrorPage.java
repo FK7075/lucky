@@ -29,7 +29,6 @@ public abstract class ErrorPage {
         for(Map.Entry<String,String> entry:errPagePathMap.entrySet()){
             errorPageMap.put(entry.getKey(),getHtmlString(entry.getValue()));
         }
-        errorPageMap= WebConfig.getWebConfig().getErrorPage();
     }
 
     /**
