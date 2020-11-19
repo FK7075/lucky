@@ -1,10 +1,12 @@
 package com.lucky.web.servlet;
 
+import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.file.Resources;
 import com.lucky.web.core.Model;
 import com.lucky.web.core.RequestFilter;
 import com.lucky.web.core.WebContext;
 import com.lucky.web.enums.RequestMethod;
+import com.lucky.web.mapping.Mapping;
 import com.lucky.web.webfile.WebFileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,17 +39,16 @@ public class LuckyDispatcherServlet extends BaseServlet {
                 return;
             }
 
-            //判断当前请求是否符合IP配置，没有权限的IP地址的请求直接拦截，拒绝访问
-            if(!RequestFilter.ipIsPass(model,webConfig)){
+            //全局IP配置校验、静态资源处理
+            if(!RequestFilter.filter(model,webConfig)){
                 return;
             }
 
-            //静态资源处理
-            if(!RequestFilter.isStaticResource(model,webConfig)){
+            Mapping mapping = mappingCollection.getMapping(model);
+            // URL、IP、RequestMethod校验
+            if(Assert.isNull(mapping)){
                 return;
             }
-
-
 
 
 

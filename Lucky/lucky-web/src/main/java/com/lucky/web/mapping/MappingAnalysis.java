@@ -8,6 +8,11 @@ package com.lucky.web.mapping;
  */
 public interface MappingAnalysis {
 
+    /**
+     * 将一个Controller解析为多个URL映射
+     * @param controller Controller对象
+     * @return
+     */
     MappingCollection analysis(Object controller);
 
 }

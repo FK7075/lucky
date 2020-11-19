@@ -17,16 +17,16 @@ public abstract class RequestFilter {
     private static final Logger log = LogManager.getLogger(RequestFilter.class);
 
     public static boolean filter(Model model, WebConfig webConfig){
-        if(ipIsPass(model, webConfig)){
-            return true;
+        if(!ipIsPass(model, webConfig)){
+            return false;
         }
-        if(isStaticResource(model, webConfig)){
-            return true;
+        if(!isStaticResource(model, webConfig)){
+            return false;
         }
-        if(staticHander(model, webConfig)){
-            return true;
+        if(!staticHander(model, webConfig)){
+            return false;
         }
-        return false;
+        return true;
     }
 
     public static boolean ipIsPass(Model model, WebConfig webConfig) {

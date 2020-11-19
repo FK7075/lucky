@@ -26,6 +26,7 @@ public class DefaultWebPreprocess implements WebPreprocess {
         url = java.net.URLDecoder.decode(new String(url.getBytes(webConfig.getEncoding()), model.getResponse().getCharacterEncoding()),  model.getResponse().getCharacterEncoding());
         String context = model.getRequest().getContextPath();
         url = url.replace(context, "");
+        url=url.endsWith("/")?url.substring(0,url.length()-1):url;
         if (Assert.strEndsWith(url,SUFFIX)) {
             //Lucky默认可以使用的后缀
             url = url.substring(0, url.lastIndexOf("."));

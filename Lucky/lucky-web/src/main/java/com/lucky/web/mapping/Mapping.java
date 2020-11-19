@@ -1,9 +1,12 @@
 package com.lucky.web.mapping;
 
 import com.lucky.framework.uitls.base.Assert;
+import com.lucky.framework.uitls.reflect.MethodUtils;
 import com.lucky.web.enums.RequestMethod;
+import com.lucky.web.utils.IpUtil;
 
 import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  * 一个具体的URL映射
@@ -21,6 +24,10 @@ public class Mapping {
     private Method mapping;
     /** 当前的请求类型*/
     private RequestMethod[] methods;
+    /** 该请求支持的ip地址*/
+    private Set<String> ips;
+    /** 该请求支持的ip段范围*/
+    private String[] ipSection;
 
     public String getUrl() {
         return url;
@@ -54,11 +61,31 @@ public class Mapping {
         this.methods = methods;
     }
 
-    public Mapping(String url, Object controller, Method mapping, RequestMethod[] methods) {
+    public Set<String> getIps() {
+        return ips;
+    }
+
+    public void setIps(Set<String> ips) {
+        this.ips = ips;
+    }
+
+    public String[] getIpSection() {
+        return ipSection;
+    }
+
+    public void setIpSection(String[] ipSection) {
+        this.ipSection = ipSection;
+    }
+
+    public Mapping(String url, Object controller,
+                   Method mapping, RequestMethod[] methods,
+                   Set<String>ips, String[] ipSection) {
         this.url = url;
         this.controller = controller;
         this.mapping = mapping;
         this.methods = methods;
+        this.ips=ips;
+        this.ipSection=ipSection;
     }
 
     /**
@@ -71,18 +98,84 @@ public class Mapping {
             return false;
         }
         //URL校验
-        if(!getUrl().equals(currMapping.getUrl())){
+        if(!urlIsEquals(currMapping.getUrl())){
             return false;
         }
         //支持的请求类型校验
         RequestMethod[] currMethods = currMapping.getMethods();
-        for (RequestMethod method : this.methods) {
-            for (RequestMethod currMethod : currMethods) {
-                if(method==currMethod){
-                    return true;
-                }
+        for (RequestMethod currMethod : currMethods) {
+            if(methodIsEquals(currMethod)){
+                return true;
             }
         }
         return false;
+    }
+
+    /**
+     * 请求类型校验
+     * @param method 待校验的请求类型
+     * @return
+     */
+    public boolean methodIsEquals(RequestMethod method){
+        for (RequestMethod requestMethod : getMethods()) {
+            if(method==requestMethod){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * URL校验
+     * @param url 待验证的URL
+     * @return
+     */
+    public boolean urlIsEquals(String url){
+        return getUrl().equals(url);
+    }
+
+    /**
+     * 执行Controller方法
+     * @param methodParams 执行方法需要的参数
+     * @return 方法执行后的返回值
+     */
+    public Object invoke(Object[] methodParams){
+        Object result = MethodUtils.invoke(controller, mapping, methodParams);
+        return result;
+    }
+
+    public boolean ipExistsInRange(String ip) {
+        if(ipSection==null||ipSection.length==0) {
+            return true;
+        }
+        for(String hfip:ipSection) {
+            if(hfip.startsWith("!")) {//判断该ip是否属于非法IP段
+                if(IpUtil.ipExistsInRange(ip,hfip.substring(1))) {
+                    return false;
+                }
+            }else if(IpUtil.ipExistsInRange(ip,hfip)){//判断该ip是否属性合法ip段
+                return true;
+            }
+        }
+        return false;//非非法ip段也非合法ip段，即为未注册ip，不给予通过
+    }
+
+    public boolean ipISCorrect(String currip) {
+        if(ips.isEmpty()) {
+            return true;
+        }
+        if("localhost".equals(currip)) {
+            currip="127.0.0.1";
+        }
+        for(String ip:ips) {
+            if(ip.startsWith("!")) {//判断该ip是否属于非法IP
+                if(currip.equals(ip.substring(1))) {
+                    return false;
+                }
+            }else if(currip.equals(ip)) {//判断该ip是否属性合法ip
+                return true;
+            }
+        }
+        return false;//非非法ip也非合法ip，即为未注册ip，不给予通过
     }
 }
