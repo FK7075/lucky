@@ -14,6 +14,15 @@ public class User {
     private String username="JACK";
     private String password="PA$$W0RD";
 
+    public User() {
+    }
+
+    public User(Integer id, String username, String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("User{");

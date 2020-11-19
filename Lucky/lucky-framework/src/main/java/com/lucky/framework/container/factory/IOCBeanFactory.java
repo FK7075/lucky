@@ -3,18 +3,22 @@ package com.lucky.framework.container.factory;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.RegisterMachine;
 import com.lucky.framework.container.SingletonContainer;
+import com.lucky.framework.uitls.base.BaseUtils;
+import com.lucky.framework.uitls.reflect.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author fk7075
  * @version 1.0.0
  * @date 2020/11/16 上午12:53
  */
-public abstract class IOCBeanFactory implements BeanFactory {
+public abstract class IOCBeanFactory implements BeanFactory,Namer {
 
     private static final SingletonContainer singletonPool= RegisterMachine.getRegisterMachine().getSingletonPool();
+    private static final Set<Class<?>> plugins=RegisterMachine.getRegisterMachine().getPlugins();
 
     public List<Module> getBeanByType(String type){
         return singletonPool.getBeanByType(type);
@@ -44,4 +48,35 @@ public abstract class IOCBeanFactory implements BeanFactory {
         return singletonPool.getBean(id);
     }
 
+    public List<Class<?>> getPluginByClass(Class<?> pluginClass){
+        return plugins.stream().filter(pluginClass::isAssignableFrom).collect(Collectors.toList());
+    }
+
+    public List<Class<?>> getPluginByAnnotation(Class<? extends Annotation> annotationClass){
+        return plugins.stream().filter(a-> AnnotationUtils.isExist(a,annotationClass)).collect(Collectors.toList());
+    }
+
+    public List<Class<?>> getPlugins(){
+        return new ArrayList<>(plugins);
+    }
+
+    @Override
+    public String getBeanName(Class<?> aClass){
+        return BaseUtils.lowercaseFirstLetter(aClass.getSimpleName());
+    }
+
+    @Override
+    public String getBeanType(Class<?> aClass){
+        return "component";
+    }
+
+    @Override
+    public Map<String, Module> replaceBean() {
+        return new HashMap<>();
+    }
+
+    @Override
+    public List<Module> createBean() {
+        return new ArrayList<>();
+    }
 }

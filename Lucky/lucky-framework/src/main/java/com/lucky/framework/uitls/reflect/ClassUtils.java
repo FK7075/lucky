@@ -180,6 +180,10 @@ public abstract class ClassUtils {
         }
     }
 
+    public static Object newObject(String fullPath){
+        return newObject(getClass(fullPath));
+    }
+
     /**
      * 得到一个类中被特定注解标注的所有属性
      * @param clzz 类CLass

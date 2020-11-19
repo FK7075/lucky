@@ -1,5 +1,6 @@
 package com.lucky.framework.container;
 
+import com.lucky.framework.container.factory.Namer;
 import com.lucky.framework.exception.AutowiredException;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.base.BaseUtils;
@@ -19,20 +20,24 @@ import java.util.List;
  * @version 1.0.0
  * @date 2020/11/16 上午3:58
  */
-public abstract class Injection {
+public abstract class Injection implements Namer {
 
     private static final Logger log= LogManager.getLogger(Injection.class);
     private static final SingletonContainer singletonPool= RegisterMachine.getRegisterMachine().getSingletonPool();
 
     public Injection(){
-        Module module=new Module(getBeanId(),getBeanType(),this);
+        Module module=
+                new Module(getBeanName(getClass()),getBeanType(getClass()),this);
         Injection.injection(module);
     }
 
-    public String getBeanId(){
-        return BaseUtils.lowercaseFirstLetter(getClass().getSimpleName());
+    @Override
+    public String getBeanName(Class<?> aClass){
+        return BaseUtils.lowercaseFirstLetter(aClass.getSimpleName());
     }
-    public String getBeanType(){
+
+    @Override
+    public String getBeanType(Class<?> aClass){
         return "component";
     }
 

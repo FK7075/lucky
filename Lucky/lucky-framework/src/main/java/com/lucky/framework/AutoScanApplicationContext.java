@@ -18,14 +18,29 @@ import java.util.stream.Collectors;
  */
 public class AutoScanApplicationContext implements ApplicationContext{
 
+    private static AutoScanApplicationContext autoScanApplicationContext;
     public Class<?> applicationBootClass;
     public SingletonContainer singletonPool;
 
-    public AutoScanApplicationContext(){
+    public static AutoScanApplicationContext create(){
+        if(autoScanApplicationContext==null){
+            autoScanApplicationContext=new AutoScanApplicationContext();
+        }
+        return autoScanApplicationContext;
+    }
+
+    public static AutoScanApplicationContext create(Class<?> applicationBootClass){
+        if(autoScanApplicationContext==null){
+            autoScanApplicationContext=new AutoScanApplicationContext(applicationBootClass);
+        }
+        return autoScanApplicationContext;
+    }
+
+    private AutoScanApplicationContext(){
         init();
     }
 
-    public AutoScanApplicationContext(Class<?> applicationBootClass) {
+    private AutoScanApplicationContext(Class<?> applicationBootClass) {
         this.applicationBootClass = applicationBootClass;
         init();
     }

@@ -61,6 +61,17 @@ public class SingletonContainer implements Map<String, Module> {
     }
 
     @Override
+    public Module replace(String key, Module value){
+        if(containsKey(key)){
+            remove(key);
+            put(key,value);
+        }else {
+            put(key,value);
+        }
+        return value;
+    }
+
+    @Override
     public Module remove(Object key) {
         return singletonPool.remove(key);
     }

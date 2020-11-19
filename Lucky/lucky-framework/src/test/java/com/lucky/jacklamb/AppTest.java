@@ -1,5 +1,6 @@
 package com.lucky.jacklamb;
 
+import com.lucky.framework.confanalysis.ConfigUtils;
 import com.lucky.framework.junit.LuckyRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,6 @@ public class AppTest {
      */
     @Test
     public void shouldAnswerWithTrue() {
-        log.info("ok");
+        System.out.println(ConfigUtils.getYamlConfAnalysis().getMap());
     }
 }

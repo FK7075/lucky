@@ -1,6 +1,7 @@
 package com.lucky.framework.uitls.file;
 
 import com.google.gson.reflect.TypeToken;
+import com.lucky.framework.exception.ClasspathFileLoadException;
 import com.lucky.framework.serializable.implement.json.LSON;
 
 import java.io.*;
@@ -50,7 +51,12 @@ public abstract class Resources {
      * @return Reader
      */
     public static BufferedReader getReader(String filePath){
-        return new BufferedReader(new InputStreamReader(getInputStream(filePath)));
+        try {
+            return new BufferedReader(new InputStreamReader(getInputStream(filePath)));
+        }catch (NullPointerException e){
+            throw new ClasspathFileLoadException(filePath,e);
+        }
+
     }
 
     /**

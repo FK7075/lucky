@@ -24,7 +24,7 @@ public class TestApp {
     @Test
     public void yamlTest(){
 //        System.out.println(gson);
-        YamlConfAnalysis yml=new YamlConfAnalysis(Resources.getReader("/test.yml"));
+        YamlConfAnalysis yml=new YamlConfAnalysis(Resources.getReader("/app.yml"));
         Map<String, Object> map = yml.getMap();
         Map<String,Object> data = (Map<String, Object>) map.get("data");
         for (String s : map.keySet()) {

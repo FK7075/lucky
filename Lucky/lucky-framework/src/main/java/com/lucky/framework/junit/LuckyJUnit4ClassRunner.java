@@ -17,11 +17,11 @@ public class LuckyJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 	public LuckyJUnit4ClassRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);
 		if(!AnnotationUtils.isExist(testClass, LuckyApplicationTest.class)){
-			new AutoScanApplicationContext();
+			AutoScanApplicationContext.create();
 		}else{
 			Class<?> aClass = AnnotationUtils.get(testClass, LuckyApplicationTest.class).rootClass();
 			aClass=aClass==Void.class?testClass:aClass;
-			new AutoScanApplicationContext(aClass);
+			AutoScanApplicationContext.create(aClass);
 		}
 
 	}
