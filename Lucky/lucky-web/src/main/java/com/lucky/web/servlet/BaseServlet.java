@@ -4,8 +4,9 @@ import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.annotation.Controller;
 import com.lucky.web.conf.WebConfig;
-import com.lucky.web.core.DefaultWebPreprocess;
-import com.lucky.web.core.WebPreprocess;
+import com.lucky.web.core.DefaultMappingPreprocess;
+import com.lucky.web.core.MappingPreprocess;
+import com.lucky.web.core.parameter.ParameterAnalysisChain;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.mapping.DefaultMappingAnalysis;
 import com.lucky.web.mapping.MappingCollection;
@@ -28,11 +29,16 @@ import java.util.List;
 public abstract class BaseServlet extends HttpServlet {
 
     protected static final Logger log = LogManager.getLogger(BaseServlet.class);
-    protected final static String ICO ="/favicon.ico";
     protected ApplicationContext applicationContext;
     protected MappingCollection mappingCollection;
     protected WebConfig webConfig;
-    protected WebPreprocess preprocess;
+
+    protected MappingPreprocess getMappingPreprocess(){
+        return webConfig.getMappingPreprocess();
+    }
+    protected ParameterAnalysisChain getParameterAnalysisChain(){
+        return null;
+    }
 
     @Override
     public void destroy() {
@@ -42,7 +48,6 @@ public abstract class BaseServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        preprocess=new DefaultWebPreprocess();
         webConfig=WebConfig.getWebConfig();
         applicationContext=AutoScanApplicationContext.create();
         List<Object> controllers = applicationContext.getBeanByAnnotation(Controller.class);

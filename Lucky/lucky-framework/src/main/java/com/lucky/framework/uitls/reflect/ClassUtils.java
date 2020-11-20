@@ -275,4 +275,34 @@ public abstract class ClassUtils {
         }
         return false;
     }
+
+    public static final Class<?>[] SIMPLE_ARRAY_CLASSES={
+            String[].class ,  Byte[].class ,  Short[].class ,Integer[].class,
+              Long[].class , Float[].class , Double[].class ,Boolean[].class,
+              char[].class ,  byte[].class ,  short[].class ,    int[].class,
+              long[].class , float[].class , double[].class ,boolean[].class
+    };
+
+    /**
+     * 判断当前类型是否为Java基本类型的包装类型
+     * @param aClass 当前类型
+     * @return
+     */
+    public static boolean isSimpleArray(Class<?> aClass){
+        for (Class<?> simpleClass : SIMPLE_ARRAY_CLASSES) {
+            if(aClass==simpleClass){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isAssignableFromArrayOr(Class<?> targetClass,Class<?>[] arrayClass){
+        for (Class<?> aClass : arrayClass) {
+            if(aClass.isAssignableFrom(targetClass)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

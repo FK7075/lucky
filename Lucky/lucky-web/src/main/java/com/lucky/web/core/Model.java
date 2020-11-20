@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.lang.reflect.Type;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -172,6 +173,14 @@ public class Model {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public String getEncod() {
+        return encod;
+    }
+
+    public Map<String, String> getRestMap() {
+        return restMap;
     }
 
     /**
@@ -358,6 +367,10 @@ public class Model {
         writer(jsonSerialization.serialization(pojo));
     }
 
+    public Object fromJson(Type type, String jsonStr) throws Exception {
+        return jsonSerialization.deserialization(type, jsonStr);
+    }
+
     /**
      * 使用response对象的Writer方法将对象模型写出为XML格式数据
      * @param pojo 模型数据
@@ -365,6 +378,10 @@ public class Model {
     public void writerXml(Object pojo) throws IOException {
         getResponse().setContentType("application/xml");
         writer(xmlSerialization.serialization(pojo));
+    }
+
+    public Object fromXml(Type type, String jsonStr) throws Exception {
+        return xmlSerialization.deserialization(type, jsonStr);
     }
 
     /**
@@ -722,4 +739,6 @@ class ExceptionMessage{
     public void setStack(String stack) {
         this.stack = stack;
     }
+
+
 }

@@ -1,13 +1,16 @@
 package com.lucky.web.core;
 
+import com.lucky.framework.uitls.file.Resources;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.webfile.StaticResourceManage;
+import com.lucky.web.webfile.WebFileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+
 /**
  * 请求过滤器
- *
  * @author fk7075
  * @version 1.0
  * @date 2020/11/19 18:23
@@ -15,8 +18,17 @@ import org.apache.logging.log4j.Logger;
 public abstract class RequestFilter {
 
     private static final Logger log = LogManager.getLogger(RequestFilter.class);
+    private static final  String ICO ="/favicon.ico";
 
-    public static boolean filter(Model model, WebConfig webConfig){
+    /**
+     * 过滤处理当前请求，无法处理返回true，可以处理并已经处理返回false
+     * @param model 当前请求的Model对象
+     * @param webConfig Web配置类
+     * @return
+     */
+    public static boolean filter(Model model, WebConfig webConfig) throws IOException {
+        if(!isICO(model, webConfig))
+            return false;
         if(!ipIsPass(model, webConfig)){
             return false;
         }
@@ -29,6 +41,28 @@ public abstract class RequestFilter {
         return true;
     }
 
+    /**
+     * favicon.ico请求的处理
+     * @param model 当前请求的Model对象
+     * @param webConfig Web配置类
+     * @return
+     * @throws IOException
+     */
+    public static boolean isICO(Model model, WebConfig webConfig) throws IOException {
+        if(ICO.equals(model.getUri())){
+            model.getResponse().setContentType("image/x-icon");
+            WebFileUtils.preview(model, Resources.getInputStream(webConfig.getFavicon()),ICO);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 全局IP配置校验
+     * @param model 当前请求的Model对象
+     * @param webConfig Web配置类
+     * @return
+     */
     public static boolean ipIsPass(Model model, WebConfig webConfig) {
         String currIp = model.getIpAddr();
         //全局资源的IP限制
@@ -47,6 +81,12 @@ public abstract class RequestFilter {
         return true;
     }
 
+    /**
+     * 是否可以处理静态资源
+     * @param model 当前请求的Model对象
+     * @param webConfig Web配置类
+     * @return
+     */
     public static boolean isStaticResource(Model model, WebConfig webConfig) {
         String uri = model.getUri();
         if (webConfig.isOpenStaticResourceManage()
@@ -74,6 +114,12 @@ public abstract class RequestFilter {
         return true;
     }
 
+    /**
+     * 当前请求是否有静态URL映射配置
+     * @param model 当前请求的Model对象
+     * @param webConfig Web配置类
+     * @return
+     */
     public static boolean staticHander(Model model, WebConfig webConfig){
         //扫描并执行配置中的映射
         if(webConfig.getStaticHander().containsKey(model.getUri())){

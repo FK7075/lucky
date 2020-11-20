@@ -6,6 +6,7 @@ import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.utils.IpUtil;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Set;
 
 /**
@@ -28,6 +29,8 @@ public class Mapping {
     private Set<String> ips;
     /** 该请求支持的ip段范围*/
     private String[] ipSection;
+    /** 运行Controller方法需要的参数*/
+    private Parameter[] parameters;
 
     public String getUrl() {
         return url;
@@ -77,6 +80,14 @@ public class Mapping {
         this.ipSection = ipSection;
     }
 
+    public Parameter[] getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Parameter[] parameters) {
+        this.parameters = parameters;
+    }
+
     public Mapping(String url, Object controller,
                    Method mapping, RequestMethod[] methods,
                    Set<String>ips, String[] ipSection) {
@@ -84,6 +95,7 @@ public class Mapping {
         this.controller = controller;
         this.mapping = mapping;
         this.methods = methods;
+        this.parameters=mapping.getParameters();
         this.ips=ips;
         this.ipSection=ipSection;
     }

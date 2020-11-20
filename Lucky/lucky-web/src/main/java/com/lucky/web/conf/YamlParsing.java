@@ -7,6 +7,7 @@ import com.lucky.framework.serializable.XMLSerializationScheme;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.conversion.JavaConversion;
 import com.lucky.framework.uitls.reflect.ClassUtils;
+import com.lucky.web.core.MappingPreprocess;
 
 import java.util.HashSet;
 import java.util.List;
@@ -101,6 +102,10 @@ public abstract class YamlParsing {
                             web.addAllErrorPage((Map<String, String>) webMap.get("error-page"));
                         }
                         if(webMap.containsKey("favicon-ico")){
+                            web.setFavicon(webMap.get("favicon-ico").toString());
+                        }
+                        if(webMap.containsKey("mapping-preprocess")){
+                            web.setMappingPreprocess((MappingPreprocess)ClassUtils.newObject(webMap.get("mapping-preprocess").toString()));
                             web.setFavicon(webMap.get("favicon-ico").toString());
                         }
                         if(webMap.containsKey("serialization")){

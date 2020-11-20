@@ -4,7 +4,7 @@ lucky:
     #URL编码格式
     encoding: UTF-8
     ##静态文件的根目录
-    #classpath}:/xxx/ ：classpath下的某个文件夹 默认：${classpath}/webapps
+    #classpath:/xxx/ ：classpath下的某个文件夹 默认：classpath:/templates
     #user.dir:/xxx/  ：System.getProperty("user.dir")下的某个文件夹
     #docBase:/xxx/   : Tomcat的docBase下的某个文件夹
     ##绝对路径
@@ -21,6 +21,13 @@ lucky:
     serialization:
       xml : com.lucky.framework.serializable.implement.XtreamSerializationScheme
       json: com.lucky.framework.serializable.implement.GsonSerializationScheme
+    ###映射的预处理器
+    #1.处理URL、请求类型和Web上下文的设置
+    #2.处理Controller的属性和跨域问题
+    #3.请求处理结束后的操作
+    mapping-preprocess: com.lucky.web.core.DefaultMappingPreprocess
+    parameter-analysis-chain-add:
+      -
     #错误页面配置
     error-page:
       404: /lucky-web/404.html

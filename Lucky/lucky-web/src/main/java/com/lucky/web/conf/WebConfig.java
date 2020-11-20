@@ -6,6 +6,8 @@ import com.lucky.framework.serializable.XMLSerializationScheme;
 import com.lucky.framework.serializable.implement.GsonSerializationScheme;
 import com.lucky.framework.serializable.implement.XtreamSerializationScheme;
 import com.lucky.framework.uitls.base.Assert;
+import com.lucky.web.core.DefaultMappingPreprocess;
+import com.lucky.web.core.MappingPreprocess;
 
 import java.util.*;
 
@@ -57,6 +59,8 @@ public class WebConfig implements LuckyConfig {
     private XMLSerializationScheme xmlSerializationScheme;
     /** JSON序列化方案*/
     private JSONSerializationScheme jsonSerializationScheme;
+    /** 映射的预处理器*/
+    private MappingPreprocess mappingPreprocess;
 
     public boolean isFirst() {
         return isFirst;
@@ -68,6 +72,14 @@ public class WebConfig implements LuckyConfig {
 
     public String getEncoding() {
         return encoding;
+    }
+
+    public MappingPreprocess getMappingPreprocess() {
+        return mappingPreprocess;
+    }
+
+    public void setMappingPreprocess(MappingPreprocess mappingPreprocess) {
+        this.mappingPreprocess = mappingPreprocess;
     }
 
     public long getMultipartMaxFileSize() {
@@ -237,6 +249,7 @@ public class WebConfig implements LuckyConfig {
         conf.setMultipartMaxRequestSize(10*1024);
         conf.setXmlSerializationScheme(new XtreamSerializationScheme());
         conf.setJsonSerializationScheme(new GsonSerializationScheme());
+        conf.setMappingPreprocess(new DefaultMappingPreprocess());
         conf.setPrefix("");
         conf.setSuffix("");
         conf.setConnectTimeout(5000);

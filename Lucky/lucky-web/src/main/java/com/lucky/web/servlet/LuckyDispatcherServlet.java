@@ -25,37 +25,40 @@ public class LuckyDispatcherServlet extends BaseServlet {
 
     @Override
     protected void applyFor(HttpServletRequest request, HttpServletResponse response, RequestMethod requestMethod) {
+        Model model=null;
+        Mapping mapping=null;
         try {
-            Model model = new Model(request, response,
+          model = new Model(request, response,
                     this.getServletConfig(), requestMethod, webConfig.getEncoding());
 
             //前置处理，处理URL、RequestMethod、以及WebContext
-            preprocess.dispose(model,webConfig);
+            getMappingPreprocess().beforeDispose(model,webConfig);
 
-            //如果请求的是favicon.ico，直接返回配置文件中配置的favicon.ico文件
-            if(ICO.equals(model.getUri())){
-                model.getResponse().setContentType("image/x-icon");
-                WebFileUtils.preview(model, Resources.getInputStream(webConfig.getFavicon()),ICO);
-                return;
-            }
-
-            //全局IP配置校验、静态资源处理
+            //全局IP配置校验、静态资源、favicon.ico等简单请求的处理
             if(!RequestFilter.filter(model,webConfig)){
                 return;
             }
 
-            Mapping mapping = mappingCollection.getMapping(model);
+            mapping = mappingCollection.getMapping(model);
             // URL、IP、RequestMethod校验
             if(Assert.isNull(mapping)){
                 return;
             }
 
+            //后置处理，处理Controller的属性和跨域问题
+            getMappingPreprocess().afterDispose(model,mapping);
+
+            //获取执行参数
+            Object[] runParam=getParameterAnalysisChain().analysis(model,mapping);
+
+            //执行Controller方法并获取返回结果
+            Object invoke = mapping.invoke(runParam);
 
 
         } catch (Throwable e) {
             e.printStackTrace();
         }finally {
-            WebContext.clearContext();
+            getMappingPreprocess().setFinally(model,mapping);
         }
     }
 }

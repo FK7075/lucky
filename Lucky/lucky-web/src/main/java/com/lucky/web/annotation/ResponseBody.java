@@ -5,14 +5,13 @@ import com.lucky.web.enums.Rest;
 import java.lang.annotation.*;
 
 /**
- * 将客户端传入的Json数据转化为Object对象
+ * 
  * @author fk-7075
  *
  */
-@Target(ElementType.PARAMETER)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RequestBody {
-
-    Rest value() default Rest.JSON;
+public @interface ResponseBody {
+	Rest value() default Rest.JSON;
 }
