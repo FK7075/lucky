@@ -21,9 +21,23 @@ public class ParameterAnalysisChain {
     public List<ParameterAnalysis> getParameterAnalysesChain() {
         return parameterAnalysesChain;
     }
-
     public void setParameterAnalysesChain(List<ParameterAnalysis> parameterAnalysesChain) {
         this.parameterAnalysesChain = parameterAnalysesChain;
+    }
+
+    public void addParameterAnalysis(ParameterAnalysis parameterAnalysis){
+        parameterAnalysesChain.add(parameterAnalysis);
+    }
+
+    public ParameterAnalysisChain(){
+        parameterAnalysesChain.add(new HttpParameterAnalysis());//ok
+        parameterAnalysesChain.add(new ApiParameterAnalysis());//
+        parameterAnalysesChain.add(new SerializationParameterAnalysis());//ok
+        parameterAnalysesChain.add(new AnnotationFileParameterAnalysis());//
+        parameterAnalysesChain.add(new MultipartFileParameterAnalysis());//
+        parameterAnalysesChain.add(new PojoParameterAnalysis());//
+        parameterAnalysesChain.add(new BaseParameterAnalysis());//ok
+
     }
 
     public void sort(){
@@ -38,9 +52,9 @@ public class ParameterAnalysisChain {
             for (ParameterAnalysis parameterAnalysis : parameterAnalysesChain) {
                 if(parameterAnalysis.can(model,mapping.getMapping(),parameters[i],paramNames[i])){
                     paramObject[i]=parameterAnalysis.analysis(model,mapping.getMapping(),parameters[i],paramNames[i]);
+                    break;
                 }
             }
-            paramObject[i]=null;
         }
         return paramObject;
     }

@@ -3,6 +3,7 @@ package com.lucky.framework.uitls.reflect;
 import org.objectweb.asm.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -36,10 +37,13 @@ public class ASMUtil {
 	     */
 	    public static String[] getMethodParamNames(final Method m) {
 	        final String[] paramNames = new String[m.getParameterTypes().length];
-	        final String n = m.getDeclaringClass().getName();
-	        ClassReader cr = null;
+	        final Class<?> aClass = m.getDeclaringClass();
+	        String aClassPath=aClass.getName().replaceAll("\\.","/")+".class";
+
+			ClassReader cr = null;
 	        try {
-	            cr = new ClassReader(n);
+				InputStream in = aClass.getClassLoader().getResource(aClassPath).openStream();
+	            cr = new ClassReader(in);
 	        } catch (IOException e) {
 	            throw new RuntimeException(e);
 	        }

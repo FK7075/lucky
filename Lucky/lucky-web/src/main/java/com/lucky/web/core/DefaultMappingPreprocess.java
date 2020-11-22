@@ -50,9 +50,6 @@ public class DefaultMappingPreprocess implements MappingPreprocess {
 
     @Override
     public void methodDispose(Model model,WebConfig config) throws UnsupportedEncodingException {
-        model.getRequest().setCharacterEncoding("utf8");
-        model.getResponse().setCharacterEncoding("utf8");
-        model.getResponse().setHeader("Content-Type", "text/html;charset=utf-8");
         if (config.isPostChangeMethod()&&model.getRequestMethod() == RequestMethod.POST) {
             String hihMeth = model.getParameter("_method");
             if (hihMeth != null) {
@@ -110,6 +107,10 @@ public class DefaultMappingPreprocess implements MappingPreprocess {
         Object controller=mapping.getController();
         Method controllerMethod=mapping.getMapping();
         Class<?> controllerClass = controller.getClass();
+        if(!(AnnotationUtils.isExist(controllerMethod,CrossOrigin.class)
+                ||AnnotationUtils.isExist(controllerClass,CrossOrigin.class))){
+            return;
+        }
         CrossOrigin crso= AnnotationUtils.get(controllerClass,CrossOrigin.class);
         if(AnnotationUtils.isExist(controllerMethod,CrossOrigin.class)){
             crso=AnnotationUtils.get(controllerMethod,CrossOrigin.class);

@@ -26,8 +26,10 @@ lucky:
     #2.处理Controller的属性和跨域问题
     #3.请求处理结束后的操作
     mapping-preprocess: com.lucky.web.core.DefaultMappingPreprocess
+    ##添加Controller参数解析器
     parameter-analysis-chain-add:
-      -
+      - com.lucky.web.core.parameter.ParameterAnalysis
+      - com.lucky.web.core.parameter.ImplParameterAnalysis
     #错误页面配置
     error-page:
       404: /lucky-web/404.html

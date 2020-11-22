@@ -17,8 +17,8 @@ import java.lang.reflect.Parameter;
  */
 public class SerializationParameterAnalysis implements ParameterAnalysis{
     @Override
-    public int priority() {
-        return 0;
+    public double priority() {
+        return 2;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SerializationParameterAnalysis implements ParameterAnalysis{
         Class<?> parameterType = parameter.getType();
         if(rest==Rest.JSON){
             return model.fromJson(parameterType,paramValue);
-        }else if(rest==Rest.JSON){
+        }else if(rest==Rest.XML){
             return model.fromXml(parameterType,paramValue);
         }else {
             return null;

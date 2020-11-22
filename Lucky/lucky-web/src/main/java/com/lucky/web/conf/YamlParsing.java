@@ -8,6 +8,7 @@ import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.conversion.JavaConversion;
 import com.lucky.framework.uitls.reflect.ClassUtils;
 import com.lucky.web.core.MappingPreprocess;
+import com.lucky.web.core.parameter.ParameterAnalysis;
 
 import java.util.HashSet;
 import java.util.List;
@@ -107,6 +108,10 @@ public abstract class YamlParsing {
                         if(webMap.containsKey("mapping-preprocess")){
                             web.setMappingPreprocess((MappingPreprocess)ClassUtils.newObject(webMap.get("mapping-preprocess").toString()));
                             web.setFavicon(webMap.get("favicon-ico").toString());
+                        }
+                        if(webMap.containsKey("parameter-analysis-chain-add")){
+                            List<String> paramana=(List<String>)webMap.get("parameter-analysis-chain-add");
+                            paramana.stream().forEach(str->web.addParameterAnalysis((ParameterAnalysis) ClassUtils.newObject(str)));
                         }
                         if(webMap.containsKey("serialization")){
                             Object serializationNode = webMap.get("serialization");

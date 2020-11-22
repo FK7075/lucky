@@ -17,7 +17,7 @@ import java.lang.reflect.Parameter;
  * @version 1.0
  * @date 2020/11/20 11:48
  */
-public class HttpTypeParameterAnalysis implements ParameterAnalysis{
+public class HttpParameterAnalysis implements ParameterAnalysis{
 
     private final static Class<?>[] HTTP_CLASS=
             new Class[]{ServletRequest.class, ServletResponse.class, HttpSession.class,
@@ -25,7 +25,7 @@ public class HttpTypeParameterAnalysis implements ParameterAnalysis{
 
 
     @Override
-    public int priority() {
+    public double priority() {
         return 0;
     }
 

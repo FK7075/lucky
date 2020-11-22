@@ -65,6 +65,9 @@ public class MappingCollection {
             return null;
         }
         String currIp=model.getIpAddr();
+        if("0:0:0:0:0:0:0:1".equals(currIp)){
+            currIp="127.0.0.1";
+        }
         if (!mapping.ipExistsInRange(currIp) || !mapping.ipISCorrect(currIp)) {
             model.error("403", "该ip地址没有被注册，服务器拒绝响应！", "不合法的请求ip：" + currIp);
             return null;

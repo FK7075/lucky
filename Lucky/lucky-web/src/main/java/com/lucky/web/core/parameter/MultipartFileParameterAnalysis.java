@@ -6,17 +6,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 /**
- * Api类型的参数解析
  * @author fk7075
- * @version 1.0
- * @date 2020/11/20 9:21
+ * @version 1.0.0
+ * @date 2020/11/23 上午1:58
  */
-public class ApiTypeParameterAnalysis implements ParameterAnalysis{
-
-
+public class MultipartFileParameterAnalysis extends FileParameterAnalysis{
     @Override
-    public int priority() {
-        return 0;
+    public double priority() {
+        return 4;
     }
 
     @Override

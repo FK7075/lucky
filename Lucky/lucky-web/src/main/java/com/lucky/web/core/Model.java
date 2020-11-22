@@ -89,11 +89,20 @@ public class Model {
     public void init(HttpServletRequest request, HttpServletResponse response){
         this.request = request;
         this.response = response;
+        try {
+            this.request.setCharacterEncoding("utf8");
+            this.response.setCharacterEncoding("utf8");
+            this.response.setHeader("Content-Type", "text/html;charset=utf-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
         this.uri=request.getRequestURI();
         this.parameterMap = getRequestParameterMap();
         this.multipartFileMap = new HashMap<>();
         this.restMap = new HashMap<>();
         this.uploadFileMap = new HashMap<>();
+
+
     }
 
     public ServletOutputStream getOutputStream() throws IOException {

@@ -5,14 +5,11 @@ import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.conversion.JavaConversion;
 import com.lucky.framework.uitls.reflect.ClassUtils;
-import com.lucky.framework.uitls.reflect.ParameterUtils;
 import com.lucky.web.annotation.RequestBody;
 import com.lucky.web.core.Model;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.List;
-import java.util.Set;
 
 /**
  * 基本类型解析
@@ -20,11 +17,11 @@ import java.util.Set;
  * @version 1.0
  * @date 2020/11/20 9:17
  */
-public class BaseTypeParameterAnalysis implements ParameterAnalysis{
+public class BaseParameterAnalysis implements ParameterAnalysis{
 
     @Override
-    public int priority() {
-        return 0;
+    public double priority() {
+        return 6;
     }
 
     @Override

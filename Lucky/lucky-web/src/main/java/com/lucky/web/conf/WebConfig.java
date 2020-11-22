@@ -8,6 +8,8 @@ import com.lucky.framework.serializable.implement.XtreamSerializationScheme;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.web.core.DefaultMappingPreprocess;
 import com.lucky.web.core.MappingPreprocess;
+import com.lucky.web.core.parameter.ParameterAnalysis;
+import com.lucky.web.core.parameter.ParameterAnalysisChain;
 
 import java.util.*;
 
@@ -61,6 +63,8 @@ public class WebConfig implements LuckyConfig {
     private JSONSerializationScheme jsonSerializationScheme;
     /** 映射的预处理器*/
     private MappingPreprocess mappingPreprocess;
+    /** 参数解析链*/
+    private ParameterAnalysisChain parameterAnalysisChain;
 
     public boolean isFirst() {
         return isFirst;
@@ -218,6 +222,14 @@ public class WebConfig implements LuckyConfig {
         return errorPage;
     }
 
+    public ParameterAnalysisChain getParameterAnalysisChain() {
+        return parameterAnalysisChain;
+    }
+
+    public void addParameterAnalysis(ParameterAnalysis parameterAnalysis) {
+        this.parameterAnalysisChain.addParameterAnalysis(parameterAnalysis);
+    }
+
     public void setErrorPage(Map<String, String> errorPage) {
         this.errorPage = errorPage;
     }
@@ -238,7 +250,9 @@ public class WebConfig implements LuckyConfig {
         this.favicon = favicon;
     }
 
-    private WebConfig() {}
+    private WebConfig() {
+        parameterAnalysisChain=new ParameterAnalysisChain();
+    }
 
     private static void defaultInit(WebConfig conf){
         conf.setEncoding("UTF-8");

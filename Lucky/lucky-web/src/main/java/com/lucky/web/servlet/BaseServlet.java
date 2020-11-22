@@ -37,7 +37,9 @@ public abstract class BaseServlet extends HttpServlet {
         return webConfig.getMappingPreprocess();
     }
     protected ParameterAnalysisChain getParameterAnalysisChain(){
-        return null;
+        ParameterAnalysisChain parameterAnalysisChain = webConfig.getParameterAnalysisChain();
+        parameterAnalysisChain.sort();
+        return parameterAnalysisChain;
     }
 
     @Override

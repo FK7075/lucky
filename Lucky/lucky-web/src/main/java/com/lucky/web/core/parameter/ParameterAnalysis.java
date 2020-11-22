@@ -15,7 +15,7 @@ import java.lang.reflect.Parameter;
  */
 public interface ParameterAnalysis {
 
-    int priority();
+    double priority();
 
 
     /**
