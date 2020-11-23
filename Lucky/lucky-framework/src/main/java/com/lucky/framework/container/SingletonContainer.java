@@ -111,24 +111,45 @@ public class SingletonContainer implements Map<String, Module> {
         return singletonPool.hashCode();
     }
 
-    public List<Module> getBeanByType(String type){
+    public List<Module> getBeanByType(String...types){
         return singletonPool.values()
                 .stream()
-                .filter(m->m.getType().equals(type))
+                .filter((m)->{
+                    for (String type : types) {
+                        if(m.getType().equals(type)){
+                            return true;
+                        }
+                    }
+                    return false;
+                })
                 .collect(Collectors.toList());
     }
 
-    public List<Module> getBeanByClass(Class<?> componentClass){
+    public List<Module> getBeanByClass(Class<?>...componentClasses){
         return singletonPool.values()
                 .stream()
-                .filter(m->componentClass.isAssignableFrom(m.getComponent().getClass()))
+                .filter((m)->{
+                    for (Class<?> componentClass : componentClasses) {
+                        if(componentClass.isAssignableFrom(m.getComponent().getClass())){
+                            return true;
+                        }
+                    }
+                    return false;
+                })
                 .collect(Collectors.toList());
     }
 
-    public List<Module> getBeanByAnnotation(Class<? extends Annotation> annotationClass){
+    public List<Module> getBeanByAnnotation(Class<? extends Annotation>...annotationClasses){
         return singletonPool.values()
                 .stream()
-                .filter(m-> AnnotationUtils.isExist(m.getComponent().getClass(),annotationClass))
+                .filter((m)-> {
+                    for (Class<? extends Annotation> annotationClass : annotationClasses) {
+                        if(AnnotationUtils.isExist(m.getComponent().getClass(),annotationClass)){
+                            return true;
+                        }
+                    }
+                    return false;
+                })
                 .collect(Collectors.toList());
     }
 

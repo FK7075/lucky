@@ -6,6 +6,7 @@ import com.lucky.framework.uitls.reflect.ClassUtils;
 import com.lucky.framework.uitls.reflect.FieldUtils;
 import com.lucky.web.annotation.RequestBody;
 import com.lucky.web.core.Model;
+import com.lucky.web.webfile.MultipartFile;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -40,21 +41,30 @@ public class PojoParameterAnalysis implements ParameterAnalysis{
         createObject(model,result);
         Field[] allFields = ClassUtils.getAllFields(parameterClass);
         for (Field fi : allFields) {
+            String fieldName = fi.getName();
+            Class<?> fieldClass = fi.getType();
             // pojo中含有@Upload返回的文件名
-            if (model.uploadFileMapContainsKey(fi.getName())) {
-                File[] uploadFiles = model.getUploadFileArray(fi.getName());
-                if (fi.getType() == String[].class) {
+            if (model.uploadFileMapContainsKey(fieldName)) {
+                File[] uploadFiles = model.getUploadFileArray(fieldName);
+                if (fieldClass == String[].class) {
                     String[] uploadFileNames = new String[uploadFiles.length];
                     for (int x = 0; x < uploadFiles.length; x++) {
                         uploadFileNames[x] = uploadFiles[x].getName();
                     }
                     FieldUtils.setValue(result,fi,uploadFiles);
-                } else if (fi.getType() == String.class) {
-                    FieldUtils.setValue(result,fi,uploadFiles[0].getName());
-                } else if (fi.getType() == File.class) {
-                    FieldUtils.setValue(result,fi,uploadFiles[0]);
-                } else if (fi.getType() == File[].class) {
+                } else if (fieldClass == String.class) {
+                    FieldUtils.setValue(result,fi,uploadFiles[uploadFiles.length-1].getName());
+                } else if (fieldClass == File.class) {
+                    FieldUtils.setValue(result,fi,uploadFiles[uploadFiles.length-1]);
+                } else if (fieldClass == File[].class) {
                     FieldUtils.setValue(result,fi,uploadFiles);
+                }
+            }else if(model.multipartFileMapContainsKey(fieldName)){
+                MultipartFile[] multipartFileArray = model.getMultipartFileArray(fieldName);
+                if (fieldClass ==  MultipartFile[].class) {
+                    FieldUtils.setValue(result,fi,multipartFileArray);
+                }else if(fieldClass ==MultipartFile.class){
+                    FieldUtils.setValue(result,fi,multipartFileArray[multipartFileArray.length-1]);
                 }
             }
 

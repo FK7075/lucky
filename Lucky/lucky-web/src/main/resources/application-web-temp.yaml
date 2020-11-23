@@ -17,6 +17,9 @@ lucky:
     multipart-max-file-size: 1204
     #[文件上传]设置总文件大小为限制，单位：KB
     multipart-max-request-size: 10*1024
+    #定义远程API访问路径
+    call-api:
+      allName: http://localhost:8080/getAllName
     #json序列化方案
     serialization:
       xml : com.lucky.framework.serializable.implement.XtreamSerializationScheme

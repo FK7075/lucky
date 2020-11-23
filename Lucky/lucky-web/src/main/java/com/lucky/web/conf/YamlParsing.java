@@ -113,6 +113,10 @@ public abstract class YamlParsing {
                             List<String> paramana=(List<String>)webMap.get("parameter-analysis-chain-add");
                             paramana.stream().forEach(str->web.addParameterAnalysis((ParameterAnalysis) ClassUtils.newObject(str)));
                         }
+                        if(webMap.containsKey("call-api")){
+                            Map<String,String> callApi=(Map<String,String>)webMap.get("call-api");
+                            web.setCallApi(callApi);
+                        }
                         if(webMap.containsKey("serialization")){
                             Object serializationNode = webMap.get("serialization");
                             if(serializationNode instanceof Map){

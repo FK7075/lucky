@@ -1,5 +1,9 @@
 package com.lucky.web.mapping;
 
+import com.lucky.web.annotation.*;
+
+import java.lang.annotation.Annotation;
+
 /**
  * 类的映射解析，将一个Controller分解为多个URL映射
  * @author fk7075
@@ -7,6 +11,10 @@ package com.lucky.web.mapping;
  * @date 2020/11/17 9:51
  */
 public interface MappingAnalysis {
+
+    public static final Class<? extends Annotation>[] MAPPING_ANNOTATIONS=
+            new Class[]{RequestMapping.class, GetMapping.class, PostMapping.class,
+                    PutMapping.class, DeleteMapping.class};
 
     /**
      * 将一个Controller解析为多个URL映射

@@ -1,4 +1,7 @@
-package com.lucky.framework.annotation;
+package com.lucky.web.annotation;
+
+import com.lucky.framework.annotation.Component;
+import com.lucky.framework.annotation.Plugin;
 
 import java.lang.annotation.*;
 
@@ -25,6 +28,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Plugin
 @Component(type = "controller")
 public @interface Controller {
 	

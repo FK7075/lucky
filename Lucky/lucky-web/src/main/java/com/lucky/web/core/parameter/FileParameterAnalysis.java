@@ -7,4 +7,6 @@ package com.lucky.web.core.parameter;
  * @date 2020/11/20 9:20
  */
 public abstract class FileParameterAnalysis implements ParameterAnalysis {
+
+
 }

@@ -45,8 +45,8 @@ public class LuckyDispatcherServlet extends BaseServlet {
                 return;
             }
 
-            //后置处理，处理Controller的属性和跨域问题
-            getMappingPreprocess().afterDispose(model,mapping);
+            //后置处理，处理Controller的属性和跨域问题以及包装文件类型的参数
+            getMappingPreprocess().afterDispose(model,webConfig,mapping);
 
             //获取执行参数
             Object[] runParam=getParameterAnalysisChain().analysis(model,mapping);

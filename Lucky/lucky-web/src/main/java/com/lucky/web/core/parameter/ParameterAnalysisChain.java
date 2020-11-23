@@ -1,11 +1,12 @@
 package com.lucky.web.core.parameter;
 
-import com.lucky.framework.uitls.reflect.ASMUtil;
+import com.lucky.framework.proxy.ASMUtil;
 import com.lucky.web.core.Model;
 import com.lucky.web.mapping.Mapping;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,20 +31,28 @@ public class ParameterAnalysisChain {
     }
 
     public ParameterAnalysisChain(){
-        parameterAnalysesChain.add(new HttpParameterAnalysis());//ok
-        parameterAnalysesChain.add(new ApiParameterAnalysis());//
-        parameterAnalysesChain.add(new SerializationParameterAnalysis());//ok
-        parameterAnalysesChain.add(new AnnotationFileParameterAnalysis());//
-        parameterAnalysesChain.add(new MultipartFileParameterAnalysis());//
-        parameterAnalysesChain.add(new PojoParameterAnalysis());//
-        parameterAnalysesChain.add(new BaseParameterAnalysis());//ok
+        parameterAnalysesChain.add(new HttpParameterAnalysis());//1-ok
+        parameterAnalysesChain.add(new CallApiParameterAnalysis());//2-
+        parameterAnalysesChain.add(new SerializationParameterAnalysis());//3-ok
+        parameterAnalysesChain.add(new AnnotationFileParameterAnalysis());//4-ok
+        parameterAnalysesChain.add(new MultipartFileParameterAnalysis());//5-ok
+        parameterAnalysesChain.add(new PojoParameterAnalysis());//6-ok
+        parameterAnalysesChain.add(new BaseParameterAnalysis());//7-ok
 
     }
 
     public void sort(){
-        parameterAnalysesChain=parameterAnalysesChain.stream().sorted().collect(Collectors.toList());
+        parameterAnalysesChain=parameterAnalysesChain.stream().sorted(Comparator.comparing(ParameterAnalysis::priority)).collect(Collectors.toList());
     }
 
+    /**
+     * [策略模式]
+     * URL请求参数解析
+     * @param model 当前请求的Model对象
+     * @param mapping 当前请求的映射
+     * @return 执行当前映射方法所需要的的参数
+     * @throws Exception
+     */
     public Object[] analysis(Model model, Mapping mapping) throws Exception {
         String[] paramNames = ASMUtil.getMethodParamNames(mapping.getMapping());
         Parameter[] parameters = mapping.getParameters();

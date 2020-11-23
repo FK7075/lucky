@@ -2,7 +2,7 @@ package com.lucky.web.servlet;
 
 import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.AutoScanApplicationContext;
-import com.lucky.framework.annotation.Controller;
+import com.lucky.web.annotation.Controller;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.core.DefaultMappingPreprocess;
 import com.lucky.web.core.MappingPreprocess;

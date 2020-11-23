@@ -49,6 +49,8 @@ public class WebConfig implements LuckyConfig {
     private Set<String> staticResourcesIpRestrict;
     /**指定资源的IP限制*/
     private Map<String,Set<String>> specifiResourcesIpRestrict;
+    /** 远程API的访问路径*/
+    private Map<String,String> callApi;
     /**连接超时时间*/
     private int connectTimeout;
     /**连接请求超时时间*/
@@ -148,6 +150,14 @@ public class WebConfig implements LuckyConfig {
 
     public JSONSerializationScheme getJsonSerializationScheme() {
         return jsonSerializationScheme;
+    }
+
+    public Map<String, String> getCallApi() {
+        return callApi;
+    }
+
+    public void setCallApi(Map<String, String> callApi) {
+        this.callApi = callApi;
     }
 
     public void setEncoding(String encoding) {
@@ -276,6 +286,7 @@ public class WebConfig implements LuckyConfig {
         conf.setErrorPage(errorPathMap);
         conf.setFavicon("/lucky-web/favicon.ico");
         conf.setStaticHander(new HashMap<>());
+        conf.setCallApi(new HashMap<>());
         conf.setGlobalResourcesIpRestrict(new HashSet<>());
         conf.setStaticResourcesIpRestrict(new HashSet<>());
         conf.setSpecifiResourcesIpRestrict(new HashMap<>());

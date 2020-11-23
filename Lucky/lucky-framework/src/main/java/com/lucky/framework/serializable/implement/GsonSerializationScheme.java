@@ -1,9 +1,5 @@
 package com.lucky.framework.serializable.implement;
 
-import com.lucky.framework.annotation.Component;
-import com.lucky.framework.annotation.Configuration;
-import com.lucky.framework.annotation.Controller;
-import com.lucky.framework.annotation.Repository;
 import com.lucky.framework.serializable.JSONSerializationScheme;
 import com.lucky.framework.serializable.implement.json.LSON;
 

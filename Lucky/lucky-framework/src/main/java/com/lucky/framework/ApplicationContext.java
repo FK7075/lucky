@@ -12,9 +12,9 @@ public interface ApplicationContext {
 
     Object getBean(String id);
 
-    <T> List<T> getBean(Class<T> aClass);
+    <T> List<T> getBean(Class<T>...aClass);
 
-    List<Object> getBeanByAnnotation(Class<?extends Annotation> ann);
+    List<Object> getBeanByAnnotation(Class<?extends Annotation>...annotationClasses);
 
     List<Object> getBeans();
 

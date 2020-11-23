@@ -8,7 +8,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 /**
- * 参数解析的基类
+ * 参数解析的基类模板
+ * can方法定义使用场景
+ * analysis方法返回该场景下的解析数据
  * @author fk7075
  * @version 1.0
  * @date 2020/11/20 9:12

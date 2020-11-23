@@ -1,6 +1,5 @@
 package com.lucky.web.mapping;
 
-import com.lucky.framework.annotation.Controller;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
@@ -22,9 +21,7 @@ import java.util.stream.Stream;
  */
 public class DefaultMappingAnalysis implements MappingAnalysis{
 
-    private Class<? extends Annotation>[] MAPPING_ANNOTATIONS=
-            new Class[]{RequestMapping.class, GetMapping.class, PostMapping.class,
-                        PutMapping.class, DeleteMapping.class};
+
 
     public MappingCollection analysis(List<Object> controllers){
         MappingCollection mappings=new MappingCollection();

@@ -3,6 +3,7 @@ package com.lucky.framework.container.factory;
 import com.lucky.framework.annotation.Bean;
 import com.lucky.framework.container.Injection;
 import com.lucky.framework.container.Module;
+import com.lucky.framework.proxy.ASMUtil;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.base.BaseUtils;
 import com.lucky.framework.uitls.reflect.*;

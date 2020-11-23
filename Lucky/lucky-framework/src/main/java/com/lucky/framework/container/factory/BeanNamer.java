@@ -17,19 +17,13 @@ import java.util.List;
 public class BeanNamer implements Namer {
 
     private Class<? extends Annotation>[] COMPONENT_ANNOTATION=
-            new Class[]{Component.class, Controller.class, Repository.class, Service.class, Configuration.class};
+            new Class[]{Component.class, Repository.class, Service.class, Configuration.class};
 
     @Override
     public String getBeanName(Class<?> beanClass) {
         Annotation annotation = AnnotationUtils.getByArray(beanClass, COMPONENT_ANNOTATION);
         String id = (String) AnnotationUtils.getValue(annotation, "id");
         String value= (String) AnnotationUtils.getValue(annotation,"value");
-        if(annotation instanceof Controller){
-            if(!Assert.isBlankString(id)){
-                return id;
-            }
-            return getDefBeanName(beanClass);
-        }
         if(!Assert.isBlankString(id)){
             return id;
         }

@@ -20,16 +20,16 @@ public abstract class IOCBeanFactory implements BeanFactory,Namer {
     private static final SingletonContainer singletonPool= RegisterMachine.getRegisterMachine().getSingletonPool();
     private static final Set<Class<?>> plugins=RegisterMachine.getRegisterMachine().getPlugins();
 
-    public List<Module> getBeanByType(String type){
-        return singletonPool.getBeanByType(type);
+    public List<Module> getBeanByType(String...types){
+        return singletonPool.getBeanByType(types);
     }
 
-    public List<Module> getBeanByClass(Class<?> componentClass){
-        return singletonPool.getBeanByClass(componentClass);
+    public List<Module> getBeanByClass(Class<?>...componentClasses){
+        return singletonPool.getBeanByClass(componentClasses);
     }
 
-    public List<Module> getBeanByAnnotation(Class<? extends Annotation> annotationClass){
-        return singletonPool.getBeanByAnnotation(annotationClass);
+    public List<Module> getBeanByAnnotation(Class<? extends Annotation>...annotationClasses){
+        return singletonPool.getBeanByAnnotation(annotationClasses);
     }
 
     public boolean isIOCType(String type) {
@@ -48,12 +48,30 @@ public abstract class IOCBeanFactory implements BeanFactory,Namer {
         return singletonPool.getBean(id);
     }
 
-    public List<Class<?>> getPluginByClass(Class<?> pluginClass){
-        return plugins.stream().filter(pluginClass::isAssignableFrom).collect(Collectors.toList());
+    public List<Class<?>> getPluginByClass(Class<?>...pluginClasses){
+        return plugins.stream()
+                .filter((pc)->{
+                    for (Class<?> pluginClass : pluginClasses) {
+                        if(pluginClass.isAssignableFrom(pc)){
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
     }
 
-    public List<Class<?>> getPluginByAnnotation(Class<? extends Annotation> annotationClass){
-        return plugins.stream().filter(a-> AnnotationUtils.isExist(a,annotationClass)).collect(Collectors.toList());
+    public List<Class<?>> getPluginByAnnotation(Class<? extends Annotation>...annotationClasses){
+        return plugins.stream()
+                .filter((a)->{
+                    for (Class<? extends Annotation> annotationClass : annotationClasses) {
+                        if(AnnotationUtils.isExist(a,annotationClass)){
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
     }
 
     public List<Class<?>> getPlugins(){

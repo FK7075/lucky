@@ -1,4 +1,4 @@
-package com.lucky.framework.uitls.reflect;
+package com.lucky.framework.proxy;
 
 import org.objectweb.asm.*;
 
@@ -42,7 +42,7 @@ public class ASMUtil {
 
 			ClassReader cr = null;
 	        try {
-				InputStream in = aClass.getClassLoader().getResource(aClassPath).openStream();
+				InputStream in = aClass.getClassLoader().getResourceAsStream(aClassPath);
 	            cr = new ClassReader(in);
 	        } catch (IOException e) {
 	            throw new RuntimeException(e);
@@ -94,8 +94,9 @@ public class ASMUtil {
 	 */
 	public static List<String> getInterfaceMethodParamNames(final Method method) throws IOException {
 		final List<String> methodParametersNames = new ArrayList<>();
-		final String className = method.getDeclaringClass().getName();
-		ClassReader cr = new ClassReader(className);
+		final Class<?> aClass = method.getDeclaringClass();
+		String aClassPath=aClass.getName().replaceAll("\\.","/")+".class";
+		ClassReader cr = new ClassReader(aClass.getClassLoader().getResourceAsStream(aClassPath));
 		ClassVisitor classVisitor=new ClassVisitor(Opcodes.ASM6) {
 			@Override
 			public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
