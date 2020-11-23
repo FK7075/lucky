@@ -8,6 +8,7 @@ import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
 import com.lucky.web.annotation.CallController;
 import com.lucky.web.annotation.Controller;
+import com.lucky.web.annotation.RestController;
 import com.lucky.web.httpclient.callcontroller.CallControllerProxy;
 
 import java.lang.annotation.Annotation;
@@ -23,14 +24,14 @@ import java.util.Map;
 public class LuckyWebBeanFactory extends IOCBeanFactory {
 
     private static final Class<? extends Annotation>[] CONTROLLER_ANNOTATION=
-            new Class[]{Controller.class,CallController.class};
+            new Class[]{Controller.class,CallController.class, RestController.class};
 
     @Override
     public List<Module> createBean() {
         List<Module> modules=new ArrayList<>();
         List<Class<?>> controllerClasses = getPluginByAnnotation(CONTROLLER_ANNOTATION);
         for (Class<?> controllerClass : controllerClasses) {
-            if(AnnotationUtils.isExist(controllerClass,Controller.class)){
+            if(AnnotationUtils.strengthenIsExist(controllerClass,Controller.class)){
                 modules.add(new Module(getBeanName(controllerClass),
                                    getBeanType(controllerClass),
                                    ClassUtils.newObject(controllerClass)));

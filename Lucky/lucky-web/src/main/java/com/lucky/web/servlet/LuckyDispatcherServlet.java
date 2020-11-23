@@ -32,7 +32,7 @@ public class LuckyDispatcherServlet extends BaseServlet {
                     this.getServletConfig(), requestMethod, webConfig.getEncoding());
 
             //前置处理，处理URL、RequestMethod、以及WebContext
-            getMappingPreprocess().beforeDispose(model,webConfig);
+            beforeDispose(model);
 
             //全局IP配置校验、静态资源、favicon.ico等简单请求的处理
             if(!RequestFilter.filter(model,webConfig)){
@@ -46,7 +46,7 @@ public class LuckyDispatcherServlet extends BaseServlet {
             }
 
             //后置处理，处理Controller的属性和跨域问题以及包装文件类型的参数
-            getMappingPreprocess().afterDispose(model,webConfig,mapping);
+            afterDispose(model,mapping);
 
             //获取执行参数
             Object[] runParam=getParameterAnalysisChain().analysis(model,mapping);
@@ -54,11 +54,15 @@ public class LuckyDispatcherServlet extends BaseServlet {
             //执行Controller方法并获取返回结果
             Object invoke = mapping.invoke(runParam);
 
+            //响应请求结果
+            response(model,invoke,mapping);
+
 
         } catch (Throwable e) {
             e.printStackTrace();
+            model.e500(e);
         }finally {
-            getMappingPreprocess().setFinally(model,mapping);
+            setFinally(model,mapping);
         }
     }
 }

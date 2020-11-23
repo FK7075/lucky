@@ -16,6 +16,9 @@ public interface MappingAnalysis {
             new Class[]{RequestMapping.class, GetMapping.class, PostMapping.class,
                     PutMapping.class, DeleteMapping.class};
 
+    public static final Class<? extends Annotation>[] CONTROLLER_ANNOTATIONS=
+            new Class[]{Controller.class,RestController.class};
+
     /**
      * 将一个Controller解析为多个URL映射
      * @param controller Controller对象

@@ -6,7 +6,9 @@ import com.lucky.framework.serializable.XMLSerializationScheme;
 import com.lucky.framework.serializable.implement.GsonSerializationScheme;
 import com.lucky.framework.serializable.implement.XtreamSerializationScheme;
 import com.lucky.framework.uitls.base.Assert;
+import com.lucky.web.core.DefaultLuckyResponse;
 import com.lucky.web.core.DefaultMappingPreprocess;
+import com.lucky.web.core.LuckyResponse;
 import com.lucky.web.core.MappingPreprocess;
 import com.lucky.web.core.parameter.ParameterAnalysis;
 import com.lucky.web.core.parameter.ParameterAnalysisChain;
@@ -67,6 +69,8 @@ public class WebConfig implements LuckyConfig {
     private MappingPreprocess mappingPreprocess;
     /** 参数解析链*/
     private ParameterAnalysisChain parameterAnalysisChain;
+    /** 定义转发与重定向*/
+    private LuckyResponse response;
 
     public boolean isFirst() {
         return isFirst;
@@ -260,6 +264,14 @@ public class WebConfig implements LuckyConfig {
         this.favicon = favicon;
     }
 
+    public LuckyResponse getResponse() {
+        return response;
+    }
+
+    public void setResponse(LuckyResponse response) {
+        this.response = response;
+    }
+
     private WebConfig() {
         parameterAnalysisChain=new ParameterAnalysisChain();
     }
@@ -274,6 +286,7 @@ public class WebConfig implements LuckyConfig {
         conf.setXmlSerializationScheme(new XtreamSerializationScheme());
         conf.setJsonSerializationScheme(new GsonSerializationScheme());
         conf.setMappingPreprocess(new DefaultMappingPreprocess());
+        conf.setResponse(new DefaultLuckyResponse());
         conf.setPrefix("");
         conf.setSuffix("");
         conf.setConnectTimeout(5000);

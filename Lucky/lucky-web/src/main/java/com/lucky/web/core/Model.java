@@ -73,10 +73,10 @@ public class Model {
      * @throws IOException
      */
     public Model(HttpServletRequest request, HttpServletResponse response, ServletConfig servletConfig, RequestMethod requestMethod, String encod) {
-        init(request, response);
         this.servletConfig = servletConfig;
         this.encod = encod;
         this.requestMethod = requestMethod;
+        init(request, response);
     }
 
     public Model(){

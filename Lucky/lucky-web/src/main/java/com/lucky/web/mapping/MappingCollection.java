@@ -1,9 +1,12 @@
 package com.lucky.web.mapping;
 
+import com.lucky.framework.uitls.file.Resources;
 import com.lucky.web.core.Model;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.exception.RepeatUrlMappingException;
+import com.lucky.web.webfile.WebFileUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,9 +61,13 @@ public class MappingCollection {
         list.clear();
     }
 
-    public Mapping getMapping(Model model){
+    public Mapping getMapping(Model model) throws IOException {
         Mapping mapping=getByUrl(model);
         if(mapping==null){
+            if("/".equals(model.getUri())){
+                WebFileUtils.preview(model, Resources.getInputStream("/lucky-web/LUCKY.html"),"LUCKY.html");
+                return null;
+            }
             model.error("404", "找不与请求相匹配的映射资,请检查您的URL是否正确！","不正确的url："+model.getUri());
             return null;
         }

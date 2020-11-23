@@ -7,6 +7,7 @@ import com.lucky.framework.serializable.XMLSerializationScheme;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.conversion.JavaConversion;
 import com.lucky.framework.uitls.reflect.ClassUtils;
+import com.lucky.web.core.LuckyResponse;
 import com.lucky.web.core.MappingPreprocess;
 import com.lucky.web.core.parameter.ParameterAnalysis;
 
@@ -116,6 +117,9 @@ public abstract class YamlParsing {
                         if(webMap.containsKey("call-api")){
                             Map<String,String> callApi=(Map<String,String>)webMap.get("call-api");
                             web.setCallApi(callApi);
+                        }
+                        if(webMap.containsKey("response")){
+                            web.setResponse((LuckyResponse) ClassUtils.newObject(webMap.get("response").toString()));
                         }
                         if(webMap.containsKey("serialization")){
                             Object serializationNode = webMap.get("serialization");

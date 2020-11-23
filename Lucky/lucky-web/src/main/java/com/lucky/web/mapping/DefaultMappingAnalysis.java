@@ -5,6 +5,7 @@ import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
 import com.lucky.web.annotation.*;
 import com.lucky.web.enums.RequestMethod;
+import com.lucky.web.enums.Rest;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -41,12 +42,10 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
         String controllerUrl=getControllerUrl(controller);
         for (Method method : mappingMethods) {
             String url=controllerUrl+getMethodUrl(method);
-            mappingCollection.add(
-                    new Mapping(url,controller,
+            mappingCollection.add(new Mapping(url,controller,
                                 method,getRequestMethod(method),
-                                getIps(controller,method),
-                                getIpSection(controller,method))
-            );
+                                getRest(method),getIps(method),
+                                getIpSection(method)));
         }
         return mappingCollection;
     }
@@ -61,6 +60,8 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
         String controllerUrl;
         if(AnnotationUtils.isExist(controllerClass,RequestMapping.class)){
             controllerUrl=AnnotationUtils.get(controllerClass,RequestMapping.class).value();
+        }else if(AnnotationUtils.isExist(controllerClass,RestController.class)){
+            controllerUrl= AnnotationUtils.get(controllerClass,RestController.class).value();
         }else{
             controllerUrl= AnnotationUtils.get(controllerClass,Controller.class).value();
         }
@@ -93,35 +94,32 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
 
     /**
      * 获取当前Controller方法支持的IP段
-     * @param controller Controller对象
      * @param method Controller方法
      * @return
      */
-    protected String[] getIpSection(Object controller,Method method){
+    protected String[] getIpSection(Method method){
         Annotation mappingAnn = AnnotationUtils.getByArray(method, MAPPING_ANNOTATIONS);
         String[] methodIpSection=(String[])AnnotationUtils.getValue(mappingAnn,"ipSection");
         if(!Assert.isEmptyArray(methodIpSection)){
             return methodIpSection;
         }
-        Class<?> controllerClass=controller.getClass();
-        Controller controllerAnn = AnnotationUtils.strengthenGet(controllerClass, Controller.class).get(0);
-        String[] controllerIpSection = controllerAnn.ipSection();
-        return controllerIpSection;
+        Class<?> controllerClass=method.getDeclaringClass();
+        Annotation controllerAnnotation = AnnotationUtils.getByArray(controllerClass, CONTROLLER_ANNOTATIONS);
+        return (String[]) AnnotationUtils.getValue(controllerAnnotation,"ipSection");
     }
 
     /**
      * 获取当前Controller方法支持的IP
-     * @param controller Controller对象
      * @param method Controller方法
      * @return
      */
-    protected Set<String> getIps(Object controller,Method method){
+    protected Set<String> getIps(Method method){
         Set<String> ips=new HashSet<>();
         Annotation mappingAnn = AnnotationUtils.getByArray(method, MAPPING_ANNOTATIONS);
         String[] methodIpSection=(String[])AnnotationUtils.getValue(mappingAnn,"ip");
-        Class<?> controllerClass=controller.getClass();
-        Controller controllerAnn = AnnotationUtils.strengthenGet(controllerClass, Controller.class).get(0);
-        String[] controllerIpSection = controllerAnn.ip();
+        Class<?> controllerClass=method.getDeclaringClass();
+        Annotation controllerAnnotation = AnnotationUtils.getByArray(controllerClass, CONTROLLER_ANNOTATIONS);
+        String[] controllerIpSection = (String[]) AnnotationUtils.getValue(controllerAnnotation,"ip");
         Stream.of(methodIpSection).forEach(ip->{
             if("localhost".equals(ip)){
                 ip="127.0.0.1";
@@ -135,5 +133,24 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
             ips.add(ip);
         });
         return ips;
+    }
+
+    /**
+     * 获取当前Controller的响应处理方式
+     * @param method Controller方法
+     * @return
+     */
+    protected Rest getRest(Method method){
+        if(AnnotationUtils.isExist(method,ResponseBody.class)){
+            return AnnotationUtils.get(method,ResponseBody.class).value();
+        }
+        Class<?> controllerClass = method.getDeclaringClass();
+        if(AnnotationUtils.isExist(controllerClass,Controller.class)){
+            return Rest.NO;
+        }
+        if(AnnotationUtils.isExist(controllerClass,RestController.class)){
+            return AnnotationUtils.get(controllerClass,RestController.class).rest();
+        }
+        return Rest.NO;
     }
 }

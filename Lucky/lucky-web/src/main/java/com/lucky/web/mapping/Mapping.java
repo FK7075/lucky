@@ -3,6 +3,7 @@ package com.lucky.web.mapping;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.reflect.MethodUtils;
 import com.lucky.web.enums.RequestMethod;
+import com.lucky.web.enums.Rest;
 import com.lucky.web.utils.IpUtil;
 
 import java.lang.reflect.Method;
@@ -25,6 +26,8 @@ public class Mapping {
     private Method mapping;
     /** 当前的请求类型*/
     private RequestMethod[] methods;
+    /** 定义响应的方式*/
+    private Rest rest;
     /** 该请求支持的ip地址*/
     private Set<String> ips;
     /** 该请求支持的ip段范围*/
@@ -88,10 +91,20 @@ public class Mapping {
         this.parameters = parameters;
     }
 
+    public Rest getRest() {
+        return rest;
+    }
+
+    public void setRest(Rest rest) {
+        this.rest = rest;
+    }
+
     public Mapping(String url, Object controller,
                    Method mapping, RequestMethod[] methods,
-                   Set<String>ips, String[] ipSection) {
+                   Rest rest,Set<String>ips,
+                   String[] ipSection) {
         this.url = url;
+        this.rest = rest;
         this.controller = controller;
         this.mapping = mapping;
         this.methods = methods;

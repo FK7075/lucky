@@ -24,6 +24,8 @@ lucky:
     serialization:
       xml : com.lucky.framework.serializable.implement.XtreamSerializationScheme
       json: com.lucky.framework.serializable.implement.GsonSerializationScheme
+    #重新定义转发与重定向
+    response: com.lucky.web.core.DefaultLuckyResponse
     ###映射的预处理器
     #1.处理URL、请求类型和Web上下文的设置
     #2.处理Controller的属性和跨域问题
