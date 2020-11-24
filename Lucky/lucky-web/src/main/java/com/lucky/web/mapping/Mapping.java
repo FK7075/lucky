@@ -18,6 +18,10 @@ import java.util.Set;
  */
 public class Mapping {
 
+    /**组件的唯一ID*/
+    private String iocId;
+    /** 组件的类型*/
+    private String iocType;
     /** URL*/
     private String url;
     /** Controller对象*/
@@ -99,11 +103,29 @@ public class Mapping {
         this.rest = rest;
     }
 
-    public Mapping(String url, Object controller,
+    public String getIocId() {
+        return iocId;
+    }
+
+    public void setIocId(String iocId) {
+        this.iocId = iocId;
+    }
+
+    public String getIocType() {
+        return iocType;
+    }
+
+    public void setIocType(String iocType) {
+        this.iocType = iocType;
+    }
+
+    public Mapping(String url, String iocId, String iocType, Object controller,
                    Method mapping, RequestMethod[] methods,
-                   Rest rest,Set<String>ips,
+                   Rest rest, Set<String>ips,
                    String[] ipSection) {
         this.url = url;
+        this.iocId=iocId;
+        this.iocType=iocType;
         this.rest = rest;
         this.controller = controller;
         this.mapping = mapping;

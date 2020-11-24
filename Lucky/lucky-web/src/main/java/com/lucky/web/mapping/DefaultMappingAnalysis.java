@@ -1,5 +1,6 @@
 package com.lucky.web.mapping;
 
+import com.lucky.framework.container.Module;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
@@ -24,9 +25,9 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
 
 
 
-    public MappingCollection analysis(List<Object> controllers){
+    public MappingCollection analysis(List<Module> controllers){
         MappingCollection mappings=new MappingCollection();
-        for (Object controller : controllers) {
+        for (Module controller : controllers) {
             Iterator<Mapping> iterator = analysis(controller).iterator();
             while (iterator.hasNext()){
                 mappings.add(iterator.next());
@@ -35,19 +36,45 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
         return mappings;
     }
 
+    public ExceptionMappingCollection exceptionAnalysis(List<Module> controllerAdvices){
+        ExceptionMappingCollection exMappings=new ExceptionMappingCollection();
+        for (Module controllerAdvice : controllerAdvices) {
+            Iterator<ExceptionMapping> iterator = exceptionAnalysis(controllerAdvice).iterator();
+            while (iterator.hasNext()){
+                exMappings.add(iterator.next());
+            }
+        }
+        return exMappings;
+    }
+
     @Override
-    public MappingCollection analysis(Object controller) {
+    public MappingCollection analysis(Module module) {
+        Object controller=module.getComponent();
         MappingCollection mappingCollection=new MappingCollection();
         List<Method> mappingMethods = ClassUtils.getMethodByStrengthenAnnotation(controller.getClass(), RequestMapping.class);
         String controllerUrl=getControllerUrl(controller);
         for (Method method : mappingMethods) {
             String url=controllerUrl+getMethodUrl(method);
-            mappingCollection.add(new Mapping(url,controller,
+            mappingCollection.add(new Mapping(url,module.getId(),
+                                module.getType(),controller,
                                 method,getRequestMethod(method),
                                 getRest(method),getIps(method),
                                 getIpSection(method)));
         }
         return mappingCollection;
+    }
+
+    @Override
+    public ExceptionMappingCollection exceptionAnalysis(Module module) {
+        Object controllerAdvice=module.getComponent();
+        ExceptionMappingCollection exceptionMappingCollection=new ExceptionMappingCollection();
+        String[] scopes = controllerAdvice.getClass().getAnnotation(ControllerAdvice.class).value();
+        List<Method> exceptionMethods = ClassUtils.getMethodByAnnotation(controllerAdvice.getClass(), ExceptionHandler.class);
+        for (Method method : exceptionMethods) {
+            exceptionMappingCollection.add(new ExceptionMapping(controllerAdvice,method,scopes,
+                                            getRest(method),getException(method)));
+        }
+        return exceptionMappingCollection;
     }
 
     /**
@@ -151,6 +178,13 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
         if(AnnotationUtils.isExist(controllerClass,RestController.class)){
             return AnnotationUtils.get(controllerClass,RestController.class).rest();
         }
+        if(AnnotationUtils.isExist(controllerClass,ControllerAdvice.class)){
+            return AnnotationUtils.get(controllerClass,ControllerAdvice.class).rest();
+        }
         return Rest.NO;
+    }
+
+    public Class<? extends Throwable>[] getException(Method method){
+        return AnnotationUtils.get(method,ExceptionHandler.class).value();
     }
 }

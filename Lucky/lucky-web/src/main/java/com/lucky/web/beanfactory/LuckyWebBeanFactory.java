@@ -8,6 +8,7 @@ import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
 import com.lucky.web.annotation.CallController;
 import com.lucky.web.annotation.Controller;
+import com.lucky.web.annotation.ControllerAdvice;
 import com.lucky.web.annotation.RestController;
 import com.lucky.web.httpclient.callcontroller.CallControllerProxy;
 
@@ -24,7 +25,7 @@ import java.util.Map;
 public class LuckyWebBeanFactory extends IOCBeanFactory {
 
     private static final Class<? extends Annotation>[] CONTROLLER_ANNOTATION=
-            new Class[]{Controller.class,CallController.class, RestController.class};
+            new Class[]{Controller.class,CallController.class, RestController.class, ControllerAdvice.class};
 
     @Override
     public List<Module> createBean() {

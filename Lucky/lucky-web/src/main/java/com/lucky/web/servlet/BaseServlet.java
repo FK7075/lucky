@@ -2,7 +2,9 @@ package com.lucky.web.servlet;
 
 import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.AutoScanApplicationContext;
+import com.lucky.framework.container.Module;
 import com.lucky.web.annotation.Controller;
+import com.lucky.web.annotation.ControllerAdvice;
 import com.lucky.web.annotation.RestController;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.core.DefaultMappingPreprocess;
@@ -15,6 +17,7 @@ import com.lucky.web.exception.FileSizeCrossingException;
 import com.lucky.web.exception.FileTypeIllegalException;
 import com.lucky.web.exception.RequestFileSizeCrossingException;
 import com.lucky.web.mapping.DefaultMappingAnalysis;
+import com.lucky.web.mapping.ExceptionMappingCollection;
 import com.lucky.web.mapping.Mapping;
 import com.lucky.web.mapping.MappingCollection;
 import org.apache.commons.fileupload.FileUploadException;
@@ -40,6 +43,7 @@ public abstract class BaseServlet extends HttpServlet {
     protected static final Logger log = LogManager.getLogger(BaseServlet.class);
     protected ApplicationContext applicationContext;
     protected MappingCollection mappingCollection;
+    protected ExceptionMappingCollection exceptionMappingCollection;
     protected WebConfig webConfig;
 
     /**
@@ -106,10 +110,13 @@ public abstract class BaseServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        DefaultMappingAnalysis analysis = new DefaultMappingAnalysis();
         webConfig=WebConfig.getWebConfig();
         applicationContext=AutoScanApplicationContext.create();
-        List<Object> controllers = applicationContext.getBeanByAnnotation(Controller.class, RestController.class);
-        mappingCollection=new DefaultMappingAnalysis().analysis(controllers);
+        List<Module> controllers = applicationContext.getModuleByAnnotation(Controller.class, RestController.class);
+        mappingCollection=analysis.analysis(controllers);
+        List<Module> controllerAdvices = applicationContext.getModuleByAnnotation(ControllerAdvice.class);
+        exceptionMappingCollection=analysis.exceptionAnalysis(controllerAdvices);
     }
 
     @Override

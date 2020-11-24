@@ -59,6 +59,11 @@ public class AutoScanApplicationContext implements ApplicationContext{
     }
 
     @Override
+    public Module getModule(String id) {
+        return singletonPool.getBean(id);
+    }
+
+    @Override
     public <T> List<T> getBean(Class<T>...aClasses) {
         List<Module> modules = singletonPool.getBeanByClass(aClasses);
         List<T> list=new ArrayList<>(modules.size());
@@ -67,11 +72,21 @@ public class AutoScanApplicationContext implements ApplicationContext{
     }
 
     @Override
+    public List<Module> getModule(Class<?>...aClasses) {
+        return singletonPool.getBeanByClass(aClasses);
+    }
+
+    @Override
     public List<Object> getBeanByAnnotation(Class<? extends Annotation>...annotationClasses) {
         return singletonPool.getBeanByAnnotation(annotationClasses)
                 .stream()
                 .map(m->m.getComponent())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Module> getModuleByAnnotation(Class<? extends Annotation>...annotationClasses){
+        return singletonPool.getBeanByAnnotation(annotationClasses);
     }
 
     @Override

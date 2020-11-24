@@ -32,11 +32,7 @@ public class MappingCollection {
         return list.isEmpty();
     }
 
-    public boolean contains(Object o) {
-        if(!(o instanceof Mapping)){
-            return false;
-        }
-        Mapping map= (Mapping) o;
+    public boolean contains(Mapping map) {
         for (Mapping mapping : list) {
             if(mapping.isEquals(map)){
                 return true;

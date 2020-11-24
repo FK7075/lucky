@@ -32,13 +32,12 @@ public class ParameterAnalysisChain {
 
     public ParameterAnalysisChain(){
         parameterAnalysesChain.add(new HttpParameterAnalysis());//1-ok
-        parameterAnalysesChain.add(new CallApiParameterAnalysis());//2-
+        parameterAnalysesChain.add(new CallApiParameterAnalysis());//2-ok
         parameterAnalysesChain.add(new SerializationParameterAnalysis());//3-ok
         parameterAnalysesChain.add(new AnnotationFileParameterAnalysis());//4-ok
         parameterAnalysesChain.add(new MultipartFileParameterAnalysis());//5-ok
         parameterAnalysesChain.add(new PojoParameterAnalysis());//6-ok
         parameterAnalysesChain.add(new BaseParameterAnalysis());//7-ok
-
     }
 
     public void sort(){

@@ -1,5 +1,7 @@
 package com.lucky.framework;
 
+import com.lucky.framework.container.Module;
+
 import java.lang.annotation.Annotation;
 import java.util.List;
 
@@ -12,9 +14,15 @@ public interface ApplicationContext {
 
     Object getBean(String id);
 
+    Module getModule(String id);
+
     <T> List<T> getBean(Class<T>...aClass);
 
+    List<Module> getModule(Class<?>...aClass);
+
     List<Object> getBeanByAnnotation(Class<?extends Annotation>...annotationClasses);
+
+    List<Module> getModuleByAnnotation(Class<?extends Annotation>...annotationClasses);
 
     List<Object> getBeans();
 

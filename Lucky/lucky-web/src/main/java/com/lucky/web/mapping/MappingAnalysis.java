@@ -1,5 +1,6 @@
 package com.lucky.web.mapping;
 
+import com.lucky.framework.container.Module;
 import com.lucky.web.annotation.*;
 
 import java.lang.annotation.Annotation;
@@ -24,6 +25,14 @@ public interface MappingAnalysis {
      * @param controller Controller对象
      * @return
      */
-    MappingCollection analysis(Object controller);
+    MappingCollection analysis(Module controller);
+
+
+    /**
+     * 将一个ControllerAdvice解析为多个异常处理器
+     * @param controllerAdvice ControllerAdvice对象
+     * @return
+     */
+    ExceptionMappingCollection exceptionAnalysis(Module controllerAdvice);
 
 }
