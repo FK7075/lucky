@@ -1,9 +1,19 @@
 package com.lucky.web.mapping;
 
 import com.lucky.framework.uitls.base.Assert;
+import com.lucky.framework.uitls.reflect.AnnotationUtils;
+import com.lucky.framework.uitls.reflect.MethodUtils;
+import com.lucky.web.annotation.Controller;
+import com.lucky.web.annotation.ControllerAdvice;
+import com.lucky.web.annotation.ResponseBody;
+import com.lucky.web.core.Model;
 import com.lucky.web.enums.Rest;
 import com.lucky.web.exception.RepeatDefinitionExceptionHandlerException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -27,7 +37,7 @@ public class ExceptionMapping {
     private Rest rest;
     /** 所要处理的异常*/
     private Class<? extends Throwable>[] exceptions;
-    /** 运行ControllerAdvice方法需要的参数*/
+    /** 运行Controller方法需要参数的类型*/
     private Parameter[] parameters;
 
     public ExceptionMapping(Object controllerAdvice, Method method, String[] scopes, Rest rest, Class<? extends Throwable>[] exceptions) {
@@ -134,5 +144,45 @@ public class ExceptionMapping {
             }
         }
         return intersect;
+    }
+
+    /**
+     * 执行ControllerAdvice方法
+     * @param model 当前请求的Model对象
+     * @return 方法执行后的返回值
+     */
+    public Object invoke(Model model,Mapping mapping,Throwable ex){
+        Rest rest = AnnotationUtils.isExist(method,ResponseBody.class)
+                ? AnnotationUtils.get(method,ResponseBody.class).value()
+                : AnnotationUtils.get(controllerAdvice.getClass(), ControllerAdvice.class).rest();
+        Object[] params = new Object[parameters.length];
+        int i = 0;
+        for (Parameter parameter : parameters) {
+            Class<?> type = parameter.getType();
+            if (Throwable.class.isAssignableFrom(type)) {
+                params[i] = ex;
+            } else if (Model.class.isAssignableFrom(type)) {
+                params[i] = model;
+            } else if (Method.class.isAssignableFrom(type)) {
+                params[i] = mapping.getMapping();
+            } else if (Class.class.isAssignableFrom(type)) {
+                params[i] = mapping.getController().getClass();
+            } else if (HttpRequest.class.isAssignableFrom(type)) {
+                params[i] = model.getRequest();
+            } else if (HttpResponse.class.isAssignableFrom(type)) {
+                params[i] = model.getResponse();
+            } else if (HttpSession.class.isAssignableFrom(type)) {
+                params[i] = model.getSession();
+            } else if (ServletContext.class.isAssignableFrom(type)) {
+                params[i] = model.getServletContext();
+            } else if (Object[].class==type) {
+                params[i] = mapping.getRunParams();
+            } else if (Object.class.isAssignableFrom(type)) {
+                params[i] = mapping.getController();
+            }
+            i++;
+        }
+        final Object result = MethodUtils.invoke(controllerAdvice, method, params);
+        return result;
     }
 }

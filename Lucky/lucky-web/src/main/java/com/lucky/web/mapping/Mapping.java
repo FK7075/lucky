@@ -36,8 +36,10 @@ public class Mapping {
     private Set<String> ips;
     /** 该请求支持的ip段范围*/
     private String[] ipSection;
-    /** 运行Controller方法需要的参数*/
+    /** 运行Controller方法需要参数的类型*/
     private Parameter[] parameters;
+    /** 运行Controller方法需要的参数*/
+    private Object[] runParams;
 
     public String getUrl() {
         return url;
@@ -119,6 +121,14 @@ public class Mapping {
         this.iocType = iocType;
     }
 
+    public Object[] getRunParams() {
+        return runParams;
+    }
+
+    public void setRunParams(Object[] runParams) {
+        this.runParams = runParams;
+    }
+
     public Mapping(String url, String iocId, String iocType, Object controller,
                    Method mapping, RequestMethod[] methods,
                    Rest rest, Set<String>ips,
@@ -183,11 +193,10 @@ public class Mapping {
 
     /**
      * 执行Controller方法
-     * @param methodParams 执行方法需要的参数
      * @return 方法执行后的返回值
      */
-    public Object invoke(Object[] methodParams){
-        Object result = MethodUtils.invoke(controller, mapping, methodParams);
+    public Object invoke(){
+        Object result = MethodUtils.invoke(controller, mapping, runParams);
         return result;
     }
 

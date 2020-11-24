@@ -95,11 +95,7 @@ public class MappingCollection {
         }
         return null;
     }
-
-    private Mapping getByMethod(Model model){
-        return null;
-    }
-
+    
     private boolean restUrlVerify(Model model,String confUrl){
         return false;
     }

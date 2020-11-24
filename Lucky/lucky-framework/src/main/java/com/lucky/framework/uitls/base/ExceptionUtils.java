@@ -1,5 +1,7 @@
 package com.lucky.framework.uitls.base;
 
+import com.lucky.framework.exception.LuckyReflectionException;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +35,8 @@ public abstract class ExceptionUtils {
     public static Throwable getCauseThrowable(Throwable e){
         while (true){
             if(e instanceof InvocationTargetException ||
-                    e.getClass()==RuntimeException.class){
+               e instanceof LuckyReflectionException ||
+               e.getClass()==RuntimeException.class){
                 e=e.getCause();
             }else {
                 break;
@@ -56,5 +59,4 @@ public abstract class ExceptionUtils {
         }
         return false;
     }
-
 }

@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -50,15 +51,14 @@ public class LuckyDispatcherServlet extends BaseServlet {
             //后置处理，处理Controller的属性和跨域问题以及包装文件类型的参数
             afterDispose(model,mapping);
 
-            //获取执行参数
-            Object[] runParam=getParameterAnalysisChain().analysis(model,mapping);
+            //设置执行参数
+            mapping.setRunParams(getParameterAnalysisChain().analysis(model,mapping));
 
             //执行Controller方法并获取返回结果
-            Object invoke = mapping.invoke(runParam);
+            Object invoke = mapping.invoke();
 
             //响应请求结果
             response(model,invoke,mapping);
-
 
         } catch (Throwable e) {
             e=getCauseThrowable(e);
@@ -66,7 +66,13 @@ public class LuckyDispatcherServlet extends BaseServlet {
             if(exceptionMapping==null){
                 model.e500(e);
             }
-
+            try {
+                Object invoke = exceptionMapping.invoke(model, mapping, e);
+                response(model,invoke,mapping);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                model.e500(ex);
+            }
         }finally {
             setFinally(model,mapping);
         }

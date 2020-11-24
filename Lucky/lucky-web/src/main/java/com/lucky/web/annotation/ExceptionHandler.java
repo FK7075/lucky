@@ -13,5 +13,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface ExceptionHandler {
 
-     Class<? extends Throwable>[] value() default Throwable.class;
+     Class<? extends Throwable>[] value();
 }
