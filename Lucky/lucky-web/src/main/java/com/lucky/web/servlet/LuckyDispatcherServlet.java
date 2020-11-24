@@ -6,6 +6,7 @@ import com.lucky.web.core.Model;
 import com.lucky.web.core.RequestFilter;
 import com.lucky.web.core.WebContext;
 import com.lucky.web.enums.RequestMethod;
+import com.lucky.web.mapping.ExceptionMapping;
 import com.lucky.web.mapping.Mapping;
 import com.lucky.web.webfile.WebFileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author fk7075
@@ -59,8 +61,12 @@ public class LuckyDispatcherServlet extends BaseServlet {
 
 
         } catch (Throwable e) {
-            e.printStackTrace();
-            model.e500(e);
+            e=getCauseThrowable(e);
+            ExceptionMapping exceptionMapping = exceptionMappingCollection.getExceptionMapping(mapping, e);
+            if(exceptionMapping==null){
+                model.e500(e);
+            }
+
         }finally {
             setFinally(model,mapping);
         }

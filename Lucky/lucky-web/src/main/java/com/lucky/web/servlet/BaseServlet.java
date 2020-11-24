@@ -3,6 +3,7 @@ package com.lucky.web.servlet;
 import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.container.Module;
+import com.lucky.framework.uitls.base.ExceptionUtils;
 import com.lucky.web.annotation.Controller;
 import com.lucky.web.annotation.ControllerAdvice;
 import com.lucky.web.annotation.RestController;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -99,6 +101,15 @@ public abstract class BaseServlet extends HttpServlet {
         webConfig.getMappingPreprocess().setFinally(model,mapping);
     }
 
+    /**
+     * 得到关键的异常
+     * @param e 程序抛出的异常
+     * @return
+     */
+    protected Throwable getCauseThrowable(Throwable e){
+        return ExceptionUtils.getCauseThrowable(e);
+    }
+
     @Override
     public void destroy() {
         super.destroy();
@@ -117,37 +128,37 @@ public abstract class BaseServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         this.applyFor(req, resp, RequestMethod.GET);
     }
 
     @Override
-    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doHead(HttpServletRequest req, HttpServletResponse resp) {
         this.applyFor(req, resp, RequestMethod.HEAD);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         this.applyFor(req, resp, RequestMethod.POST);
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
         this.applyFor(req, resp, RequestMethod.PUT);
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
         this.applyFor(req, resp, RequestMethod.DELETE);
     }
 
     @Override
-    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) {
         this.applyFor(req, resp, RequestMethod.OPTIONS);
     }
 
     @Override
-    protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doTrace(HttpServletRequest req, HttpServletResponse resp) {
         this.applyFor(req, resp, RequestMethod.TRACE);
     }
 

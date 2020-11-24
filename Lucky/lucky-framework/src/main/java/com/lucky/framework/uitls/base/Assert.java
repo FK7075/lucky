@@ -64,6 +64,12 @@ public abstract class Assert {
         return map==null||map.isEmpty();
     }
 
+    /**
+     * 判断目标字符串是否以数组中的字符结尾
+     * @param str 目标字符串
+     * @param suffix 待判断的的后缀
+     * @return
+     */
     public static boolean strEndsWith(String str,String[] suffix){
         for (String s : suffix) {
             if(str.endsWith(s)){
@@ -73,9 +79,24 @@ public abstract class Assert {
         return false;
     }
 
+    /**
+     * 判断目标字符串是否以数组中的字符开头
+     * @param str 目标字符串
+     * @param prefix 待判断的的前缀
+     * @return
+     */
     public static boolean strStartsWith(String str,String[] prefix){
         for (String s : prefix) {
             if(str.startsWith(s)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean inArray(String[] array,String str){
+        for (String s : array) {
+            if(s.equals(str)){
                 return true;
             }
         }
