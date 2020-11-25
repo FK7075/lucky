@@ -34,8 +34,6 @@ public class UrlMappingCollection {
         runList=new ArrayList<>(10);
     }
 
-
-
     public int size() {
         return list.size();
     }
@@ -156,5 +154,13 @@ public class UrlMappingCollection {
     
     private boolean restUrlVerify(Model model,String confUrl){
         return false;
+    }
+
+    public boolean merge(UrlMappingCollection collection){
+        Iterator<UrlMapping> iterator = collection.iterator();
+        while (iterator.hasNext()){
+            add(iterator.next());
+        }
+        return true;
     }
 }

@@ -8,6 +8,10 @@ import com.lucky.web.conf.WebConfig;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.error.ErrorPage;
 import com.lucky.web.exception.RealPathNotFoundException;
+import com.lucky.web.mapping.ExceptionMapping;
+import com.lucky.web.mapping.ExceptionMappingCollection;
+import com.lucky.web.mapping.UrlMapping;
+import com.lucky.web.mapping.UrlMappingCollection;
 import com.lucky.web.webfile.MultipartFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,6 +66,11 @@ public class Model {
     private Map<String, String> restMap;
     /** Servlet输出流*/
     private ServletOutputStream outputStream;
+    /** URL映射集*/
+    private UrlMappingCollection urlMappingCollection;
+    /** 异常处理映射集*/
+    private ExceptionMappingCollection exceptionMappingCollection;
+
 
     /**
      * Model构造器
@@ -112,6 +121,21 @@ public class Model {
         return outputStream;
     }
 
+    public UrlMappingCollection getUrlMappingCollection() {
+        return urlMappingCollection;
+    }
+
+    public void setUrlMappingCollection(UrlMappingCollection urlMappingCollection) {
+        this.urlMappingCollection = urlMappingCollection;
+    }
+
+    public ExceptionMappingCollection getExceptionMappingCollection() {
+        return exceptionMappingCollection;
+    }
+
+    public void setExceptionMappingCollection(ExceptionMappingCollection exceptionMappingCollection) {
+        this.exceptionMappingCollection = exceptionMappingCollection;
+    }
 
     /**
      * 得到所有的Rest风格的参数集合RestParamMap

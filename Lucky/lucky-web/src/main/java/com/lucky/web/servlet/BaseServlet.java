@@ -95,6 +95,8 @@ public abstract class BaseServlet extends HttpServlet {
      */
     protected void afterDispose(Model model, UrlMapping urlMapping) throws FileUploadException, FileTypeIllegalException, FileSizeCrossingException, RequestFileSizeCrossingException, IOException {
         webConfig.getMappingPreprocess().afterDispose(model,webConfig, urlMapping);
+        model.setExceptionMappingCollection(exceptionMappingCollection);
+        model.setUrlMappingCollection(urlMappingCollection);
     }
 
     /**

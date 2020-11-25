@@ -6,7 +6,9 @@ import com.lucky.framework.container.SingletonContainer;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.scan.ScanFactory;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -95,6 +97,10 @@ public class AutoScanApplicationContext implements ApplicationContext{
                 .stream()
                 .map(m->m.getComponent())
                 .collect(Collectors.toList());
+    }
+
+    public SingletonContainer getNewSingletonPool(String...jarFilePath) throws IOException {
+        return RegisterMachine.dynamicAssembly(Scan.scan(jarFilePath));
     }
 
     @Override

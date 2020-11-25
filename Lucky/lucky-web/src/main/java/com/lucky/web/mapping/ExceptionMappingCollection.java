@@ -154,4 +154,12 @@ public class ExceptionMappingCollection {
         });
         return exMap;
     }
+
+    public boolean merge(ExceptionMappingCollection collection){
+        Iterator<ExceptionMapping> iterator = collection.iterator();
+        while (iterator.hasNext()){
+            add(iterator.next());
+        }
+        return true;
+    }
 }

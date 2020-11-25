@@ -25,6 +25,10 @@ public class SingletonContainer implements Map<String, Module> {
     /** 单例池*/
     private Map<String,Module> singletonPool=new ConcurrentHashMap<>(256);
 
+    public Map<String, Module> getSingletonPool() {
+        return singletonPool;
+    }
+
     @Override
     public int size() {
         return singletonPool.size();

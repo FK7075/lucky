@@ -15,7 +15,6 @@ public class JarScan extends Scan {
 	private static final Logger log= LogManager.getLogger(JarScan.class);
 	protected String prefix;
 
-
 	public JarScan(Class<?> clzz) throws URISyntaxException {
 		super(clzz);
 		String allname=clzz.getName();
@@ -30,7 +29,6 @@ public class JarScan extends Scan {
 				jarpath=jarpath.substring(0, jarpath.indexOf(".jar!")+4);
 			}
 		}
-
 	}
 
 	@Override
