@@ -79,7 +79,7 @@ public abstract class MethodUtils {
      * @throws IOException
      */
     public static List<String> getInterfaceParamNames(Method method) throws IOException {
-       return ASMUtil.getInterfaceMethodParamNames(method);
+        return ASMUtil.getInterfaceMethodParamNames(method);
     }
 
     /**

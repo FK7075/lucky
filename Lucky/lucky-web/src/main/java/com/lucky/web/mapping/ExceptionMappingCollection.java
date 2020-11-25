@@ -2,9 +2,7 @@ package com.lucky.web.mapping;
 
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.base.ExceptionUtils;
-import com.lucky.web.exception.RepeatUrlMappingException;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
