@@ -6,10 +6,7 @@ import com.lucky.framework.serializable.XMLSerializationScheme;
 import com.lucky.framework.serializable.implement.GsonSerializationScheme;
 import com.lucky.framework.serializable.implement.XtreamSerializationScheme;
 import com.lucky.framework.uitls.base.Assert;
-import com.lucky.web.core.DefaultLuckyResponse;
-import com.lucky.web.core.DefaultMappingPreprocess;
-import com.lucky.web.core.LuckyResponse;
-import com.lucky.web.core.MappingPreprocess;
+import com.lucky.web.core.*;
 import com.lucky.web.core.parameter.ParameterAnalysis;
 import com.lucky.web.core.parameter.ParameterAnalysisChain;
 
@@ -69,6 +66,8 @@ public class WebConfig implements LuckyConfig {
     private MappingPreprocess mappingPreprocess;
     /** 参数解析链*/
     private ParameterAnalysisChain parameterAnalysisChain;
+    /** 对参数的二次处理[加密、校验等操作]*/
+    private ParameterProcess parameterProcess;
     /** 定义转发与重定向*/
     private LuckyResponse response;
 
@@ -276,6 +275,14 @@ public class WebConfig implements LuckyConfig {
         parameterAnalysisChain=new ParameterAnalysisChain();
     }
 
+    public ParameterProcess getParameterProcess() {
+        return parameterProcess;
+    }
+
+    public void setParameterProcess(ParameterProcess parameterProcess) {
+        this.parameterProcess = parameterProcess;
+    }
+
     private static void defaultInit(WebConfig conf){
         conf.setEncoding("UTF-8");
         conf.setWebRoot("classpath:/templates/");
@@ -287,6 +294,7 @@ public class WebConfig implements LuckyConfig {
         conf.setJsonSerializationScheme(new GsonSerializationScheme());
         conf.setMappingPreprocess(new DefaultMappingPreprocess());
         conf.setResponse(new DefaultLuckyResponse());
+        conf.setParameterProcess(new ParameterProcess());
         conf.setPrefix("");
         conf.setSuffix("");
         conf.setConnectTimeout(5000);

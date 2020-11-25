@@ -48,13 +48,13 @@ public class ExceptionMappingCollection {
 
     /***
      * 根据一个Mapping映射与一个具体的异常信息得到一个唯一的异常映射ExceptionMapping
-     * @param mapping 当前请求的具体映射
+     * @param urlMapping 当前请求的具体映射
      * @param ex 执行请求时出现的异常
      * @return
      */
-    public ExceptionMapping getExceptionMapping(Mapping mapping,Throwable ex){
-        String iocId=mapping.getIocId();
-        String methosId=iocId+"."+mapping.getMapping().getName();
+    public ExceptionMapping getExceptionMapping(UrlMapping urlMapping, Throwable ex){
+        String iocId= urlMapping.getIocId();
+        String methosId=iocId+"."+ urlMapping.getMapping().getName();
         Map<Class<? extends Throwable>, ExceptionMapping> methodIdExMap = findByMethodId(methosId, ex);
         if(!methodIdExMap.isEmpty()){
             return locate(methodIdExMap,ex);

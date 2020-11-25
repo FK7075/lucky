@@ -1,11 +1,9 @@
 package com.lucky.web.core;
 
 import com.lucky.web.enums.Rest;
-import com.lucky.web.mapping.Mapping;
+import com.lucky.web.mapping.UrlMapping;
 
-import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * 将结果响应给客户端
@@ -27,8 +25,7 @@ public interface LuckyResponse {
      */
     void redirect(Model model,String url);
 
-    default void jump(Model model, Object invoke, Mapping mapping, String prefix, String suffix) throws IOException {
-        Rest rest=mapping.getRest();
+    default void jump(Model model, Object invoke, UrlMapping urlMapping, Rest rest, String prefix, String suffix) throws IOException {
         if (invoke != null) {
             if (rest == Rest.JSON) {
                 model.writerJson(invoke);
@@ -47,7 +44,7 @@ public interface LuckyResponse {
                 if (String.class.isAssignableFrom(invoke.getClass())) {
                     toPage(model, invoke.toString(), prefix,suffix);
                 } else {
-                    RuntimeException e = new RuntimeException("返回值类型错误，无法完成转发和重定向操作!合法的返回值类型为String，错误位置：" + mapping.getMapping());
+                    RuntimeException e = new RuntimeException("返回值类型错误，无法完成转发和重定向操作!合法的返回值类型为String，错误位置：" + urlMapping.getMapping());
                     model.error(e,"500");
                 }
             }

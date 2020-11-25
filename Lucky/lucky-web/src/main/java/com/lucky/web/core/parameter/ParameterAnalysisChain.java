@@ -2,7 +2,7 @@ package com.lucky.web.core.parameter;
 
 import com.lucky.framework.proxy.ASMUtil;
 import com.lucky.web.core.Model;
-import com.lucky.web.mapping.Mapping;
+import com.lucky.web.mapping.UrlMapping;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -48,18 +48,18 @@ public class ParameterAnalysisChain {
      * [策略模式]
      * URL请求参数解析
      * @param model 当前请求的Model对象
-     * @param mapping 当前请求的映射
+     * @param urlMapping 当前请求的映射
      * @return 执行当前映射方法所需要的的参数
      * @throws Exception
      */
-    public Object[] analysis(Model model, Mapping mapping) throws Exception {
-        String[] paramNames = ASMUtil.getMethodParamNames(mapping.getMapping());
-        Parameter[] parameters = mapping.getParameters();
+    public Object[] analysis(Model model, UrlMapping urlMapping) throws Exception {
+        String[] paramNames = ASMUtil.getMethodParamNames(urlMapping.getMapping());
+        Parameter[] parameters = urlMapping.getParameters();
         Object[] paramObject=new Object[parameters.length];
         for (int i = 0,j=parameters.length; i < j; i++) {
             for (ParameterAnalysis parameterAnalysis : parameterAnalysesChain) {
-                if(parameterAnalysis.can(model,mapping.getMapping(),parameters[i],paramNames[i])){
-                    paramObject[i]=parameterAnalysis.analysis(model,mapping.getMapping(),parameters[i],paramNames[i]);
+                if(parameterAnalysis.can(model, urlMapping.getMapping(),parameters[i],paramNames[i])){
+                    paramObject[i]=parameterAnalysis.analysis(model, urlMapping.getMapping(),parameters[i],paramNames[i]);
                     break;
                 }
             }

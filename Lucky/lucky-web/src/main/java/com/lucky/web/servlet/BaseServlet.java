@@ -11,13 +11,11 @@ import com.lucky.web.conf.WebConfig;
 import com.lucky.web.core.Model;
 import com.lucky.web.core.parameter.ParameterAnalysisChain;
 import com.lucky.web.enums.RequestMethod;
+import com.lucky.web.enums.Rest;
 import com.lucky.web.exception.FileSizeCrossingException;
 import com.lucky.web.exception.FileTypeIllegalException;
 import com.lucky.web.exception.RequestFileSizeCrossingException;
-import com.lucky.web.mapping.DefaultMappingAnalysis;
-import com.lucky.web.mapping.ExceptionMappingCollection;
-import com.lucky.web.mapping.Mapping;
-import com.lucky.web.mapping.MappingCollection;
+import com.lucky.web.mapping.*;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -41,7 +38,7 @@ public abstract class BaseServlet extends HttpServlet {
 
     protected static final Logger log = LogManager.getLogger(BaseServlet.class);
     protected ApplicationContext applicationContext;
-    protected MappingCollection mappingCollection;
+    protected UrlMappingCollection urlMappingCollection;
     protected ExceptionMappingCollection exceptionMappingCollection;
     protected WebConfig webConfig;
 
@@ -56,14 +53,22 @@ public abstract class BaseServlet extends HttpServlet {
     }
 
     /**
+     * Controller参数的二次加工「校验、加密等处理」
+     * @param urlMapping 当前请求的方法映射
+     */
+    protected void process(UrlMapping urlMapping){
+        webConfig.getParameterProcess().processAll(urlMapping);
+    }
+
+    /**
      * 处理并返回Controller方法响应的结果
      * @param model 当前请求的Model
      * @param invoke Controller方法执行的结果
-     * @param mapping 当前响应的映射
+     * @param urlMapping 当前请求的方法映射
      * @throws IOException
      */
-    protected void response(Model model, Object invoke, Mapping mapping) throws IOException {
-        webConfig.getResponse().jump(model,invoke,mapping,webConfig.getPrefix(),webConfig.getSuffix());
+    protected void response(Model model, Object invoke, UrlMapping urlMapping, Rest rest) throws IOException {
+        webConfig.getResponse().jump(model,invoke, urlMapping,rest,webConfig.getPrefix(),webConfig.getSuffix());
     }
 
     /**
@@ -81,24 +86,24 @@ public abstract class BaseServlet extends HttpServlet {
      * 1.处理Controller的属性和跨域问题
      * 2.包装文件类型的参数
      * @param model 当前请求的Model
-     * @param mapping 当前请求的方法映射
+     * @param urlMapping 当前请求的方法映射
      * @throws FileUploadException
      * @throws FileTypeIllegalException
      * @throws FileSizeCrossingException
      * @throws RequestFileSizeCrossingException
      * @throws IOException
      */
-    protected void afterDispose(Model model, Mapping mapping) throws FileUploadException, FileTypeIllegalException, FileSizeCrossingException, RequestFileSizeCrossingException, IOException {
-        webConfig.getMappingPreprocess().afterDispose(model,webConfig,mapping);
+    protected void afterDispose(Model model, UrlMapping urlMapping) throws FileUploadException, FileTypeIllegalException, FileSizeCrossingException, RequestFileSizeCrossingException, IOException {
+        webConfig.getMappingPreprocess().afterDispose(model,webConfig, urlMapping);
     }
 
     /**
      * 响应结束后的Web上下文清理
      * @param model 当前请求的Model
-     * @param mapping 当前请求的方法映射
+     * @param urlMapping 当前请求的方法映射
      */
-    protected void setFinally(Model model,Mapping mapping){
-        webConfig.getMappingPreprocess().setFinally(model,mapping);
+    protected void setFinally(Model model, UrlMapping urlMapping){
+        webConfig.getMappingPreprocess().setFinally(model, urlMapping);
     }
 
     /**
@@ -113,6 +118,7 @@ public abstract class BaseServlet extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
+        urlMappingCollection.closeRun();
     }
 
     @Override
@@ -122,9 +128,10 @@ public abstract class BaseServlet extends HttpServlet {
         webConfig=WebConfig.getWebConfig();
         applicationContext=AutoScanApplicationContext.create();
         List<Module> controllers = applicationContext.getModuleByAnnotation(Controller.class, RestController.class);
-        mappingCollection=analysis.analysis(controllers);
+        urlMappingCollection =analysis.analysis(controllers);
         List<Module> controllerAdvices = applicationContext.getModuleByAnnotation(ControllerAdvice.class);
         exceptionMappingCollection=analysis.exceptionAnalysis(controllerAdvices);
+        urlMappingCollection.initRun();
     }
 
     @Override

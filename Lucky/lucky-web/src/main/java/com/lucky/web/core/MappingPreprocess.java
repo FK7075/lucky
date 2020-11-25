@@ -1,20 +1,14 @@
 package com.lucky.web.core;
 
 import com.lucky.web.conf.WebConfig;
-import com.lucky.web.core.parameter.AnnotationFileParameterAnalysis;
-import com.lucky.web.core.parameter.MultipartFileParameterAnalysis;
-import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.exception.FileSizeCrossingException;
 import com.lucky.web.exception.FileTypeIllegalException;
 import com.lucky.web.exception.RequestFileSizeCrossingException;
-import com.lucky.web.mapping.Mapping;
+import com.lucky.web.mapping.UrlMapping;
 import org.apache.commons.fileupload.FileUploadException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 
 /**
  * 映射预处理器
@@ -45,12 +39,12 @@ public interface MappingPreprocess {
      * 2.包装文件类型的参数
      * @param model 当前请求的Model对象
      * @param webConfig Web配置类
-     * @param mapping 当前请求的映射
+     * @param urlMapping 当前请求的映射
      */
-    default void afterDispose(Model model, WebConfig webConfig, Mapping mapping) throws FileUploadException, IOException, FileSizeCrossingException, RequestFileSizeCrossingException, FileTypeIllegalException {
-        setField(model,mapping);
-        setCross(model,mapping);
-        UploadAnnotationFileToModel.uploadAnnotationFileSetting(model,webConfig,mapping.getMapping());
+    default void afterDispose(Model model, WebConfig webConfig, UrlMapping urlMapping) throws FileUploadException, IOException, FileSizeCrossingException, RequestFileSizeCrossingException, FileTypeIllegalException {
+        setField(model, urlMapping);
+        setCross(model, urlMapping);
+        UploadAnnotationFileToModel.uploadAnnotationFileSetting(model,webConfig, urlMapping.getMapping());
         MultipartFileToModel.setMultipartFileToModel(model,webConfig);
     }
 
@@ -79,22 +73,22 @@ public interface MappingPreprocess {
     /**
      * Controller特殊属性的设置[Request、Response、Model....]
      * @param model 当前请求的Model对象
-     * @param mapping 当前请求的映射
+     * @param urlMapping 当前请求的映射
      */
-    void setField(Model model, Mapping mapping);
+    void setField(Model model, UrlMapping urlMapping);
 
     /**
      * 跨域设置
      * @param model 当前请求的Model对象
      * @param model 当前请求的Model对象
-     * @param mapping 当前请求的映射
+     * @param urlMapping 当前请求的映射
      */
-    void setCross(Model model, Mapping mapping);
+    void setCross(Model model, UrlMapping urlMapping);
 
     /**
      * 请求结束后要执行的逻辑
      * @param model 当前请求的Model对象
-     * @param mapping 当前请求的映射
+     * @param urlMapping 当前请求的映射
      */
-    void setFinally(Model model, Mapping mapping);
+    void setFinally(Model model, UrlMapping urlMapping);
 }

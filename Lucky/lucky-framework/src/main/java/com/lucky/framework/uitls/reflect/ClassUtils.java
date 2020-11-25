@@ -201,6 +201,17 @@ public abstract class ClassUtils {
         return annFields;
     }
 
+    public static List<Field> getFieldByAnnotationArrayOR(Class<?> clzz, Class<? extends Annotation>[] annotationArray){
+        Field[] allFields = getAllFields(clzz);
+        List<Field> annFields=new ArrayList<>();
+        for (Field field : allFields) {
+            if(AnnotationUtils.isExistOrByArray(field,annotationArray)){
+                annFields.add(field);
+            }
+        }
+        return annFields;
+    }
+
     /**
      * 得到一个类中被特定注解标注的所有属性(包括注解中的组合注解)
      * @param clzz 类CLass
@@ -230,6 +241,17 @@ public abstract class ClassUtils {
         List<Method> annMethods=new ArrayList<>();
         for (Method method : allMethods) {
             if(AnnotationUtils.isExist(method,annotation)){
+                annMethods.add(method);
+            }
+        }
+        return annMethods;
+    }
+
+    public static List<Method> getMethodByAnnotationArrayOR(Class<?> clzz, Class<? extends Annotation>[] annotationArray){
+        Method[] allMethod = getAllMethod(clzz);
+        List<Method> annMethods=new ArrayList<>();
+        for (Method method : allMethod) {
+            if(AnnotationUtils.isExistOrByArray(method,annotationArray)){
                 annMethods.add(method);
             }
         }

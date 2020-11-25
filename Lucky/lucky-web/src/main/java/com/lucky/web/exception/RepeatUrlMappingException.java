@@ -1,6 +1,6 @@
 package com.lucky.web.exception;
 
-import com.lucky.web.mapping.Mapping;
+import com.lucky.web.mapping.UrlMapping;
 
 import java.util.Arrays;
 
@@ -11,11 +11,11 @@ import java.util.Arrays;
  */
 public class RepeatUrlMappingException extends RuntimeException{
 
-    public RepeatUrlMappingException(Mapping mapping){
+    public RepeatUrlMappingException(UrlMapping urlMapping){
         String.format("URL映射重复定义异常！[%s]/%s 已经被定义!错误位置：Controller:[%s] Method:[%s]"
-                ,mapping.getUrl()
-                ,Arrays.toString(mapping.getMethods())
-                ,mapping.getController().getClass()
-                ,mapping.getMapping().getName());
+                , urlMapping.getUrl()
+                ,Arrays.toString(urlMapping.getMethods())
+                , urlMapping.getObject().getClass()
+                , urlMapping.getMapping().getName());
     }
 }

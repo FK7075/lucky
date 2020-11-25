@@ -20,12 +20,15 @@ public interface MappingAnalysis {
     public static final Class<? extends Annotation>[] CONTROLLER_ANNOTATIONS=
             new Class[]{Controller.class,RestController.class};
 
+    public static final Class<? extends Annotation>[] RUN_ANNOTATIONS=
+            new Class[]{InitRun.class,CloseRun.class};
+
     /**
      * 将一个Controller解析为多个URL映射
      * @param controller Controller对象
      * @return
      */
-    MappingCollection analysis(Module controller);
+    UrlMappingCollection analysis(Module controller);
 
 
     /**

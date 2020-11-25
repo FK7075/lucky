@@ -6,14 +6,8 @@ import com.lucky.framework.uitls.reflect.ClassUtils;
 import com.lucky.framework.uitls.reflect.FieldUtils;
 import com.lucky.web.annotation.CrossOrigin;
 import com.lucky.web.conf.WebConfig;
-import com.lucky.web.core.parameter.AnnotationFileParameterAnalysis;
-import com.lucky.web.core.parameter.MultipartFileParameterAnalysis;
 import com.lucky.web.enums.RequestMethod;
-import com.lucky.web.exception.FileSizeCrossingException;
-import com.lucky.web.exception.FileTypeIllegalException;
-import com.lucky.web.exception.RequestFileSizeCrossingException;
-import com.lucky.web.mapping.Mapping;
-import org.apache.commons.fileupload.FileUploadException;
+import com.lucky.web.mapping.UrlMapping;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -22,7 +16,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -86,8 +79,8 @@ public class DefaultMappingPreprocess implements MappingPreprocess {
     }
 
     @Override
-    public void setField(Model model, Mapping mapping) {
-        Object controller=mapping.getController();
+    public void setField(Model model, UrlMapping urlMapping) {
+        Object controller= urlMapping.getObject();
         Class<?> controllerClass=controller.getClass();
         Field[] fields= ClassUtils.getAllFields(controllerClass);
         for(Field field:fields) {
@@ -110,9 +103,9 @@ public class DefaultMappingPreprocess implements MappingPreprocess {
     }
 
     @Override
-    public void setCross(Model model, Mapping mapping) {
-        Object controller=mapping.getController();
-        Method controllerMethod=mapping.getMapping();
+    public void setCross(Model model, UrlMapping urlMapping) {
+        Object controller= urlMapping.getObject();
+        Method controllerMethod= urlMapping.getMapping();
         Class<?> controllerClass = controller.getClass();
         if(!(AnnotationUtils.isExist(controllerMethod,CrossOrigin.class)
                 ||AnnotationUtils.isExist(controllerClass,CrossOrigin.class))){
@@ -144,7 +137,7 @@ public class DefaultMappingPreprocess implements MappingPreprocess {
     }
 
     @Override
-    public void setFinally(Model model, Mapping mapping) {
+    public void setFinally(Model model, UrlMapping urlMapping) {
         WebContext.clearContext();
     }
 }

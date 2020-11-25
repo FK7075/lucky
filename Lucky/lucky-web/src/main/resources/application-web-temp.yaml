@@ -32,9 +32,13 @@ lucky:
     #3.请求处理结束后的操作
     mapping-preprocess: com.lucky.web.core.DefaultMappingPreprocess
     ##添加Controller参数解析器
+    ##自定义的参数解析器需要实现接口「com.lucky.web.core.parameter.ParameterAnalysis」
     parameter-analysis-chain-add:
       - com.lucky.web.core.parameter.ParameterAnalysis
       - com.lucky.web.core.parameter.ImplParameterAnalysis
+    ##对参数进行二次加工，如校验、加密，子类可继承
+    ##「com.lucky.web.core.ParameterProcess」来扩展自定义的处理逻辑
+    parameter-process: com.lucky.web.core.ParameterProcess
     #错误页面配置
     error-page:
       404: /lucky-web/404.html

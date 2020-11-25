@@ -3,7 +3,6 @@ package com.lucky.web.mapping;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.MethodUtils;
-import com.lucky.web.annotation.Controller;
 import com.lucky.web.annotation.ControllerAdvice;
 import com.lucky.web.annotation.ResponseBody;
 import com.lucky.web.core.Model;
@@ -25,24 +24,17 @@ import java.util.List;
  * @version 1.0
  * @date 2020/11/24 9:12
  */
-public class ExceptionMapping {
+public class ExceptionMapping extends Mapping{
 
-    /** ControllerAdvice对象*/
-    private Object controllerAdvice;
-    /** Controller方法*/
-    private Method method;
+
     /** 作用范围*/
     private String[] scopes;
-    /** 响应方式*/
-    private Rest rest;
     /** 所要处理的异常*/
     private Class<? extends Throwable>[] exceptions;
-    /** 运行Controller方法需要参数的类型*/
-    private Parameter[] parameters;
 
     public ExceptionMapping(Object controllerAdvice, Method method, String[] scopes, Rest rest, Class<? extends Throwable>[] exceptions) {
-        this.controllerAdvice = controllerAdvice;
-        this.method = method;
+        this.object = controllerAdvice;
+        this.mapping = method;
         this.scopes = scopes;
         this.rest = rest;
         this.parameters=method.getParameters();
@@ -57,44 +49,12 @@ public class ExceptionMapping {
         this.scopes = scopes;
     }
 
-    public Rest getRest() {
-        return rest;
-    }
-
-    public void setRest(Rest rest) {
-        this.rest = rest;
-    }
-
-    public Object getControllerAdvice() {
-        return controllerAdvice;
-    }
-
-    public void setControllerAdvice(Object controllerAdvice) {
-        this.controllerAdvice = controllerAdvice;
-    }
-
-    public Method getMethod() {
-        return method;
-    }
-
-    public void setMethod(Method method) {
-        this.method = method;
-    }
-
     public Class<? extends Throwable>[] getExceptions() {
         return exceptions;
     }
 
     public void setExceptions(Class<? extends Throwable>[] exceptions) {
         this.exceptions = exceptions;
-    }
-
-    public Parameter[] getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(Parameter[] parameters) {
-        this.parameters = parameters;
     }
 
     /**
@@ -109,7 +69,7 @@ public class ExceptionMapping {
         if(Assert.isEmptyCollection(scopeIntersect)||Assert.isEmptyCollection(exceptionIntersect)){
             return false;
         }
-        throw new RepeatDefinitionExceptionHandlerException(scopeIntersect,exceptionIntersect,this.method,em.getMethod());
+        throw new RepeatDefinitionExceptionHandlerException(scopeIntersect,exceptionIntersect,this.mapping,em.getMapping());
     }
 
     /**
@@ -151,10 +111,7 @@ public class ExceptionMapping {
      * @param model 当前请求的Model对象
      * @return 方法执行后的返回值
      */
-    public Object invoke(Model model,Mapping mapping,Throwable ex){
-        Rest rest = AnnotationUtils.isExist(method,ResponseBody.class)
-                ? AnnotationUtils.get(method,ResponseBody.class).value()
-                : AnnotationUtils.get(controllerAdvice.getClass(), ControllerAdvice.class).rest();
+    public Object invoke(Model model, UrlMapping urlMapping, Throwable ex){
         Object[] params = new Object[parameters.length];
         int i = 0;
         for (Parameter parameter : parameters) {
@@ -164,9 +121,9 @@ public class ExceptionMapping {
             } else if (Model.class.isAssignableFrom(type)) {
                 params[i] = model;
             } else if (Method.class.isAssignableFrom(type)) {
-                params[i] = mapping.getMapping();
+                params[i] = urlMapping.getMapping();
             } else if (Class.class.isAssignableFrom(type)) {
-                params[i] = mapping.getController().getClass();
+                params[i] = urlMapping.getObject().getClass();
             } else if (HttpRequest.class.isAssignableFrom(type)) {
                 params[i] = model.getRequest();
             } else if (HttpResponse.class.isAssignableFrom(type)) {
@@ -176,13 +133,13 @@ public class ExceptionMapping {
             } else if (ServletContext.class.isAssignableFrom(type)) {
                 params[i] = model.getServletContext();
             } else if (Object[].class==type) {
-                params[i] = mapping.getRunParams();
+                params[i] = urlMapping.getRunParams();
             } else if (Object.class.isAssignableFrom(type)) {
-                params[i] = mapping.getController();
+                params[i] = urlMapping.getObject();
             }
             i++;
         }
-        final Object result = MethodUtils.invoke(controllerAdvice, method, params);
+        final Object result = MethodUtils.invoke(object, mapping, params);
         return result;
     }
 }

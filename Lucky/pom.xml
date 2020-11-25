@@ -91,6 +91,13 @@
             <version>4.0.1</version>
         </dependency>
 
+        <!-- DM5加密工具包-->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
+        </dependency>
+
         <!-- Gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>

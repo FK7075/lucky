@@ -25,12 +25,17 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
 
 
 
-    public MappingCollection analysis(List<Module> controllers){
-        MappingCollection mappings=new MappingCollection();
+    public UrlMappingCollection analysis(List<Module> controllers){
+        UrlMappingCollection mappings=new UrlMappingCollection();
         for (Module controller : controllers) {
-            Iterator<Mapping> iterator = analysis(controller).iterator();
+            UrlMappingCollection collection = analysis(controller);
+            Iterator<UrlMapping> iterator = collection.iterator();
             while (iterator.hasNext()){
                 mappings.add(iterator.next());
+            }
+            Iterator<UrlMapping> runIterator = collection.runIterator();
+            while (runIterator.hasNext()){
+                mappings.addRun(runIterator.next());
             }
         }
         return mappings;
@@ -48,20 +53,25 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
     }
 
     @Override
-    public MappingCollection analysis(Module module) {
+    public UrlMappingCollection analysis(Module module) {
         Object controller=module.getComponent();
-        MappingCollection mappingCollection=new MappingCollection();
-        List<Method> mappingMethods = ClassUtils.getMethodByStrengthenAnnotation(controller.getClass(), RequestMapping.class);
-        String controllerUrl=getControllerUrl(controller);
+        Class<?> controllerClass=controller.getClass();
+        UrlMappingCollection urlMappingCollection =new UrlMappingCollection();
+        List<Method> mappingMethods = ClassUtils.getMethodByStrengthenAnnotation(controllerClass, RequestMapping.class);
+        String controllerUrl=getControllerUrl(controllerClass);
         for (Method method : mappingMethods) {
             String url=controllerUrl+getMethodUrl(method);
-            mappingCollection.add(new Mapping(url,module.getId(),
+            urlMappingCollection.add(new UrlMapping(url,module.getId(),
                                 module.getType(),controller,
                                 method,getRequestMethod(method),
                                 getRest(method),getIps(method),
                                 getIpSection(method)));
         }
-        return mappingCollection;
+        List<Method> runMethods = ClassUtils.getMethodByAnnotationArrayOR(controllerClass, RUN_ANNOTATIONS);
+        for (Method runMethod : runMethods) {
+            urlMappingCollection.addRun(controller,runMethod);
+        }
+        return urlMappingCollection;
     }
 
     @Override
@@ -79,11 +89,10 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
 
     /**
      * 获取当前Controller类上的URL映射
-     * @param controller Controller对象
+     * @param controllerClass Controller对象的Class
      * @return URL映射
      */
-    protected String getControllerUrl(Object controller){
-        Class<?> controllerClass=controller.getClass();
+    protected String getControllerUrl( Class<?> controllerClass){
         String controllerUrl;
         if(AnnotationUtils.isExist(controllerClass,RequestMapping.class)){
             controllerUrl=AnnotationUtils.get(controllerClass,RequestMapping.class).value();
