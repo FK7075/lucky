@@ -82,8 +82,6 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
                     }
                 }
             }
-
-
         }
 
         return list;

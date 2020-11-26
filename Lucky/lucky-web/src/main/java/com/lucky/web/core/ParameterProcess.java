@@ -70,10 +70,10 @@ public class ParameterProcess {
      * @param paramName 参数名
      */
     protected void check(Parameter parameter,Object runParam,String paramName){
-        if(Assert.isNull(runParam)){
-            throw new ControllerParameterCheckException("Controller参数校验异常: 当前参数为NULL! ["+paramName+"=null] 校验位置："+parameter);
-        }
         if(AnnotationUtils.isExist(parameter, Check.class)){
+            if(Assert.isNull(runParam)){
+                throw new ControllerParameterCheckException("Controller参数校验异常: 当前参数为NULL! ["+paramName+"=null] 校验位置："+parameter);
+            }
             Check check=AnnotationUtils.get(parameter,Check.class);
             String[] value = check.value();
             if(!Regular.check(runParam.toString(), value)){

@@ -22,8 +22,12 @@ import java.util.List;
  */
 public abstract class Injection implements Namer {
 
-    private static final Logger log= LogManager.getLogger(Injection.class);
-    private static final SingletonContainer singletonPool= RegisterMachine.getRegisterMachine().getSingletonPool();
+    private static Logger log= LogManager.getLogger(Injection.class);
+    private static SingletonContainer singletonPool= RegisterMachine.getRegisterMachine().getSingletonPool();
+
+    public static void setSingletonPool(SingletonContainer singletonPool) {
+        Injection.singletonPool = singletonPool;
+    }
 
     public Injection(){
         Module module=

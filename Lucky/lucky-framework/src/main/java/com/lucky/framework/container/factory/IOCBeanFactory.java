@@ -17,8 +17,16 @@ import java.util.stream.Collectors;
  */
 public abstract class IOCBeanFactory implements BeanFactory,Namer {
 
-    private static final SingletonContainer singletonPool= RegisterMachine.getRegisterMachine().getSingletonPool();
-    private static final Set<Class<?>> plugins=RegisterMachine.getRegisterMachine().getPlugins();
+    private SingletonContainer singletonPool= RegisterMachine.getRegisterMachine().getSingletonPool();
+    private Set<Class<?>> plugins=RegisterMachine.getRegisterMachine().getPlugins();
+
+    public  void setSingletonPool(SingletonContainer singletonPool) {
+        this.singletonPool = singletonPool;
+    }
+
+    public void setPlugins(Set<Class<?>> plugins) {
+        this.plugins = plugins;
+    }
 
     public List<Module> getBeanByType(String...types){
         return singletonPool.getBeanByType(types);

@@ -1,10 +1,7 @@
 package com.lucky.framework.container;
 
 import com.lucky.framework.annotation.Plugin;
-import com.lucky.framework.container.factory.BeanFactory;
-import com.lucky.framework.container.factory.BeanNamer;
-import com.lucky.framework.container.factory.ConfigurationBeanFactory;
-import com.lucky.framework.container.factory.Namer;
+import com.lucky.framework.container.factory.*;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
@@ -92,7 +89,7 @@ public class RegisterMachine {
      * 动态组装，在运行期间动态组装一些Bean的实例到IOC容器中
      * @param componentClasses 需要动态加载的组件
      */
-    public static SingletonContainer dynamicAssembly(Set<Class<?>> componentClasses){
+    public static SingletonContainer dynamicAssembly(Set<IOCBeanFactory> beanFactorys, Set<Class<?>> componentClasses){
         //动态插件库
         Set<Class<?>> plugins=new HashSet<>(20);
         //动态容器
@@ -117,14 +114,16 @@ public class RegisterMachine {
         configurationBeanFactory.createBean().stream().forEach(m->singletonPool.put(m.getId(),m));
 
         //找到IOC容器中所有的BeanFactory，并将这些BeanFactory生产的Bean实例注入IOC容器
-        singletonPool.getBeanByClass(BeanFactory.class).stream().forEach(beanFactoryModule->{
-            BeanFactory beanFactory = (BeanFactory) beanFactoryModule.getComponent();
+        beanFactorys.stream().forEach(beanFactory->{
+            beanFactory.setSingletonPool(singletonPool);
+            beanFactory.setPlugins(plugins);
             beanFactory.createBean().stream().forEach(m->singletonPool.put(m.getId(),m));
             Map<String, Module> replaceBeans = beanFactory.replaceBean();
             replaceBeans.keySet().stream().forEach(k->singletonPool.replace(k,replaceBeans.get(k)));
         });
 
         singletonPool.values().stream().forEach(module -> {
+            Injection.setSingletonPool(singletonPool);
             Injection.injection(module);
         });
        return singletonPool;
