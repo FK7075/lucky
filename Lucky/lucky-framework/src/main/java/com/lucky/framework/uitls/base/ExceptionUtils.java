@@ -34,15 +34,11 @@ public abstract class ExceptionUtils {
      */
     public static Throwable getCauseThrowable(Throwable e){
         while (true){
-            if(e instanceof InvocationTargetException ||
-               e instanceof LuckyReflectionException ||
-               e.getClass()==RuntimeException.class){
-                e=e.getCause();
-            }else {
-                break;
+            if(Assert.isNull(e.getCause())){
+                return e;
             }
+            e=e.getCause();
         }
-        return e;
     }
 
     /**

@@ -21,6 +21,7 @@ import java.lang.reflect.Parameter;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -92,6 +93,8 @@ public class UrlMapping extends Mapping{
         this.iocType = iocType;
     }
 
+    public UrlMapping(){}
+
     public UrlMapping(String url, String iocId, String iocType, Object controller,
                       Method mapping, RequestMethod[] methods,
                       Rest rest, Set<String>ips,
@@ -121,6 +124,7 @@ public class UrlMapping extends Mapping{
         if(!urlIsEquals(currUrlMapping.getUrl())){
             return false;
         }
+
         //支持的请求类型校验
         RequestMethod[] currMethods = currUrlMapping.getMethods();
         for (RequestMethod currMethod : currMethods) {
@@ -151,7 +155,119 @@ public class UrlMapping extends Mapping{
      * @return
      */
     public boolean urlIsEquals(String url){
+        return simpleUrlIsEquals(url)||addingRestUrlIsEquals(url);
+    }
+
+    /**
+     * 简单URL校验，字符串的全匹配
+     * @param url
+     * @return
+     */
+    public boolean simpleUrlIsEquals(String url){
         return getUrl().equals(url);
+    }
+
+    /**
+     * [查找时] REST URL校验，当有一个URL请求过来时的校验
+     * 校验成功后会将Rest参数设置到Model对象中
+     * @param model 当前请求的Model对象
+     * @param requestUrl 待验证的请求 URL
+     * @return
+     */
+    public boolean findingRestUelIsEquals(Model model,String requestUrl){
+        String[] thisURLArray = getUrl().split("/");
+        String[] requestURLArray = requestUrl.split("/");
+        if(thisURLArray.length!=requestURLArray.length){
+            return false;
+        }
+        for (int i = 0,j=thisURLArray.length; i < j; i++) {
+            if(!findingRestURLElementTest(requestURLArray[i],thisURLArray[i])){
+                return false;
+            }
+        }
+        Map<String,String> restMap=new HashMap<>();
+        String key;
+        for (int i = 0,j=thisURLArray.length; i < j; i++) {
+            if(isRestElement(thisURLArray[i])){
+                key=thisURLArray[i].startsWith("#{")?thisURLArray[i].substring(2):thisURLArray[i];
+                key=key.startsWith("{")?key.substring(1):key;
+                key=key.endsWith("}")?key.substring(0,key.length()-1):key;
+                restMap.put(key,requestURLArray[i]);
+            }
+        }
+        model.setRestParams(restMap);
+        return true;
+    }
+
+    /**
+     * [查找时] 判断两个REST URL元素是否等价
+     * @param urlElement 待验证的URL元素
+     * @param testElement
+     * @return
+     */
+    private boolean findingRestURLElementTest(String urlElement,String testElement){
+        boolean isRestElement=isRestElement(testElement);
+
+        //testElement为REST URL元素
+        if(isRestElement){
+            return true;
+        }
+        return urlElement.equals(testElement);
+    }
+
+
+    /**
+     * [添加时] REST URL校验，向集合中添加Mapping时的REST URL校验
+     * 以下这些REST URL会被视为等价
+     * user/#{uid}/{jack}/ <=>
+     * user/{uid}/{jack}/ <=>
+     * user/{lucy}/#{tomcat}/
+     * @param url 待验证的REST URL
+     * @return
+     */
+    public boolean addingRestUrlIsEquals(String url) {
+        String[] thisURLArray = getUrl().split("/");
+        String[] verifiedURLArray = url.split("/");
+        if(thisURLArray.length!=verifiedURLArray.length){
+            return false;
+        }
+        for (int i = 0,j=thisURLArray.length; i < j; i++) {
+            if(!addingRestURLElementTest(thisURLArray[i],verifiedURLArray[i])){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * [添加时]判断两个REST URL元素是否等价
+     * @param thisElement 元素1
+     * @param verifiedURLElement 元素2
+     * @return
+     */
+    private boolean addingRestURLElementTest(String thisElement,String verifiedURLElement){
+        boolean thisIsRest=isRestElement(thisElement);
+        boolean verifiedIsRest=isRestElement(verifiedURLElement);
+        //一个是REST元素一个不是REST元素
+        if((!verifiedIsRest&&thisIsRest)||(verifiedIsRest&&!thisIsRest)){
+            return false;
+        }
+        //两个都不是REST元素
+        if(!thisIsRest&&!verifiedIsRest){
+            return thisElement.equals(verifiedURLElement);
+        }
+        //两个都是REST元素
+        return true;
+    }
+
+    /**
+     * 判断一个URL元素是否为REST URL元素
+     * @param urlElement
+     * @return
+     */
+    private boolean isRestElement(String urlElement){
+        return urlElement.startsWith("{")||urlElement.startsWith("#{")
+                &&urlElement.endsWith("}");
     }
 
     /**

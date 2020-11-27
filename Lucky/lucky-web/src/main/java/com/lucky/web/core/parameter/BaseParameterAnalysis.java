@@ -47,9 +47,11 @@ public class BaseParameterAnalysis implements ParameterAnalysis{
         //可以在Request参数中拿到
         if(model.parameterMapContainsKey(paramName)){
             if(parameterType.isArray()){
-                return JavaConversion.strArrToBasicArr(model.getArray(paramName),parameterType);
+                return model.getParams(paramName,parameterType);
             }
             return JavaConversion.strToBasic(model.getParameter(paramName),parameterType);
+        }else if(model.restMapContainsKey(paramName)){
+            return JavaConversion.strToBasic(model.getRestParam(paramName),parameterType);
         }else{  //尝试解析@Param中配置的默认值
 
             String defaultValue = getParamDefaultValue(parameter);

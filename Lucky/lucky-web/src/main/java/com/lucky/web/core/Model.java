@@ -71,7 +71,6 @@ public class Model {
     /** 异常处理映射集*/
     private ExceptionMappingCollection exceptionMappingCollection;
 
-
     /**
      * Model构造器
      *
@@ -135,14 +134,6 @@ public class Model {
 
     public void setExceptionMappingCollection(ExceptionMappingCollection exceptionMappingCollection) {
         this.exceptionMappingCollection = exceptionMappingCollection;
-    }
-
-    /**
-     * 得到所有的Rest风格的参数集合RestParamMap
-     * @return
-     */
-    public Map<String, String> getRestParams() {
-        return restMap;
     }
 
     /**
@@ -228,7 +219,7 @@ public class Model {
      * 设置RestParamMap
      * @param restMap
      */
-    protected void setRestParams(Map<String, String> restMap) {
+    public void setRestParams(Map<String, String> restMap) {
         this.restMap = restMap;
     }
 
@@ -349,7 +340,7 @@ public class Model {
      * @return
      */
     public String getParameter(String name) {
-        String[] array = getArray(name);
+        String[] array = getParams(name);
         return array[array.length-1];
     }
 
@@ -543,7 +534,7 @@ public class Model {
      * @param key 键
      * @return
      */
-    public String[] getArray(String key) {
+    public String[] getParams(String key) {
         return parameterMap.get(key);
     }
 
@@ -554,7 +545,7 @@ public class Model {
      * @param clzz 目标类型T的Class
      * @return
      */
-    public <T> T[] getArray(String key, Class<T> clzz) {
+    public <T> T[] getParams(String key, Class<T> clzz) {
         return (T[]) JavaConversion.strArrToBasicArr(parameterMap.get(key), clzz);
     }
 
@@ -721,6 +712,7 @@ public class Model {
     public File getRealFile(String uri) {
         return new File(getServletContext().getRealPath(uri));
     }
+
 }
 
 class ExceptionMessage{

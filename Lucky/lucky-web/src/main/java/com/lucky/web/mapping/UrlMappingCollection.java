@@ -142,19 +142,16 @@ public class UrlMappingCollection {
     private UrlMapping getByUrl(Model model){
         String url=model.getUri();
         for (UrlMapping urlMapping : list) {
-            if(urlMapping.urlIsEquals(url)){
+            if(urlMapping.simpleUrlIsEquals(url)){
                 return urlMapping;
             }
-            if(restUrlVerify(model, urlMapping.getUrl())){
+            if(urlMapping.findingRestUelIsEquals(model, url)){
                 return urlMapping;
             }
         }
         return null;
     }
-    
-    private boolean restUrlVerify(Model model,String confUrl){
-        return false;
-    }
+
 
     public boolean merge(UrlMappingCollection collection){
         Iterator<UrlMapping> iterator = collection.iterator();

@@ -23,6 +23,9 @@ public abstract class Mapping {
     /** 运行Controller方法需要的参数*/
     protected Object[] runParams;
 
+    public Mapping() {
+    }
+
     public Object getObject() {
         return object;
     }

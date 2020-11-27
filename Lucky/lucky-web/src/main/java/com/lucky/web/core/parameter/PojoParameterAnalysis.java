@@ -66,6 +66,13 @@ public class PojoParameterAnalysis implements ParameterAnalysis{
                 }else if(fieldClass ==MultipartFile.class){
                     FieldUtils.setValue(result,fi,multipartFileArray[multipartFileArray.length-1]);
                 }
+            }else if(model.parameterMapContainsKey(fieldName)){
+                if(fieldClass.isArray()){
+                    FieldUtils.setValue(result,fi,model.getParams(fieldName,fieldClass));
+                }
+                return JavaConversion.strToBasic(model.getParameter(fieldName),fieldClass);
+            }else if(model.restMapContainsKey(fieldName)){
+                return JavaConversion.strToBasic(model.getRestParam(fieldName),fieldClass);
             }
 
         }
@@ -87,7 +94,7 @@ public class PojoParameterAnalysis implements ParameterAnalysis{
             Class<?> fieClass = field.getType();
             if (ClassUtils.isBasic(fieClass)) {
                 if (fieClass.isArray()) {
-                    FieldUtils.setValue(pojo,field,model.getArray(field.getName(), fieClass));
+                    FieldUtils.setValue(pojo,field,model.getParams(field.getName(), fieClass));
                 } else {
                     if (model.parameterMapContainsKey(field.getName())) {
                         FieldUtils.setValue(pojo,field,JavaConversion.strToBasic(model.getParameter(field.getName()), fieClass));
