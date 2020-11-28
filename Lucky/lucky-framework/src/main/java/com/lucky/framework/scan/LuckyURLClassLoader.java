@@ -2,16 +2,16 @@ package com.lucky.framework.scan;
 
 import com.lucky.framework.annotation.Component;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLStreamHandlerFactory;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -22,6 +22,8 @@ import java.util.jar.JarFile;
  * @date 2020/11/26 上午4:03
  */
 public class LuckyURLClassLoader extends URLClassLoader {
+
+    private static final Logger log= LogManager.getLogger(LuckyURLClassLoader.class);
 
 
     //属于本类加载器加载的jar包
@@ -116,7 +118,7 @@ public class LuckyURLClassLoader extends URLClassLoader {
             try {
                 aClass = loadClass(key);
             } catch (Throwable e) {
-                System.err.println(key);
+                System.err.println("[WARNING] CLASS LOAD ERROR："+key);
                 continue;
             }
             cacheClassMap.put(key,aClass);

@@ -25,4 +25,10 @@ public interface BeanFactory {
      */
     Map<String,Module> replaceBean();
 
+    /**
+     * 优先级
+     * @return
+     */
+    double priority();
+
 }

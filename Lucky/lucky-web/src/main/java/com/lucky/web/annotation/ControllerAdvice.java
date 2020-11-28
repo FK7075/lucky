@@ -1,7 +1,5 @@
 package com.lucky.web.annotation;
 
-import com.lucky.framework.annotation.Component;
-import com.lucky.framework.annotation.Plugin;
 import com.lucky.web.enums.Rest;
 
 import java.lang.annotation.*;

@@ -5,9 +5,10 @@ import com.lucky.framework.container.factory.*;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 注册机
@@ -16,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2020/11/14 1:30 下午
  */
 public class RegisterMachine {
+
+    private static final Logger log= LogManager.getLogger("c.l.framework.container.RegisterMachine");
 
     private static RegisterMachine registerMachine;
     private SingletonContainer singletonPool;
@@ -61,6 +64,7 @@ public class RegisterMachine {
             //将所有插件Class过滤到插件集合中
             if(AnnotationUtils.strengthenIsExist(componentClass, Plugin.class)){
                 plugins.add(componentClass);
+                log.debug("Plugin [class=`"+componentClass+"`]");
                 continue;
             }
 
@@ -69,19 +73,34 @@ public class RegisterMachine {
                                     ,namer.getBeanType(componentClass)
                                     , ClassUtils.newObject(componentClass));
             singletonPool.put(module.getId(),module);
+            log.info("Component `{}`",module);
         }
 
         //找到IOC容器中所有的配置类，初始化所有配置类生产的Bean实例，并注入IOC容器
         ConfigurationBeanFactory configurationBeanFactory=
                 new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"));
-        configurationBeanFactory.createBean().stream().forEach(m->singletonPool.put(m.getId(),m));
+        configurationBeanFactory.createBean().stream().forEach((m)->{
+            singletonPool.put(m.getId(),m);
+            log.info("Configuration Bean `{}`",m);
+        });
 
         //找到IOC容器中所有的BeanFactory，并将这些BeanFactory生产的Bean实例注入IOC容器
-        singletonPool.getBeanByClass(BeanFactory.class).stream().forEach(beanFactoryModule->{
+        singletonPool.getBeanByClass(BeanFactory.class).stream().sorted(Comparator.comparing((m)->{
+            BeanFactory beanFactory=(BeanFactory)m.getComponent();
+            return beanFactory.priority();
+        })).forEach(beanFactoryModule->{
             BeanFactory beanFactory = (BeanFactory) beanFactoryModule.getComponent();
-            beanFactory.createBean().stream().forEach(m->singletonPool.put(m.getId(),m));
+            log.info("BeanFactory `{}`",beanFactory);
+            beanFactory.createBean().stream().forEach((m)->{
+                singletonPool.put(m.getId(),m);
+                log.info("Factory Create Bean `{}`",m);
+            });
             Map<String, Module> replaceBeans = beanFactory.replaceBean();
-            replaceBeans.keySet().stream().forEach(k->singletonPool.replace(k,replaceBeans.get(k)));
+            replaceBeans.keySet().stream().forEach((k)->{
+                Module newModule = replaceBeans.get(k);
+                singletonPool.replace(k,newModule);
+                log.info("Replace Bean To `{}`",newModule);
+            });
         });
     }
 
@@ -98,6 +117,7 @@ public class RegisterMachine {
             //将所有插件Class过滤到插件集合中
             if(AnnotationUtils.strengthenIsExist(componentClass, Plugin.class)){
                 plugins.add(componentClass);
+                log.debug("Plugin `{}`",componentClass);
                 continue;
             }
 
@@ -106,20 +126,31 @@ public class RegisterMachine {
                     ,namer.getBeanType(componentClass)
                     , ClassUtils.newObject(componentClass));
             singletonPool.put(module.getId(),module);
+            log.info("Component `{}`",module);
         }
 
         //找到IOC容器中所有的配置类，初始化所有配置类生产的Bean实例，并注入IOC容器
         ConfigurationBeanFactory configurationBeanFactory=
                 new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"));
-        configurationBeanFactory.createBean().stream().forEach(m->singletonPool.put(m.getId(),m));
+        configurationBeanFactory.createBean().stream().forEach((m)->{
+            singletonPool.put(m.getId(),m);
+            log.info("Configuration Bean `{}`",m);
+        });
 
         //找到IOC容器中所有的BeanFactory，并将这些BeanFactory生产的Bean实例注入IOC容器
         beanFactorys.stream().forEach(beanFactory->{
             beanFactory.setSingletonPool(singletonPool);
             beanFactory.setPlugins(plugins);
-            beanFactory.createBean().stream().forEach(m->singletonPool.put(m.getId(),m));
+            beanFactory.createBean().stream().forEach((m)->{
+                singletonPool.put(m.getId(),m);
+                log.info("Factory Create Bean `{}`",m);
+            });
             Map<String, Module> replaceBeans = beanFactory.replaceBean();
-            replaceBeans.keySet().stream().forEach(k->singletonPool.replace(k,replaceBeans.get(k)));
+            replaceBeans.keySet().stream().forEach((k)->{
+                Module newModule = replaceBeans.get(k);
+                singletonPool.replace((k),replaceBeans.get(k));
+                log.info("Replace Bean To `{}`",newModule);
+            });
         });
 
         singletonPool.values().stream().forEach(module -> {

@@ -3,6 +3,7 @@ package com.lucky.web.httpclient.callcontroller;
 import com.lucky.framework.proxy.ASMUtil;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
+import com.lucky.framework.uitls.reflect.MethodUtils;
 import com.lucky.framework.uitls.reflect.ParameterUtils;
 import com.lucky.web.annotation.CallController;
 import com.lucky.web.annotation.FileDownload;
@@ -39,6 +40,9 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
 
     @Override
     public Object intercept(Object o, Method method, Object[] params, MethodProxy methodProxy) throws Throwable {
+        if(MethodUtils.isObjectMethod(method)){
+            return methodProxy.invokeSuper(o,params);
+        }
         if(!AnnotationUtils.isExistOrByArray(method, MappingAnalysis.MAPPING_ANNOTATIONS)){
             throw new NotMappingMethodException("该方法不是Mapping方法，无法执行代理！错误位置："+method);
         }

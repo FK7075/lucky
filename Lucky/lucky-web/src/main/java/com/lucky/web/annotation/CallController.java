@@ -29,7 +29,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Plugin
-@Component(type = "controller")
+@Component(type = "callController")
 public @interface CallController {
 
 

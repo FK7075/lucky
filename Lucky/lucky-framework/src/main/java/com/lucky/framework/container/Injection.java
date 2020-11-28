@@ -48,6 +48,7 @@ public abstract class Injection implements Namer {
     public static void injection(Module mod){
         Object bean=mod.getComponent();
         Class<?> beanClass=bean.getClass();
+        String beanName=beanClass.getName();
         List<Field> fields = ClassUtils.getFieldByAnnotation(beanClass, Autowired.class);
         for (Field field : fields) {
             Autowired autowired= AnnotationUtils.get(field,Autowired.class);
@@ -59,7 +60,9 @@ public abstract class Injection implements Namer {
                     log.error(lex);
                     throw lex;
                 }
-                FieldUtils.setValue(bean,field,singletonPool.getBean(value).getComponent());
+                Object component = singletonPool.getBean(value).getComponent();
+                FieldUtils.setValue(bean,field,component);
+                log.debug("Attribute injection [BY-ID] `"+beanName+"`「"+field.getName()+"」 <= "+component);
            }else{
                 List<Module> modules = singletonPool.getBeanByClass(field.getType());
                 if(Assert.isEmptyCollection(modules)){
@@ -71,7 +74,9 @@ public abstract class Injection implements Namer {
                     log.error(lex);
                     throw lex;
                 }else{
-                    FieldUtils.setValue(bean,field,modules.get(0).getComponent());
+                    Object component = modules.get(0).getComponent();
+                    FieldUtils.setValue(bean,field,component);
+                    log.debug("Attribute injection [BY-CLASS] `"+beanName+"`「"+field.getName()+"」 <= "+component);
                 }
             }
         }

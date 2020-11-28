@@ -11,11 +11,28 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class MethodUtils {
 
     private static final Logger log= LogManager.getLogger(MethodUtils.class);
+    private static final Method[] objectMethods=Object.class.getDeclaredMethods();
+
+    /**
+     * 判断方法是否为Object类的方法
+     * @param method 待判断的方法
+     * @return
+     */
+    public static boolean isObjectMethod(Method method){
+        for (Method objectMethod : objectMethods) {
+            if(method.equals(objectMethod)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * 使用反射机制执行方法
@@ -131,58 +148,58 @@ public abstract class MethodUtils {
 //        return runParams;
 //    }
 
-//    /**
-//     * 接口方法
-//     * 得到由参数列表的参数名和参数值所组成的Map
-//     * @param method 接口方法
-//     * @param params 执行参数
-//     * @return
-//     * @throws IOException
-//     */
-//    public static Map<String,Object> getInterfaceMethodParamsNV(Method method,Object[] params) throws IOException {
-//        Map<String,Object> paramMap=new HashMap<>();
-//        List<String> interParams = ASMUtil.getInterfaceMethodParamNames(method);
-//        Parameter[] parameters = method.getParameters();
-//        for (int i = 0; i < interParams.size(); i++) {
-//            paramMap.put(Mapping.getParamName(parameters[i],interParams.get(i)),params[i]);
-//        }
-//        return paramMap;
-//    }
+    /**
+     * 接口方法
+     * 得到由参数列表的参数名和参数值所组成的Map
+     * @param method 接口方法
+     * @param params 执行参数
+     * @return
+     * @throws IOException
+     */
+    public static Map<String,Object> getInterfaceMethodParamsNV(Method method,Object[] params) throws IOException {
+        Map<String,Object> paramMap=new HashMap<>();
+        List<String> interParams = ASMUtil.getInterfaceMethodParamNames(method);
+        Parameter[] parameters = method.getParameters();
+        for (int i = 0; i < interParams.size(); i++) {
+            paramMap.put(ParameterUtils.getParamName(parameters[i],interParams.get(i)),params[i]);
+        }
+        return paramMap;
+    }
 
-//    /**
-//     * 类方法
-//     * 得到由参数列表的参数名和参数值所组成的Map
-//     * @param method 类方法
-//     * @param params 执行参数
-//     * @return
-//     * @throws IOException
-//     */
-//    public static Map<String,Object> getClassMethodParamsNV(Method method, Object[] params) throws IOException {
-//        Map<String,Object> paramMap=new HashMap<>();
-//        String[] mparams = ASMUtil.getMethodParamNames(method);
-//        Parameter[] parameters = method.getParameters();
-//        for (int i = 0; i < parameters.length; i++) {
-//            paramMap.put(Mapping.getParamName(parameters[i],mparams[i]),params[i]);
-//        }
-//        return paramMap;
-//    }
+    /**
+     * 类方法
+     * 得到由参数列表的参数名和参数值所组成的Map
+     * @param method 类方法
+     * @param params 执行参数
+     * @return
+     * @throws IOException
+     */
+    public static Map<String,Object> getClassMethodParamsNV(Method method, Object[] params) throws IOException {
+        Map<String,Object> paramMap=new HashMap<>();
+        String[] mparams = ASMUtil.getMethodParamNames(method);
+        Parameter[] parameters = method.getParameters();
+        for (int i = 0; i < parameters.length; i++) {
+            paramMap.put(ParameterUtils.getParamName(parameters[i],mparams[i]),params[i]);
+        }
+        return paramMap;
+    }
 
-//    /**
-//     * 兼容接口方法与类方法
-//     * 得到由参数列表的参数名和参数值所组成的Map
-//     * @param method 方法
-//     * @param params 执行参数
-//     * @return
-//     * @throws IOException
-//     */
-//    public static Map<String,Object> getMethodParamsNV(Method method, Object[] params) {
-//        try {
-//            Map<String, Object> interfaceMethodParamsNV = getInterfaceMethodParamsNV(method, params);
-//            return interfaceMethodParamsNV.isEmpty()?getClassMethodParamsNV(method,params):interfaceMethodParamsNV;
-//        } catch (IOException e) {
-//            throw new LuckySqlGrammarMistakesException(method,e);
-//        }
-//    }
+    /**
+     * 兼容接口方法与类方法
+     * 得到由参数列表的参数名和参数值所组成的Map
+     * @param method 方法
+     * @param params 执行参数
+     * @return
+     * @throws IOException
+     */
+    public static Map<String,Object> getMethodParamsNV(Method method, Object[] params) {
+        try {
+            Map<String, Object> interfaceMethodParamsNV = getInterfaceMethodParamsNV(method, params);
+            return interfaceMethodParamsNV.isEmpty()?getClassMethodParamsNV(method,params):interfaceMethodParamsNV;
+        } catch (IOException e) {
+            throw new LuckyReflectionException("获取`"+method+"`的参数列表时出现异常！",e);
+        }
+    }
 
     /**
      * 获取方法返回值类型

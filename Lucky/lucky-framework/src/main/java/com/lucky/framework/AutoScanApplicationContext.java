@@ -6,9 +6,13 @@ import com.lucky.framework.container.SingletonContainer;
 import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.scan.ScanFactory;
+import com.lucky.framework.welcome.JackLamb;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 public class AutoScanApplicationContext implements ApplicationContext{
 
     private static AutoScanApplicationContext autoScanApplicationContext;
+    private static final RuntimeMXBean mxb = ManagementFactory.getRuntimeMXBean();
     public Class<?> applicationBootClass;
     public SingletonContainer singletonPool;
 
@@ -50,6 +55,9 @@ public class AutoScanApplicationContext implements ApplicationContext{
     }
 
     private void init(){
+        JackLamb.welcome();
+        String pid = mxb.getName().split("@")[0];
+        ThreadContext.put("pid", pid);
         Scan scan= ScanFactory.createScan(applicationBootClass);
         RegisterMachine registerMachine=RegisterMachine.getRegisterMachine();
         registerMachine.setScan(scan);
@@ -99,6 +107,24 @@ public class AutoScanApplicationContext implements ApplicationContext{
                 .stream()
                 .map(m->m.getComponent())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Module> getModules() {
+        return (List<Module>) singletonPool.values();
+    }
+
+    @Override
+    public List<Object> getBeanByType(String...iocType) {
+        return singletonPool.getBeanByType(iocType)
+                .stream()
+                .map(m->m.getComponent())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Module> getModuleByType(String...iocType) {
+        return singletonPool.getBeanByType(iocType);
     }
 
     public SingletonContainer getNewSingletonPool(Set<IOCBeanFactory> iocBeanFactories,Set<Class<?>> componentClassSet) throws IOException {

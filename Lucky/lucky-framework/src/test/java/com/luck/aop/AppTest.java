@@ -1,4 +1,4 @@
-package com.lucky.jacklamb;
+package com.luck.aop;
 
 import com.lucky.framework.confanalysis.ConfigUtils;
 import com.lucky.framework.junit.LuckyRunner;

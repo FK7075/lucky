@@ -40,6 +40,10 @@ public abstract class IOCBeanFactory implements BeanFactory,Namer {
         return singletonPool.getBeanByAnnotation(annotationClasses);
     }
 
+    public Collection<Module> getBeans(){
+        return singletonPool.values();
+    }
+
     public boolean isIOCType(String type) {
         return singletonPool.containsType(type);
     }
@@ -104,5 +108,10 @@ public abstract class IOCBeanFactory implements BeanFactory,Namer {
     @Override
     public List<Module> createBean() {
         return new ArrayList<>();
+    }
+
+    @Override
+    public double priority() {
+        return 1;
     }
 }

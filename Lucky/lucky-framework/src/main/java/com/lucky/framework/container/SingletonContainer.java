@@ -134,7 +134,7 @@ public class SingletonContainer implements Map<String, Module> {
                 .stream()
                 .filter((m)->{
                     for (Class<?> componentClass : componentClasses) {
-                        if(componentClass.isAssignableFrom(m.getComponent().getClass())){
+                        if(componentClass.isAssignableFrom(m.getOriginalType())){
                             return true;
                         }
                     }
@@ -148,7 +148,7 @@ public class SingletonContainer implements Map<String, Module> {
                 .stream()
                 .filter((m)-> {
                     for (Class<? extends Annotation> annotationClass : annotationClasses) {
-                        if(AnnotationUtils.isExist(m.getComponent().getClass(),annotationClass)){
+                        if(AnnotationUtils.isExist(m.getOriginalType(),annotationClass)){
                             return true;
                         }
                     }
@@ -174,7 +174,7 @@ public class SingletonContainer implements Map<String, Module> {
     public boolean containsClass(Class<?> beanClass){
         Collection<Module> values = values();
         for (Module value : values) {
-            if(value.getComponent().getClass()==beanClass){
+            if(value.getOriginalType()==beanClass){
                 return true;
             }
         }

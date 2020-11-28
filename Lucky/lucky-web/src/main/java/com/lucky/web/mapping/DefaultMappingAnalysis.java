@@ -31,7 +31,7 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
             UrlMappingCollection collection = analysis(controller);
             Iterator<UrlMapping> iterator = collection.iterator();
             while (iterator.hasNext()){
-                mappings.add(iterator.next());
+                mappings.add(iterator.next(),false);
             }
             Iterator<UrlMapping> runIterator = collection.runIterator();
             while (runIterator.hasNext()){
@@ -46,7 +46,7 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
         for (Module controllerAdvice : controllerAdvices) {
             Iterator<ExceptionMapping> iterator = exceptionAnalysis(controllerAdvice).iterator();
             while (iterator.hasNext()){
-                exMappings.add(iterator.next());
+                exMappings.add(iterator.next(),false);
             }
         }
         return exMappings;
@@ -55,7 +55,7 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
     @Override
     public UrlMappingCollection analysis(Module module) {
         Object controller=module.getComponent();
-        Class<?> controllerClass=controller.getClass();
+        Class<?> controllerClass=module.getOriginalType();
         UrlMappingCollection urlMappingCollection =new UrlMappingCollection();
         List<Method> mappingMethods = ClassUtils.getMethodByStrengthenAnnotation(controllerClass, RequestMapping.class);
         String controllerUrl=getControllerUrl(controllerClass);
@@ -77,9 +77,10 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
     @Override
     public ExceptionMappingCollection exceptionAnalysis(Module module) {
         Object controllerAdvice=module.getComponent();
+        Class<?> adviceClass = module.getOriginalType();
         ExceptionMappingCollection exceptionMappingCollection=new ExceptionMappingCollection();
-        String[] scopes = controllerAdvice.getClass().getAnnotation(ControllerAdvice.class).value();
-        List<Method> exceptionMethods = ClassUtils.getMethodByAnnotation(controllerAdvice.getClass(), ExceptionHandler.class);
+        String[] scopes = adviceClass.getAnnotation(ControllerAdvice.class).value();
+        List<Method> exceptionMethods = ClassUtils.getMethodByAnnotation(adviceClass, ExceptionHandler.class);
         for (Method method : exceptionMethods) {
             exceptionMappingCollection.add(new ExceptionMapping(controllerAdvice,method,scopes,
                                             getRest(method),getException(method)));

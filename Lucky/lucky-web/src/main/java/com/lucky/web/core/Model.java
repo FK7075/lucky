@@ -94,6 +94,10 @@ public class Model {
         requestMethod=currentContext.getRequestMethod();
     }
 
+    public Model(HttpServletRequest request, HttpServletResponse response){
+        init(request,response);
+    }
+
     public void init(HttpServletRequest request, HttpServletResponse response){
         this.request = request;
         this.response = response;
@@ -402,6 +406,16 @@ public class Model {
     public void writerXml(Object pojo) throws IOException {
         getResponse().setContentType("application/xml");
         writer(xmlSerialization.serialization(pojo));
+    }
+
+    /**
+     * 使用response对象的Writer方法将对象模型写出为JS格式数据
+     * @param pojo 模型数据
+     */
+    public void writerJs(Object pojo){
+        getResponse().setContentType("application/x-javascript");
+        StringBuilder js=new StringBuilder("<script>").append(pojo).append("</script>");
+        writer(js.toString());
     }
 
     public Object fromXml(Type type, String jsonStr) throws Exception {

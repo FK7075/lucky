@@ -11,13 +11,12 @@ import com.lucky.web.exception.CloseRunException;
 import com.lucky.web.exception.InitRunException;
 import com.lucky.web.exception.RepeatUrlMappingException;
 import com.lucky.web.webfile.WebFileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author fk7075
@@ -25,6 +24,8 @@ import java.util.List;
  * @date 2020/11/17 10:03
  */
 public class UrlMappingCollection {
+
+    private static final Logger log= LogManager.getLogger("c.l.web.mapping.UrlMappingCollection");
 
     private List<UrlMapping> list;
     private List<UrlMapping> runList;
@@ -59,12 +60,21 @@ public class UrlMappingCollection {
         return runList.iterator();
     }
 
-    public boolean add(UrlMapping urlMapping) {
+    public boolean add(UrlMapping urlMapping,boolean isLog) {
         if(contains(urlMapping)){
             throw new RepeatUrlMappingException(urlMapping);
         }
         list.add(urlMapping);
+        if(isLog){
+            log.info("Mapping `Url=[{}] , RequestMethod={} , Rest={} , Method={}`",
+                    urlMapping.getUrl(), Arrays.toString(urlMapping.getMethods()),urlMapping.getRest(),
+                    urlMapping.getMapping());
+        }
         return true;
+    }
+
+    public boolean add(UrlMapping urlMapping){
+        return add(urlMapping,true);
     }
 
 
@@ -156,7 +166,7 @@ public class UrlMappingCollection {
     public boolean merge(UrlMappingCollection collection){
         Iterator<UrlMapping> iterator = collection.iterator();
         while (iterator.hasNext()){
-            add(iterator.next());
+            add(iterator.next(),false);
         }
         return true;
     }

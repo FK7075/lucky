@@ -1,6 +1,7 @@
 package com.lucky.web.mapping;
 
 import com.lucky.framework.uitls.base.Assert;
+import com.lucky.framework.uitls.base.BaseUtils;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.MethodUtils;
 import com.lucky.web.annotation.ControllerAdvice;
@@ -141,5 +142,16 @@ public class ExceptionMapping extends Mapping{
         }
         final Object result = MethodUtils.invoke(object, mapping, params);
         return result;
+    }
+
+    public String getStrScopes(){
+        if(scopes.length==0){
+            return "_global_";
+        }
+        StringBuilder scopeStr=new StringBuilder();
+        for (String scope : scopes) {
+            scopeStr.append(scope).append(",");
+        }
+        return scopeStr.substring(0,scopeStr.length()-1);
     }
 }

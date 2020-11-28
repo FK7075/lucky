@@ -2,6 +2,8 @@ package com.lucky.web.mapping;
 
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.base.ExceptionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
  * @date 2020/11/24 9:15
  */
 public class ExceptionMappingCollection {
+    private static final Logger log= LogManager.getLogger("c.l.w.mapping.ExceptionMappingCollection");
 
     private List<ExceptionMapping> list;
 
@@ -31,7 +34,7 @@ public class ExceptionMappingCollection {
         return list.iterator();
     }
 
-    public boolean add(ExceptionMapping em) {
+    public boolean add(ExceptionMapping em,boolean isLog) {
         if(Assert.isNull(em)){
             return false;
         }
@@ -39,7 +42,15 @@ public class ExceptionMappingCollection {
             cem.isRepel(em);
         }
         list.add(em);
+        if(isLog){
+            log.info("ExceptionHandler `Scopes=[{}]` , Exception={}",
+                    em.getStrScopes(),Arrays.toString(em.getExceptions()));
+        }
         return true;
+    }
+
+    public boolean add(ExceptionMapping em){
+        return add(em,true);
     }
 
     public void clear() {
@@ -158,7 +169,7 @@ public class ExceptionMappingCollection {
     public boolean merge(ExceptionMappingCollection collection){
         Iterator<ExceptionMapping> iterator = collection.iterator();
         while (iterator.hasNext()){
-            add(iterator.next());
+            add(iterator.next(),false);
         }
         return true;
     }

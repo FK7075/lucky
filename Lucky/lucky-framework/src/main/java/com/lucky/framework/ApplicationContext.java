@@ -26,6 +26,12 @@ public interface ApplicationContext {
 
     List<Object> getBeans();
 
+    List<Module> getModules();
+
+    List<Object> getBeanByType(String...iocType);
+
+    List<Module> getModuleByType(String...iocType);
+
     boolean isIOCType(String type);
 
     boolean isIOCId(String id);
