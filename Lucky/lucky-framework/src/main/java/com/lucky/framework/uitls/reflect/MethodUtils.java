@@ -1,19 +1,15 @@
 package com.lucky.framework.uitls.reflect;
 
+import com.lucky.framework.container.Module;
 import com.lucky.framework.exception.LuckyReflectionException;
 import com.lucky.framework.proxy.ASMUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.function.DoubleToIntFunction;
 
 public abstract class MethodUtils {
 
@@ -248,5 +244,43 @@ public abstract class MethodUtils {
        return method.getParameters();
     }
 
+    public static String getWithParamMethodName(Method method){
+        StringBuilder methodName=new StringBuilder(method.getName()).append("(");
+        Type[] genericParameterTypes = method.getGenericParameterTypes();
+        for (Type type : genericParameterTypes) {
+            String typeName = type.getTypeName();
+            //泛型参数
+            if(type instanceof ParameterizedType){
+                //java.util.Set<com.lucky.framework.container.Module>
+                int divide = typeName.indexOf("<");
+                String head=typeName.substring(0,divide);
+                head=head.contains(".")?head.substring(head.lastIndexOf(".")+1):head;
+                String[] split=typeName.substring(divide).split(",");
+                StringBuilder tail=new StringBuilder();
+                for (String s : split) {
+                    s=s.contains(".")?s.substring(s.lastIndexOf(".")+1):s;
+                    tail.append(s).append(",");
+                }
+                methodName.append(head).append("<").append(tail.substring(0,tail.length()-1)).append(",");
+            }else{
+                typeName=typeName.contains(".")?typeName.substring(typeName.lastIndexOf(".")+1):typeName;
+                methodName.append(typeName).append(",");
+            }
+        }
+        return methodName.substring(0,methodName.length()-1)+")";
+    }
+
+    public MethodUtils() {
+    }
+
+    public void ttt(List<String> list, Set<Module> set){
+
+    }
+
+    public static void main(String[] args) {
+        Method m = MethodUtils.getDeclaredMethod(MethodUtils.class, "ttt",List.class,Set.class);
+        System.out.println(getWithParamMethodName(m));
+
+    }
 
 }

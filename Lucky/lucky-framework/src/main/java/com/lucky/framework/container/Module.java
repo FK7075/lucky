@@ -60,11 +60,11 @@ public class Module {
 
     @Override
     public String toString() {
-        return "Module{" +
-                "id='" + id + '\'' +
-                ", type='" + type + '\'' +
-                ", originalType=" + originalType +
-                ", component=" + component +
-                '}';
+        final StringBuilder sb = new StringBuilder("Module{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", type='").append(type).append('\'');
+        sb.append(", originalType=").append(originalType);
+        sb.append('}');
+        return sb.toString();
     }
 }

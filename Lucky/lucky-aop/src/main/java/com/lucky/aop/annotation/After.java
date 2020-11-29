@@ -20,6 +20,15 @@ public @interface After {
 	String value() default "";
 
 	/**
+	 * 切面表达式
+	 * P:{包定位表达式}C:{类定位表达式}M:{方法定位表达式}/A:{注解定位}
+	 * C:{id:luckyService,path:org.lucky.demo.service.*}M:{show,print,query(int String)}
+	 * C:{ann:com.lucky.aop.annotation.OperateLog}A:{注解A,注解B}
+	 * @return
+	 */
+	String expression() default "";
+
+	/**
 	 * 配置切面(Class)，增强方法执行的范围，用来定位需要代理的真实类<br>
 	 * pointCutClass的值必须以下列前缀开始,多个值使用","分隔:<br>
 	 * <p>
