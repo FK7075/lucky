@@ -138,7 +138,7 @@ public class RegisterMachine {
         });
 
         //找到IOC容器中所有的BeanFactory，并将这些BeanFactory生产的Bean实例注入IOC容器
-        beanFactorys.stream().forEach(beanFactory->{
+        beanFactorys.stream().sorted(Comparator.comparing(m-> m.priority())).forEach(beanFactory->{
             beanFactory.setSingletonPool(singletonPool);
             beanFactory.setPlugins(plugins);
             beanFactory.createBean().stream().forEach((m)->{

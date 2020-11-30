@@ -1,5 +1,7 @@
 package com.lucky.aop.annotation;
 
+import com.lucky.aop.enums.Location;
+
 import java.lang.annotation.*;
 
 /**
@@ -10,7 +12,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Expand
+@Expand(Location.AFTER)
 public @interface After {
 
 	/**
@@ -21,12 +23,13 @@ public @interface After {
 
 	/**
 	 * 切面表达式
-	 * P:{包定位表达式}C:{类定位表达式}M:{方法定位表达式}/A:{注解定位}
-	 * C:{id:luckyService,path:org.lucky.demo.service.*}M:{show,print,query(int String)}
-	 * C:{ann:com.lucky.aop.annotation.OperateLog}A:{注解A,注解B}
+	 * P:{包检验表达式}
+	 * C:{N[类名检验表达式],I[IOC_ID校验表达式],T[IOC_TYPE校验表达式],A[是否被注解]}
+	 * M:{N[方法名校验表达式],A[是否被注解],AC[访问修饰符],O[要增强的继承自Object对象的方法]}
+	 * P:{*}C:{N[HelloController,MyService]}M:{AC[*],N[show,query(int,String)]}
 	 * @return
 	 */
-	String expression() default "";
+	String expres() default "";
 
 	/**
 	 * 配置切面(Class)，增强方法执行的范围，用来定位需要代理的真实类<br>

@@ -1,5 +1,7 @@
 package com.lucky.aop.annotation;
 
+import com.lucky.aop.enums.Location;
+
 import java.lang.annotation.*;
 
 /**
@@ -12,4 +14,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Expand {
+     Location value();
 }

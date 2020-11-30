@@ -1,8 +1,5 @@
 package com.lucky.aop.core;
 
-import com.lucky.framework.container.Injection;
-import com.lucky.framework.container.Module;
-import com.lucky.framework.uitls.base.BaseUtils;
 import net.sf.cglib.proxy.MethodProxy;
 
 import java.util.List;
@@ -64,7 +61,6 @@ public class AopChain {
 			result=methodProxy.invokeSuper(target, params);
 		}else {
 			AopPoint point=points.get(index);
-//			Injection.injection(new Module(BaseUtils.lowercaseFirstLetter(point.getClass().getName()),"aop",point));
 			result=point.proceed(this);
 		}
 		return result;

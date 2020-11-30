@@ -67,7 +67,7 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
             if(originalType.getName().contains("$$LUCKY_PROXY$$")){
                 continue;
             }
-            Object aspect = AopProxyFactory.aspect(pointRunSet, bean.getType(), bean.getId(), originalType);
+            Object aspect = AopProxyFactory.aspect(pointRunSet, bean);
             if(aspect.getClass().getName().contains("$$LUCKY_PROXY$$")){
                 bean.setComponent(aspect);
                 log.info("Create Aop Proxy Bean `{}`",bean.getComponent());

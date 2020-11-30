@@ -2,8 +2,11 @@ package com.lucky.aop.core;
 
 import com.lucky.aop.annotation.*;
 import com.lucky.aop.enums.Location;
+import com.lucky.aop.exception.AopParamsConfigurationException;
 import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.AutoScanApplicationContext;
+import com.lucky.framework.container.Module;
+import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
 import com.lucky.framework.uitls.reflect.MethodUtils;
 
@@ -17,16 +20,22 @@ import java.util.Map;
  * 转换器，用于将AOP注解标注的Method转化为AopPoint
  */
 public class PointRun {
+
+	private static final Class<? extends Annotation>[] EXPAND_ANNOTATIONS=
+			new Class[]{After.class,AfterReturning.class,
+					AfterThrowing.class,Around.class,Before.class};
+
 	/** 环绕增强的执行节点*/
 	private AopPoint point;
-	/** 当前增强要作用的类需要符合的规则*/
-	private String pointCutClass;
-	/** 当前增强要作用的类方法需要符合的规则*/
-	private String pointCutMethod;
-	/** 当前增强要作用的类方法需要被某个注解标注*/
-	private Class<? extends Annotation>[] pointCutMethodAnn;
+//	/** 当前增强要作用的类需要符合的规则*/
+//	private String pointCutClass;
+//	/** 当前增强要作用的类方法需要符合的规则*/
+//	private String pointCutMethod;
+//	/** 当前增强要作用的类方法需要被某个注解标注*/
+//	private Class<? extends Annotation>[] pointCutMethodAnn;
 	/** 增强的方法*/
 	public Method method;
+	private AopExecutionChecker aopExecutionChecker;
 
 	public Method getMethod() {
 		return method;
@@ -41,9 +50,10 @@ public class PointRun {
 		Around exp = proceedMethod.getAnnotation(Around.class);
 		this.point = point;
 		this.point.setPriority(exp.priority());
-		this.pointCutClass = exp.pointCutClass();
-		this.pointCutMethod = exp.pointCutMethod();
-		this.pointCutMethodAnn =exp.pointCutMethodAnn();
+		this.aopExecutionChecker=new AopExecutionChecker(proceedMethod,exp.expres());
+//		this.pointCutClass = exp.pointCutClass();
+//		this.pointCutMethod = exp.pointCutMethod();
+//		this.pointCutMethodAnn =exp.pointCutMethodAnn();
 	}
 	
 	/**
@@ -55,9 +65,10 @@ public class PointRun {
 		Around exp = proceedMethod.getAnnotation(Around.class);
 		this.point = (AopPoint) ClassUtils.newObject(pointClass);
 		this.point.setPriority(exp.priority());
-		this.pointCutClass = exp.pointCutClass();
-		this.pointCutMethod = exp.pointCutMethod();
-		this.pointCutMethodAnn =exp.pointCutMethodAnn();
+		this.aopExecutionChecker=new AopExecutionChecker(proceedMethod,exp.expres());
+//		this.pointCutClass = exp.pointCutClass();
+//		this.pointCutMethod = exp.pointCutMethod();
+//		this.pointCutMethodAnn =exp.pointCutMethodAnn();
 
 	}
 
@@ -68,67 +79,72 @@ public class PointRun {
 	 */
 	public PointRun(Object expand, Method method) {
 		this.method=method;
-		if(method.isAnnotationPresent(Before.class)) {
-			Before before=method.getAnnotation(Before.class);
-			this.point=conversion(expand,method, Location.BEFORE);
-			this.point.setPriority(before.priority());
-			this.pointCutClass = before.pointCutClass();
-			this.pointCutMethod = before.pointCutMethod();
-			this.pointCutMethodAnn =before.pointCutMethodAnn();
-		}else if(method.isAnnotationPresent(After.class)) {
-			After after=method.getAnnotation(After.class);
-			this.point=conversion(expand,method,Location.AFTER);
-			this.point.setPriority(after.priority());
-			this.pointCutClass = after.pointCutClass();
-			this.pointCutMethod = after.pointCutMethod();
-			this.pointCutMethodAnn =after.pointCutMethodAnn();
-		}else if(method.isAnnotationPresent(Around.class)){
-			Around around=method.getAnnotation(Around.class);
-			this.point=conversion(expand,method,Location.AROUND);
-			this.point.setPriority(around.priority());
-			this.pointCutClass = around.pointCutClass();
-			this.pointCutMethod = around.pointCutMethod();
-			this.pointCutMethodAnn =around.pointCutMethodAnn();
-		}else if(method.isAnnotationPresent(AfterReturning.class)){
-			AfterReturning afterReturning=method.getAnnotation(AfterReturning.class);
-			this.point=conversion(expand,method,Location.AFTER_RETURNING);
-			this.point.setPriority(afterReturning.priority());
-			this.pointCutClass = afterReturning.pointCutClass();
-			this.pointCutMethod = afterReturning.pointCutMethod();
-			this.pointCutMethodAnn =afterReturning.pointCutMethodAnn();
-		}else if(method.isAnnotationPresent(AfterThrowing.class)){
-			AfterThrowing afterThrowing=method.getAnnotation(AfterThrowing.class);
-			this.point=conversion(expand,method,Location.AFTER_THROWING);
-			this.point.setPriority(afterThrowing.priority());
-			this.pointCutClass = afterThrowing.pointCutClass();
-			this.pointCutMethod = afterThrowing.pointCutMethod();
-			this.pointCutMethodAnn =afterThrowing.pointCutMethodAnn();
-		}
+		Annotation ean = AnnotationUtils.getByArray(method, EXPAND_ANNOTATIONS);
+		Location location=AnnotationUtils.strengthenGet(method,Expand.class).get(0).value();
+		this.point=conversion(expand,method,location);
+		this.point.setPriority((Double) AnnotationUtils.getValue(ean,"priority"));
+		this.aopExecutionChecker=new AopExecutionChecker(method, (String) AnnotationUtils.getValue(ean,"expres"));
+//		if(method.isAnnotationPresent(Before.class)) {
+//			Before before=method.getAnnotation(Before.class);
+//			this.point=conversion(expand,method, Location.BEFORE);
+//			this.point.setPriority(before.priority());
+//			this.pointCutClass = before.pointCutClass();
+//			this.pointCutMethod = before.pointCutMethod();
+//			this.pointCutMethodAnn =before.pointCutMethodAnn();
+//		}else if(method.isAnnotationPresent(After.class)) {
+//			After after=method.getAnnotation(After.class);
+//			this.point=conversion(expand,method,Location.AFTER);
+//			this.point.setPriority(after.priority());
+//			this.pointCutClass = after.pointCutClass();
+//			this.pointCutMethod = after.pointCutMethod();
+//			this.pointCutMethodAnn =after.pointCutMethodAnn();
+//		}else if(method.isAnnotationPresent(Around.class)){
+//			Around around=method.getAnnotation(Around.class);
+//			this.point=conversion(expand,method,Location.AROUND);
+//			this.point.setPriority(around.priority());
+//			this.pointCutClass = around.pointCutClass();
+//			this.pointCutMethod = around.pointCutMethod();
+//			this.pointCutMethodAnn =around.pointCutMethodAnn();
+//		}else if(method.isAnnotationPresent(AfterReturning.class)){
+//			AfterReturning afterReturning=method.getAnnotation(AfterReturning.class);
+//			this.point=conversion(expand,method,Location.AFTER_RETURNING);
+//			this.point.setPriority(afterReturning.priority());
+//			this.pointCutClass = afterReturning.pointCutClass();
+//			this.pointCutMethod = afterReturning.pointCutMethod();
+//			this.pointCutMethodAnn =afterReturning.pointCutMethodAnn();
+//		}else if(method.isAnnotationPresent(AfterThrowing.class)){
+//			AfterThrowing afterThrowing=method.getAnnotation(AfterThrowing.class);
+//			this.point=conversion(expand,method,Location.AFTER_THROWING);
+//			this.point.setPriority(afterThrowing.priority());
+//			this.pointCutClass = afterThrowing.pointCutClass();
+//			this.pointCutMethod = afterThrowing.pointCutMethod();
+//			this.pointCutMethodAnn =afterThrowing.pointCutMethodAnn();
+//		}
 	}
 
-	public String getPointCutClass() {
-		return pointCutClass;
-	}
-
-	public void setPointCutClass(String mateClass) {
-		this.pointCutClass = mateClass;
-	}
-
-	public String getPointCutMethod() {
-		return pointCutMethod;
-	}
-
-	public void setPointCutMethod(String mateMethod) {
-		this.pointCutMethod = mateMethod;
-	}
-
-	public Class<? extends Annotation>[] getPointCutMethodAnn() {
-		return pointCutMethodAnn;
-	}
-
-	public void setPointCutMethodAnn(Class<? extends Annotation>[] pointCutMethodAnn) {
-		this.pointCutMethodAnn = pointCutMethodAnn;
-	}
+//	public String getPointCutClass() {
+//		return pointCutClass;
+//	}
+//
+//	public void setPointCutClass(String mateClass) {
+//		this.pointCutClass = mateClass;
+//	}
+//
+//	public String getPointCutMethod() {
+//		return pointCutMethod;
+//	}
+//
+//	public void setPointCutMethod(String mateMethod) {
+//		this.pointCutMethod = mateMethod;
+//	}
+//
+//	public Class<? extends Annotation>[] getPointCutMethodAnn() {
+//		return pointCutMethodAnn;
+//	}
+//
+//	public void setPointCutMethodAnn(Class<? extends Annotation>[] pointCutMethodAnn) {
+//		this.pointCutMethodAnn = pointCutMethodAnn;
+//	}
 
 	public AopPoint getPoint() {
 		return point;
@@ -143,76 +159,81 @@ public class PointRun {
 	 * @param method
 	 * @return
 	 */
-	public boolean standard(Method method) {
-		return standardStart(method);
+	public boolean methodExamine(Method method) {
+//		return standardStart(method);
+		return aopExecutionChecker.methodExamine(method);
+	}
+
+	public boolean classExamine(Module module){
+		return aopExecutionChecker.classExamine(module);
 	}
 	
-	/**
-	 * 遍历mateMethod，逐个验证
-	 * @param method 当前Method
-	 * @return
-	 */
-	private boolean standardStart(Method method) {
-		String methodName=method.getName();
-		Parameter[] parameters = method.getParameters();
-		String[] pointCutMethodArray=pointCutMethod.split(",");
-		//注解验证,如果存在注解配置，则pointCutMethod配置将失效
-		if(pointCutMethodAnn.length!=0){
-			return standardAnnotation(method);
-		}
-
-
-		for(String methodCut:pointCutMethodArray) {
-			methodCut=methodCut.trim();
-
-			//访问修饰符验证
-			if("public".equals(methodCut)){
-				//是否配置了public,如果配置了public，则所有非public都将不会执行该增强
-				if(!Modifier.isPublic(method.getModifiers())) {
-					return false;
-				}
-			}
-			if("private".equals(methodCut)){
-				//如果配置了private，则所有非private都将不会执行该增强
-				if(!Modifier.isPrivate(method.getModifiers())) {
-					return false;
-				}
-			}
-			if("protected".equals(methodCut)){
-				//如果配置了protected，则所有非protected都将不会执行该增强
-				if(!Modifier.isProtected(method.getModifiers())) {
-					return false;
-				}
-			}
-			//方法名验证以及方法名+参数类型简写验证
-			if("*".equals(methodCut)) {
-				return true;
-			}else if(methodCut.contains("(")&&methodCut.endsWith(")")){
-				if(standardMethod(methodName,parameters,methodCut)) {
-					return true;
-				}
-			}else {
-				if(standardName(methodName,methodCut)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * 注解验证
-	 * @param method
-	 * @return
-	 */
-	private boolean standardAnnotation(Method method){
-		for (Class<? extends Annotation> aClass : pointCutMethodAnn) {
-			if(method.isAnnotationPresent(aClass)){
-				return true;
-			}
-		}
-		return false;
-	}
+//	/**
+//	 * 遍历mateMethod，逐个验证
+//	 * @param method 当前Method
+//	 * @return
+//	 */
+//	private boolean standardStart(Method method) {
+//		String methodName=method.getName();
+//		Parameter[] parameters = method.getParameters();
+//		String[] pointCutMethodArray=pointCutMethod.split(",");
+//		//注解验证,如果存在注解配置，则pointCutMethod配置将失效
+//		if(pointCutMethodAnn.length!=0){
+//			return standardAnnotation(method);
+//		}
+//
+//
+//		for(String methodCut:pointCutMethodArray) {
+//			methodCut=methodCut.trim();
+//
+//			//访问修饰符验证
+//			if("public".equals(methodCut)){
+//				//是否配置了public,如果配置了public，则所有非public都将不会执行该增强
+//				if(!Modifier.isPublic(method.getModifiers())) {
+//					return false;
+//				}
+//			}
+//			if("private".equals(methodCut)){
+//				//如果配置了private，则所有非private都将不会执行该增强
+//				if(!Modifier.isPrivate(method.getModifiers())) {
+//					return false;
+//				}
+//			}
+//			if("protected".equals(methodCut)){
+//				//如果配置了protected，则所有非protected都将不会执行该增强
+//				if(!Modifier.isProtected(method.getModifiers())) {
+//					return false;
+//				}
+//			}
+//			//方法名验证以及方法名+参数类型简写验证
+//			if("*".equals(methodCut)) {
+//				return true;
+//			}else if(methodCut.contains("(")&&methodCut.endsWith(")")){
+//				if(standardMethod(methodName,parameters,methodCut)) {
+//					return true;
+//				}
+//			}else {
+//				if(standardName(methodName,methodCut)) {
+//					return true;
+//				}
+//			}
+//		}
+//		return false;
+//	}
+//
+//	/**
+//	 * 注解验证
+//	 * @param method
+//	 * @return
+//	 */
+//	private boolean standardAnnotation(Method method){
+//		for (Class<? extends Annotation> aClass : pointCutMethodAnn) {
+//			if(method.isAnnotationPresent(aClass)){
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 	
 	/**
 	 * 方法名验证
@@ -279,6 +300,25 @@ public class PointRun {
 	 * @return
 	 */
 	private AopPoint conversion(Object expand, Method expandMethod, final Location location) {
+
+
+		if(location==Location.AROUND){
+			Parameter[] parameters = expandMethod.getParameters();
+			int cursor=0;
+			for(int i=0;i<parameters.length;i++) {
+				if(AopChain.class.isAssignableFrom(parameters[i].getType())){
+					cursor++;
+				}
+			}
+			if(cursor==0){
+				throw new AopParamsConfigurationException("环绕增强方法中必须要带有一个`com.lucky.aop.core.AopChain`类型的参数，该方法中没有AopChain参数，错误位置："+method);
+			}
+			if(cursor>1){
+				throw new AopParamsConfigurationException("环绕增强方法中有且只能有一个`com.lucky.aop.core.AopChain`类型的参数，该方法中包含"+cursor+"个AopChain参数，错误位置："+method);
+			}
+
+		}
+
 		AopPoint cpoint=new AopPoint() {
 			
 			@Override
@@ -338,21 +378,6 @@ public class PointRun {
 				Parameter[] parameters = expandMethod.getParameters();
 				Object[] expandParams=new Object[parameters.length];
 				TargetMethodSignature targetMethodSignature = tlTargetMethodSignature.get();
-				if(expandMethod.isAnnotationPresent(Around.class)){
-					int cursor=0;
-					for(int i=0;i<parameters.length;i++) {
-						if(AopChain.class.isAssignableFrom(parameters[i].getType())){
-							expandParams[i]=chain;
-							cursor++;
-						}
-					}
-					if(cursor==0){
-						throw new AopParamsConfigurationException("环绕增强方法中必须要带有一个\"com.lucky.jacklamb.aop.core.AopChain\"类型的参数，并返回Object类型结果，该方法中没有AopChain参数，错误位置："+method);
-					}
-					if(cursor>1){
-						throw new AopParamsConfigurationException("环绕增强方法中有且只能有一个\"com.lucky.jacklamb.aop.core.AopChain\"类型的参数，并返回Object类型结果，该方法中包含"+cursor+"个AopChain参数，错误位置："+method);
-					}
-				}
 				ApplicationContext applicationContext= AutoScanApplicationContext.create();
 				for(int i=0;i<parameters.length;i++) {
 					Class<?> paramClass = parameters[i].getType();
@@ -393,6 +418,8 @@ public class PointRun {
 					}else{
 						if(TargetMethodSignature.class.isAssignableFrom(paramClass)) {
 							expandParams[i]=targetMethodSignature;
+						}else if(AopChain.class.isAssignableFrom(paramClass)){
+							expandParams[i]=chain;
 						}else if(Class.class.isAssignableFrom(paramClass)){
 							expandParams[i]=targetMethodSignature.getTargetClass();
 						}else if(Method.class.isAssignableFrom(paramClass)){

@@ -63,7 +63,7 @@ public class LuckyAopMethodInterceptor implements MethodInterceptor {
 			}
 		});
 		//得到所有自定义的的环绕增强节点
-		pointRuns.stream().filter(a->a.standard(method)).forEach((a)->{
+		pointRuns.stream().filter(a->a.methodExamine(method)).forEach((a)->{
 			AopPoint p=a.getPoint();
 			p.init(targetMethodSignature);
 			points.add(p);

@@ -1,4 +1,4 @@
-package com.lucky.aop.core;
+package com.lucky.aop.exception;
 
 /**
  * @author fk7075

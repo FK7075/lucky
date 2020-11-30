@@ -259,12 +259,12 @@ public abstract class MethodUtils {
                 StringBuilder tail=new StringBuilder();
                 for (String s : split) {
                     s=s.contains(".")?s.substring(s.lastIndexOf(".")+1):s;
-                    tail.append(s).append(",");
+                    tail.append(s).append(" ");
                 }
-                methodName.append(head).append("<").append(tail.substring(0,tail.length()-1)).append(",");
+                methodName.append(head).append("<").append(tail.substring(0,tail.length()-1)).append(" ");
             }else{
                 typeName=typeName.contains(".")?typeName.substring(typeName.lastIndexOf(".")+1):typeName;
-                methodName.append(typeName).append(",");
+                methodName.append(typeName).append(" ");
             }
         }
         return methodName.substring(0,methodName.length()-1)+")";
@@ -273,13 +273,13 @@ public abstract class MethodUtils {
     public MethodUtils() {
     }
 
-    public void ttt(List<String> list, Set<Module> set){
+     void ttt(List<String> list, Set<Module> set,Map<String,Double> map){
 
     }
 
     public static void main(String[] args) {
-        Method m = MethodUtils.getDeclaredMethod(MethodUtils.class, "ttt",List.class,Set.class);
-        System.out.println(getWithParamMethodName(m));
+        Method m = MethodUtils.getDeclaredMethod(MethodUtils.class, "ttt",List.class,Set.class,Map.class);
+        System.out.println(m.getModifiers());
 
     }
 

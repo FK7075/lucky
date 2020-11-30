@@ -1,4 +1,4 @@
-package com.lucky.aop.core;
+package com.lucky.aop.exception;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

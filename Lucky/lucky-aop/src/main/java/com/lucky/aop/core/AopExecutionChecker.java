@@ -1,23 +1,48 @@
 package com.lucky.aop.core;
 
+import com.lucky.aop.exception.PositionExpressionException;
 import com.lucky.framework.container.Module;
+import com.lucky.framework.uitls.base.Assert;
+import com.lucky.framework.uitls.conversion.JavaConversion;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
+import com.lucky.framework.uitls.reflect.ClassUtils;
 import com.lucky.framework.uitls.reflect.MethodUtils;
+import com.lucky.framework.uitls.regula.Regular;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
  * AOP执行检验器
  * P:{包检验表达式}
- * C:{N:[类名检验表达式],I:[IOC_ID校验表达式],T:[IOC_TYPE校验表达式],A:[是否被注解]}
- * M:{N:[方法名校验表达式],A:[是否被注解],AC:[访问修饰符],O:[要增强的继承自Object对象的方法]}
+ * C:{N[类名检验表达式],I[IOC_ID校验表达式],T[IOC_TYPE校验表达式],A[是否被注解]}
+ * M:{N[方法名校验表达式],A[是否被注解],AC[访问修饰符],O[要增强的继承自Object对象的方法]}
+ * P:{*}C:{N[HelloController,MyService]}M:{AC[*],N[show,query(int,String)]}
  * @author fk7075
  * @version 1.0.0
  * @date 2020/11/29 下午10:59
  */
 public class AopExecutionChecker {
+
+    private static final String $P="P:\\{([\\s\\S]*?)\\}";
+    private static final String $C="C:\\{([\\s\\S]*?)\\}";
+    private static final String $M="M:\\{([\\s\\S]*?)\\}";
+
+    private static final String $N="N\\[([\\s\\S]*?)\\]";
+    private static final String $I="I\\[([\\s\\S]*?)\\]";
+    private static final String $A="A\\[([\\s\\S]*?)\\]";
+    private static final String $T="T\\[([\\s\\S]*?)\\]";
+    private static final String $O="O\\[([\\s\\S]*?)\\]";
+    private static final String $AC="AC\\[([\\s\\S]*?)\\]";
+
+    private String pe;
+    private String ce;
+    private String me;
+
+    private Method method;
 
     /** 环绕增强的执行节点*/
     private AopPoint point;
@@ -40,6 +65,153 @@ public class AopExecutionChecker {
     /** 需要增强的继承自Object类的方法*/
     private Set<String> objectMethod;
 
+
+    public AopExecutionChecker(Method method,String positionExpression){
+        if(!formatVerification(positionExpression)){
+            throw new PositionExpressionException(method,positionExpression);
+        }
+        this.method=method;
+        init();
+    }
+
+    /**
+     * 定位表达式的格式校验
+     * @param positionExpression 定位表达式
+     * @return
+     */
+    private boolean formatVerification(String positionExpression){
+        List<String> pl = Regular.getArrayByExpression(positionExpression, $P);
+        List<String> cl = Regular.getArrayByExpression(positionExpression, $C);
+        List<String> ml = Regular.getArrayByExpression(positionExpression, $M);
+        int p=pl.size(),c=cl.size(),m=ml.size();
+        if(!(((p==0||p==1)&&(c==0||c==1)&&(m==0||m==1)))){
+            return false;
+        }
+        String ps=p==0?"P:{*}":pl.get(0);
+        String cs=c==0?"C:{N[*]}":cl.get(0);
+        String ms=m==0?"M:{N[*],AC[0,1,2,4]}":ml.get(0);
+        boolean ok=fvc(cs)&&fvm(ms);
+        if(ok){
+            pe=ps;ce=cs;me=ms;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean fvc(String positionExpression){
+        int n = Regular.getArrayByExpression(positionExpression, $N).size();
+        int i = Regular.getArrayByExpression(positionExpression, $I).size();
+        int t = Regular.getArrayByExpression(positionExpression, $T).size();
+        int a = Regular.getArrayByExpression(positionExpression, $A).size();
+        if(!(((n==0||n==1)&&(i==0||i==1)&&(t==0||t==1)&&(a==0||a==1)))){
+            return false;
+        }
+        return true;
+    }
+
+    private boolean fvm(String positionExpression){
+        int n = Regular.getArrayByExpression(positionExpression, $N).size();
+        int o = Regular.getArrayByExpression(positionExpression, $O).size();
+        int ac = Regular.getArrayByExpression(positionExpression, $AC).size();
+        int a = Regular.getArrayByExpression(positionExpression, $A).size();
+        if(!(((n==0||n==1)&&(o==0||o==1)&&(ac==0||ac==1)&&(a==0||a==1)))){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 定位表达式解析
+     */
+    private void init(){
+        packages=pe.substring(3,pe.length()-1).split(",");
+        List<String> cnl = Regular.getArrayByExpression(ce, $N);
+        if(cnl.size()==0){
+            classNames=new String[0];
+        }else {
+            String cns = cnl.get(0);
+            classNames=cns.substring(2,cns.length()-1).split(",");
+        }
+
+        List<String> cil = Regular.getArrayByExpression(ce, $I);
+        if(cil.size()==0){
+            iocIds=new String[0];
+        }else{
+            String cis = cil.get(0);
+            iocIds=cis.substring(2,cis.length()-1).split(",");
+        }
+
+        List<String> ctl = Regular.getArrayByExpression(ce, $T);
+        if(ctl.size()==0){
+            types=new String[0];
+        }else{
+            String cts = ctl.get(0);
+            types=cts.substring(2,cts.length()-1).split(",");
+        }
+
+        List<String> cal = Regular.getArrayByExpression(ce, $A);
+        if(cal.size()==0){
+            classAnnotations=new Class[0];
+        }else{
+            String cas = cal.get(0);
+            String[] split = cas.substring(2, cas.length() - 1).split(",");
+            classAnnotations=new Class[split.length];
+            for (int i = 0,j= split.length; i <j; i++) {
+                classAnnotations[i]= (Class<? extends Annotation>) ClassUtils.getClass(split[i]);
+            }
+        }
+
+        List<String> mnl = Regular.getArrayByExpression(me, $N);
+        if(mnl.size()==0){
+            methodNames=new String[0];
+        }else{
+            String mns = mnl.get(0);
+            methodNames=mns.substring(2,mns.length()-1).split(",");
+        }
+
+        List<String> macl = Regular.getArrayByExpression(me, $AC);
+        if(macl.size()==0){
+            accesses=new HashSet<>();
+            accesses.add(0);accesses.add(1);accesses.add(2);accesses.add(4);
+        }else{
+            String macs = macl.get(0);
+            accesses=new HashSet<>();
+            String[] access = macs.substring(3, macs.length() - 1).split(",");
+            for (String s : access) {
+                try {
+                    accesses.add(Integer.parseInt(s));
+                }catch (NumberFormatException e){
+                    throw new RuntimeException("错误的访问修饰符配置：`"+macs+"` ,位置："+method,e);
+                }
+
+            }
+        }
+
+        List<String> mal = Regular.getArrayByExpression(me, $A);
+        if(mal.size()==0){
+            methodAnnotations=new Class[0];
+        }else{
+            String mas = mal.get(0);
+            String[] mann = mas.substring(2, mas.length() - 1).split(",");
+            methodAnnotations=new Class[mann.length];
+            for (int i = 0,j=mann.length; i < j; i++) {
+                methodAnnotations[i]= (Class<? extends Annotation>) ClassUtils.getClass(mann[i]);
+            }
+
+        }
+
+        List<String> mol = Regular.getArrayByExpression(me, $O);
+        if(mol.size()==0){
+            objectMethod=new HashSet<>();
+        }else{
+            String mos = mol.get(0);
+            objectMethod=new HashSet<>();
+            String[] objs = mos.substring(2, mos.length() - 1).split(",");
+            for (String obj : objs) {
+                objectMethod.add(obj);
+            }
+        }
+    }
 
     /**
      * 类检验
@@ -66,7 +238,7 @@ public class AopExecutionChecker {
         if(!methodAccessExamine(method)){
             return false;
         }
-        if(!(methodNameExamine(method)||methodAccessExamine(method))){
+        if(!methodNameExamine(method)){
             return false;
         }
         return true;
@@ -93,6 +265,9 @@ public class AopExecutionChecker {
 
     //类是否被注解
     private boolean classAnnotationExamine(Class<?> aClass){
+        if(Assert.isEmptyArray(classAnnotations)){
+            return true;
+        }
         return AnnotationUtils.isExistOrByArray(aClass,classAnnotations);
     }
 
@@ -106,9 +281,13 @@ public class AopExecutionChecker {
         return accesses.contains(method.getModifiers());
     }
 
+    //方法名检验
     private boolean methodNameExamine(Method method){
         String name=method.getName();
         for (String methodName : methodNames) {
+            if("*".equals(methodName)){
+                return true;
+            }
             //带方法参数的写法
             if(methodName.contains("(")&&methodName.endsWith(")")){
                 String withParamMethodName = MethodUtils.getWithParamMethodName(method);
@@ -162,15 +341,44 @@ public class AopExecutionChecker {
         return false;
     }
 
-
-
     private boolean examine(String[] array,String info){
+        if(Assert.isEmptyArray(array)){
+            return true;
+        }
         for (String str : array) {
+            if("*".equals(str)){
+                return true;
+            }
+            if(str.startsWith("*")||str.startsWith("!*")){
+                if(str.startsWith("!")){
+                    if(!(info.endsWith(str.substring(2)))){
+                        return true;
+                    }
+                }
+                if(info.endsWith(str.substring(1))){
+                    return true;
+                }
+            }
+            if(str.endsWith("*")){
+                if(str.startsWith("!")){
+                    if(!(info.startsWith(str.substring(1,info.length()-1)))){
+                        return true;
+                    }
+                }
+                if(info.startsWith(str.substring(0,info.length()-1))){
+                    return true;
+                }
+            }
             if(str.equals(info)){
                 return true;
             }
         }
         return false;
+    }
+
+    public static void main(String[] args) {
+        String e="M:{AC[1u,2,3,3],N[show,query(int String)],A[com.lucky.aop.annotation.After,com.lucky.aop.annotation.Before]}";
+        AopExecutionChecker a =new AopExecutionChecker(null,e);
     }
 
 }
