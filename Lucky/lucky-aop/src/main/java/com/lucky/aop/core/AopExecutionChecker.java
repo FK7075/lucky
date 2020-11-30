@@ -3,7 +3,6 @@ package com.lucky.aop.core;
 import com.lucky.aop.exception.PositionExpressionException;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.conversion.JavaConversion;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
 import com.lucky.framework.uitls.reflect.MethodUtils;
@@ -220,7 +219,9 @@ public class AopExecutionChecker {
      */
     public boolean classExamine(Module bean){
         Class<?> originalType = bean.getOriginalType();
-        if(!packageExamine(originalType.getName())){
+        String name = originalType.getName();
+        name=name.contains(".")?name.substring(0,name.lastIndexOf(".")):"";
+        if(!packageExamine(name)){
             return false;
         }
         if(!classInfoExamine(originalType,bean.getId(),bean.getType())){
@@ -251,7 +252,27 @@ public class AopExecutionChecker {
             if("*".equals(pack)){
                 return true;
             }
-            if(fullClassName.startsWith(pack)){
+            if(pack.startsWith("*")||pack.startsWith("!*")){
+                if(pack.startsWith("!")){
+                    if(!(fullClassName.endsWith(pack.substring(2)))){
+                        return true;
+                    }
+                }
+                if(fullClassName.endsWith(pack.substring(1))){
+                    return true;
+                }
+            }
+            if(pack.endsWith("*")){
+                if(pack.startsWith("!")){
+                    if(!(fullClassName.startsWith(pack.substring(1,pack.length()-1)))){
+                        return true;
+                    }
+                }
+                if(fullClassName.startsWith(pack.substring(0,pack.length()-1))){
+                    return true;
+                }
+            }
+            if(fullClassName.equals(pack)){
                 return true;
             }
         }
@@ -265,9 +286,9 @@ public class AopExecutionChecker {
 
     //类是否被注解
     private boolean classAnnotationExamine(Class<?> aClass){
-        if(Assert.isEmptyArray(classAnnotations)){
-            return true;
-        }
+//        if(Assert.isEmptyArray(classAnnotations)){
+//            return true;
+//        }
         return AnnotationUtils.isExistOrByArray(aClass,classAnnotations);
     }
 
@@ -342,9 +363,9 @@ public class AopExecutionChecker {
     }
 
     private boolean examine(String[] array,String info){
-        if(Assert.isEmptyArray(array)){
-            return true;
-        }
+//        if(Assert.isEmptyArray(array)){
+//            return true;
+//        }
         for (String str : array) {
             if("*".equals(str)){
                 return true;

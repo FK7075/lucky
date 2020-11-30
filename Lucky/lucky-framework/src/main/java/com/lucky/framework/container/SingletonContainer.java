@@ -57,7 +57,7 @@ public class SingletonContainer implements Map<String, Module> {
     @Override
     public Module put(String key, Module value) {
         if(containsKey(key)){
-            LuckyBeanCreateException lex = new LuckyBeanCreateException("ID为\"" + key + "\"的组件已经存在，无法重复创建！");
+            LuckyBeanCreateException lex = new LuckyBeanCreateException("ID为 `" + key + "` 的组件已经存在，无法重复创建！  具体信息："+value);
             log.error(lex);
             throw lex;
         }
@@ -82,7 +82,9 @@ public class SingletonContainer implements Map<String, Module> {
 
     @Override
     public void putAll(Map<? extends String, ? extends Module> m) {
-        singletonPool.putAll(m);
+        for(Map.Entry<? extends String,?extends Module> entry:m.entrySet()){
+            put(entry.getKey(),entry.getValue());
+        }
     }
 
     @Override

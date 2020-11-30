@@ -1,8 +1,10 @@
 package com.lucky.framework.container.factory;
 
+import com.lucky.framework.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.RegisterMachine;
 import com.lucky.framework.container.SingletonContainer;
+import com.lucky.framework.container.enums.Strategy;
 import com.lucky.framework.uitls.base.BaseUtils;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 
@@ -17,15 +19,24 @@ import java.util.stream.Collectors;
  */
 public abstract class IOCBeanFactory implements BeanFactory,Namer {
 
+    private FusionStrategy fusionStrategy;
+
+    public IOCBeanFactory() {
+    }
+
+    protected IOCBeanFactory(FusionStrategy fusionStrategy) {
+        this.fusionStrategy = fusionStrategy;
+    }
+
     private SingletonContainer singletonPool= RegisterMachine.getRegisterMachine().getSingletonPool();
     private Set<Class<?>> plugins=RegisterMachine.getRegisterMachine().getPlugins();
 
     public  void setSingletonPool(SingletonContainer singletonPool) {
-        this.singletonPool = singletonPool;
+        this.singletonPool=fusionStrategy.singletonPoolStrategy(this.singletonPool,singletonPool);
     }
 
     public void setPlugins(Set<Class<?>> plugins) {
-        this.plugins = plugins;
+        this.plugins=fusionStrategy.pluginsStrategy(this.plugins,plugins);
     }
 
     public List<Module> getBeanByType(String...types){

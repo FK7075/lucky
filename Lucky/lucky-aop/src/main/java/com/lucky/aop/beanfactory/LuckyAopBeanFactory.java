@@ -6,6 +6,7 @@ import com.lucky.aop.core.AopPoint;
 import com.lucky.aop.core.AopProxyFactory;
 import com.lucky.aop.core.InjectionAopPoint;
 import com.lucky.aop.core.PointRun;
+import com.lucky.framework.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.AopBeanFactory;
 import com.lucky.framework.uitls.base.Assert;
@@ -31,8 +32,15 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
     private static final Logger log= LogManager.getLogger("c.l.aop.beanfactory.LuckyAopBeanFactory");
 
     public LuckyAopBeanFactory(){
+        super();
         pointRunSet=new HashSet<>(30);
     }
+
+    public LuckyAopBeanFactory(FusionStrategy fusionStrategy){
+        super(fusionStrategy);
+        pointRunSet=new HashSet<>(30);
+    }
+
 
     @Override
     public List<Module> createBean() {
@@ -43,7 +51,9 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
                 .collect(Collectors.toList());
         for (Class<?> aspectPluginClass : aspectPluginClasses) {
             Object aspectObject = ClassUtils.newObject(aspectPluginClass);
-            pointModules.add(new Module(getBeanName(aspectPluginClass),"aspect",aspectObject));
+            if(!isIOCId(getBeanName(aspectPluginClass))){
+                pointModules.add(new Module(getBeanName(aspectPluginClass),"aspect",aspectObject));
+            }
             List<Method> expandMethods = ClassUtils.getMethodByStrengthenAnnotation(aspectPluginClass, Expand.class);
             for (Method expandMethod : expandMethods) {
                 pointRunSet.add(new PointRun(aspectObject,expandMethod));

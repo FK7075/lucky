@@ -1,5 +1,6 @@
 package com.lucky.web.beanfactory;
 
+import com.lucky.framework.FusionStrategy;
 import com.lucky.framework.annotation.Component;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
@@ -23,6 +24,14 @@ import java.util.Map;
  * @date 2020/11/23 16:25
  */
 public class LuckyWebBeanFactory extends IOCBeanFactory {
+
+    public LuckyWebBeanFactory(){
+        super();
+    }
+
+    public LuckyWebBeanFactory(FusionStrategy fusionStrategy){
+        super(fusionStrategy);
+    }
 
     private static final Class<? extends Annotation>[] CONTROLLER_ANNOTATION=
             new Class[]{Controller.class,CallController.class, RestController.class, ControllerAdvice.class};
