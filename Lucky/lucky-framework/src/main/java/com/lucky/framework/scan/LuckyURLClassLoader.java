@@ -1,6 +1,9 @@
 package com.lucky.framework.scan;
 
 import com.lucky.framework.annotation.Component;
+import com.lucky.framework.exception.LuckyIOException;
+import com.lucky.framework.uitls.base.Assert;
+import com.lucky.framework.uitls.file.FileUtils;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,69 +27,38 @@ import java.util.jar.JarFile;
 public class LuckyURLClassLoader extends URLClassLoader {
 
     private static final Logger log= LogManager.getLogger(LuckyURLClassLoader.class);
+    private URL[] urls;
 
-
-    //属于本类加载器加载的jar包
-    private JarFile jarFile;
-
-    //保存已经加载过的Class对象
-    private Map<String,Class> cacheClassMap = new HashMap<>();
-
-    //保存本类加载器加载的class字节码
-    private Map<String,byte[]> classBytesMap = new HashMap<>();
-
-    //需要注册的spring bean的name集合
-    private List<String> registeredBean = new ArrayList<>();
-
-
-    //构造
     public LuckyURLClassLoader(URL[] urls, ClassLoader parent){
         super(urls, parent);
-        URL url = urls[0];
-        try {
-            JarURLConnection conn = (JarURLConnection) url.openConnection();
-            jarFile = conn.getJarFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //初始化类加载器执行类加载
-        init();
+        this.urls=urls;
     }
 
-
-
-    //重写loadClass方法
-    //改写loadClass方式
-    @Override
-    public Class<?> loadClass(String name) throws ClassNotFoundException {
-        if(findLoadedClass(name)==null){
-            return super.loadClass(name);
-        }else{
-            return cacheClassMap.get(name);
+    public Set<Class<?>> getComponentClass(){
+        Set<Class<?>> componentClasses=new HashSet<>(200);
+        for (URL url : urls) {
+            findClass(url).forEach(componentClasses::add);
         }
-
+        return componentClasses;
     }
 
-
-
-    /**
-     * 方法描述 初始化类加载器，保存字节码
-     * @method init
-     */
-    private void init() {
-        //解析jar包每一项
-        Enumeration<JarEntry> en = jarFile.entries();
+    private Set<Class<?>> findClass(URL url){
         InputStream input = null;
+        Set<Class<?>> componentClasses=new HashSet<>(200);
         try{
+            JarURLConnection conn = (JarURLConnection) url.openConnection();
+            JarFile jarFile = conn.getJarFile();
+            //解析jar包每一项
+            Enumeration<JarEntry> en = jarFile.entries();
             while (en.hasMoreElements()) {
-                JarEntry je = en.nextElement();
-                String name = je.getName();
+                JarEntry jarEntry = en.nextElement();
+                String name = jarEntry.getName();
                 //这里添加了路径扫描限制
                 if (!name.endsWith(".class")){
                     continue;
                 }
                 String className = name.replace(".class", "").replaceAll("/", ".");
-                input = jarFile.getInputStream(je);
+                input = jarFile.getInputStream(jarEntry);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 int bufferSize = 4096;
                 byte[] buffer = new byte[bufferSize];
@@ -95,52 +67,43 @@ public class LuckyURLClassLoader extends URLClassLoader {
                     baos.write(buffer, 0, bytesNumRead);
                 }
                 byte[] classBytes = baos.toByteArray();
-                classBytesMap.put(className,classBytes);
+                Class<?> aClass;
+                try {
+                    aClass = loadClass(className, classBytes);
+                }catch (Throwable e){
+                    System.err.println("[ERROR] --"+e.getClass().getSimpleName()+"-- CLASS LOAD ERROR："+className);
+                    continue;
+                }
+                if(Assert.isNull(aClass)||Annotation.class.isAssignableFrom(aClass)){
+                    continue;
+                }
+                if(AnnotationUtils.strengthenIsExist(aClass, Component.class)){
+                    componentClasses.add(aClass);
+                }
             }
-
+            return componentClasses;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new LuckyIOException(e);
         } finally {
             if(input!=null){
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new LuckyIOException(e);
                 }
             }
         }
-
-
-        //将jar中的每一个class字节码进行Class载入
-        for (Map.Entry<String, byte[]> entry : classBytesMap.entrySet()) {
-            String key = entry.getKey();
-            Class<?> aClass = null;
-            try {
-                aClass = loadClass(key);
-            } catch (Throwable e) {
-                System.err.println("[WARNING] CLASS LOAD ERROR："+key);
-                continue;
-            }
-            cacheClassMap.put(key,aClass);
-        }
-
     }
 
-    /**
-     * 方法描述 初始化spring bean
-     * @method initBean
-     */
-    public Set<Class<?>> getComponentClass(){
-        Set<Class<?>> componentClassSet = new HashSet<>();
-        for (Map.Entry<String, Class> entry : cacheClassMap.entrySet()) {
-            Class<?> fileClass = entry.getValue();
-            if(Annotation.class.isAssignableFrom(fileClass)){
-                continue;
-            }
-            if(AnnotationUtils.strengthenIsExist(fileClass, Component.class)){
-                componentClassSet.add(fileClass);
-            }
+
+
+    //重写loadClass方法
+    public Class<?> loadClass(String name,byte[] bytes) throws ClassNotFoundException {
+        if(findLoadedClass(name)==null){
+            return super.loadClass(name);
+        }else{
+            return defineClass(name,bytes,0,bytes.length);
         }
-        return componentClassSet;
+
     }
 }

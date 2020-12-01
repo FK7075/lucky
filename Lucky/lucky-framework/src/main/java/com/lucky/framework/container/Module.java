@@ -8,10 +8,10 @@ package com.lucky.framework.container;
  */
 public class Module {
 
-    /**Bean的唯一标识*/
-    private String id;
     /**组件类型*/
     private String type="component";
+    /**Bean的唯一标识*/
+    private String id;
     /** 组件的原始类型*/
     private Class<?> originalType;
     /**组件实例*/
@@ -61,9 +61,10 @@ public class Module {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Module{");
-        sb.append("id='").append(id).append('\'');
-        sb.append(", type='").append(type).append('\'');
+        sb.append("type='").append(type).append('\'');
+        sb.append(", id='").append(id).append('\'');
         sb.append(", originalType=").append(originalType);
+        sb.append(", component=").append(component);
         sb.append('}');
         return sb.toString();
     }

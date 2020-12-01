@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
  */
 public class LuckyAopBeanFactory extends AopBeanFactory {
 
-    private Set<PointRun> pointRunSet;
     private static final Logger log= LogManager.getLogger("c.l.aop.beanfactory.LuckyAopBeanFactory");
-
+    private Set<PointRun> pointRunSet;
+    private static final String PROXY_NAME="$$LUCKY_PROXY$$";
     public LuckyAopBeanFactory(){
         super();
         pointRunSet=new HashSet<>(30);
@@ -74,11 +74,12 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
         Collection<Module> beans = getBeans();
         for (Module bean : beans) {
             Class<?> originalType = bean.getOriginalType();
-            if(originalType.getName().contains("$$LUCKY_PROXY$$")){
+            if(originalType.getName().contains(PROXY_NAME)
+                    ||bean.getComponent().getClass().getName().contains(PROXY_NAME)){
                 continue;
             }
             Object aspect = AopProxyFactory.aspect(pointRunSet, bean);
-            if(aspect.getClass().getName().contains("$$LUCKY_PROXY$$")){
+            if(aspect.getClass().getName().contains(PROXY_NAME)){
                 bean.setComponent(aspect);
                 log.info("Create Aop Proxy Bean `{}`",bean.getComponent());
             }
