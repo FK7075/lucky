@@ -41,6 +41,7 @@ public abstract class JackLamb {
             BufferedReader reader = Resources.getReader(DEFAULT_LOGO_FILE);
             Console.white(IOUtils.toString(reader));
             versionInfo();
+            System.setProperty("log4j.skipJansi","false");
             first = false;
         } catch (IOException e) {
            throw new LuckyIOException(e);
