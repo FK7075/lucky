@@ -14,19 +14,39 @@ import java.util.Set;
 public enum Strategy implements FusionStrategy {
 
     /**
-     * 替换
+     * 新单例池和插件池【替换】原有的
      */
     REPLACE(1,1),
 
     /**
-     * 沿用
+     * 【沿用】旧的单例池和插件池
      */
-    CONTINUE(2,1),
+    CONTINUE(2,2),
 
     /**
-     * 补充
+     * 使用新的单例池和插件次【补充】原有的
      */
-    SUPPLEMENT(3,3);
+    SUPPLEMENT(3,3),
+
+    /***
+     * 新的【单例池替换】原有的，【插件池沿用】原来的
+     */
+    REPLACE_STRATEGY(1,2),
+
+    /***
+     * 新的【单例池补充】原有的，【插件池沿用】原来的
+     */
+    SUPPLEMENT_STRATEGY(3,2),
+
+    /**
+     * 【单例池沿用】原有的，新的【插件池替换】原有的，
+     */
+    REPLACE_PIUGIN(2,1),
+
+    /**
+     * 【单例池沿用】原有的，新的【插件池补充】原有的，
+     */
+    SUPPLEMENT_PIUGIN(2,3);
 
 
 

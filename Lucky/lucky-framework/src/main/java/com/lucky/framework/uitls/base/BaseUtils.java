@@ -1,11 +1,12 @@
 package com.lucky.framework.uitls.base;
 
-import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 
 /**
  * 基本工具类

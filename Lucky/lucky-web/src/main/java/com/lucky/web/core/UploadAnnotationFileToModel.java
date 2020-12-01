@@ -1,5 +1,6 @@
 package com.lucky.web.core;
 
+import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.base.BaseUtils;
 import com.lucky.framework.uitls.file.FileUtils;
 import com.lucky.web.annotation.Upload;
@@ -65,17 +66,13 @@ public class UploadAnnotationFileToModel {
      * @param type           允许上传的文件类型
      * @param fileSize        允许上传文件的最大大小
      */
-    private static void setUploadFileToModel(Model model, WebConfig webCfg , Map<String, String> fieldAndFolder, String type, long fileSize,long totalSize) throws FileTypeIllegalException, IOException, FileSizeCrossingException, FileUploadException, RequestFileSizeCrossingException {
-        String savePath = model.getRealPath("/");
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        upload.setHeaderEncoding("UTF-8");
-        if (!ServletFileUpload.isMultipartContent(model.getRequest())) {
+    private static void setUploadFileToModel(Model model, WebConfig webCfg , Map<String, String> fieldAndFolder, String type, long fileSize,long totalSize)
+            throws FileTypeIllegalException, IOException, FileSizeCrossingException, FileUploadException, RequestFileSizeCrossingException {
+        Map<String, List<FileItem>> sameNameFileItemMap=MultipartFileGain.getMultipartFileMap(model);
+        if(Assert.isEmptyMap(sameNameFileItemMap)){
             return;
         }
-        List<FileItem> list = upload.parseRequest(model.getRequest());
-        //同名分组
-        Map<String, List<FileItem>> sameNameFileItemMap = list.stream().collect(Collectors.groupingBy(FileItem::getFieldName));
+        String savePath = model.getRealPath("/");
         Set<String> fieldNames = sameNameFileItemMap.keySet();
         List<FileItem> fileItemList;
 

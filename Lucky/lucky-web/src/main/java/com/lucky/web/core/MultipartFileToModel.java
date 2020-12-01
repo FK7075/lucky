@@ -1,6 +1,7 @@
 package com.lucky.web.core;
 
 import com.lucky.framework.proxy.ASMUtil;
+import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.reflect.ParameterUtils;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.exception.FileSizeCrossingException;
@@ -9,6 +10,7 @@ import com.lucky.web.webfile.MultipartFile;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
@@ -18,10 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -62,15 +61,10 @@ public abstract class MultipartFileToModel {
      * @param webCfg Web配置类
      */
     public final static void setMultipartFileToModel(Model model, WebConfig webCfg) throws FileUploadException, IOException, FileSizeCrossingException, RequestFileSizeCrossingException {
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        upload.setHeaderEncoding("UTF-8");
-        if (!FileUploadBase.isMultipartContent(new ServletRequestContext(model.getRequest()))){
+        Map<String, List<FileItem>> sameNameFileItemMap = MultipartFileGain.getMultipartFileMap(model);
+        if(Assert.isEmptyMap(sameNameFileItemMap)){
             return;
         }
-        List<FileItem> list = upload.parseRequest(model.getRequest());
-        //同名分组
-        Map<String, List<FileItem>> sameNameFileItemMap = list.stream().collect(Collectors.groupingBy(FileItem::getFieldName));
         Set<String> fieldNames = sameNameFileItemMap.keySet();
         List<FileItem> fileItemList;
         MultipartFile[] multipartFiles;
