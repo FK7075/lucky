@@ -60,7 +60,7 @@ public class LuckyDispatcherServlet extends BaseServlet {
 
         } catch (Throwable e) {
             e=getCauseThrowable(e);
-            ExceptionMapping exceptionMapping = exceptionMappingCollection.getExceptionMapping(urlMapping, e);
+            ExceptionMapping exceptionMapping = exceptionMappingCollection.findExceptionMapping(urlMapping, e);
             if(exceptionMapping==null){
                 model.e500(e);
                 return;

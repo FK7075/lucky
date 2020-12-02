@@ -27,19 +27,15 @@ import java.util.jar.JarFile;
 public class LuckyURLClassLoader extends URLClassLoader {
 
     private static final Logger log= LogManager.getLogger(LuckyURLClassLoader.class);
-    private URL[] urls;
+    private URL url;
 
     public LuckyURLClassLoader(URL[] urls, ClassLoader parent){
         super(urls, parent);
-        this.urls=urls;
+        this.url=urls[0];
     }
 
     public Set<Class<?>> getComponentClass(){
-        Set<Class<?>> componentClasses=new HashSet<>(200);
-        for (URL url : urls) {
-            findClass(url).forEach(componentClasses::add);
-        }
-        return componentClasses;
+        return findClass(url);
     }
 
     private Set<Class<?>> findClass(URL url){

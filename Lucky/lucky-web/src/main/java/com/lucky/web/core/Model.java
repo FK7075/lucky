@@ -111,16 +111,20 @@ public class Model {
         this.multipartFileMap = new HashMap<>();
         this.restMap = new HashMap<>();
         this.uploadFileMap = new HashMap<>();
-
-
     }
 
+    /***
+     * 获取Response对象的OutputStream
+     * @return
+     * @throws IOException
+     */
     public ServletOutputStream getOutputStream() throws IOException {
         if(outputStream==null){
             outputStream=getResponse().getOutputStream();
         }
         return outputStream;
     }
+
 
     public UrlMappingCollection getUrlMappingCollection() {
         return urlMappingCollection;

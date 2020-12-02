@@ -24,9 +24,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class LuckyController {
+public abstract class LuckyController extends ExpandController{
 
-	protected static final Logger log = LogManager.getLogger(LuckyController.class);
+	private static final Logger log = LogManager.getLogger(LuckyController.class);
 	protected static LSON lson=new LSON();
 	protected static String baseDir=System.getProperty("java.io.tmpdir");
 	static {
@@ -34,8 +34,6 @@ public abstract class LuckyController {
 		baseDir+=("LUCKY_TEMP_FOLDER"+File.separator);
 	}
 
-	/** 当前请求的Model对象*/
-	protected Model model;
 	/** Request对象*/
 	protected HttpServletRequest request;
 	/** Response对象*/

@@ -121,12 +121,20 @@ public class UrlMapping extends Mapping{
             return false;
         }
         //URL校验
-        if(!urlIsEquals(currUrlMapping.getUrl())){
-            return false;
-        }
-
+        boolean urleq=urlIsEquals(currUrlMapping.getUrl());
         //支持的请求类型校验
         RequestMethod[] currMethods = currUrlMapping.getMethods();
+        boolean methodeq=methodIsEquals(currMethods);
+
+        return urleq&&methodeq;
+    }
+
+    /**
+     * [添加时]请求类型校验
+     * @param currMethods 待校验的请求类型
+     * @return
+     */
+    public boolean methodIsEquals(RequestMethod[] currMethods){
         for (RequestMethod currMethod : currMethods) {
             if(methodIsEquals(currMethod)){
                 return true;
@@ -136,7 +144,7 @@ public class UrlMapping extends Mapping{
     }
 
     /**
-     * 请求类型校验
+     * [请求时]请求类型校验
      * @param method 待校验的请求类型
      * @return
      */

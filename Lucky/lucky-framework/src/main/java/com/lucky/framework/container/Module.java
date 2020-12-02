@@ -14,8 +14,10 @@ public class Module {
     private String id;
     /** 组件的原始类型*/
     private Class<?> originalType;
-    /**组件实例*/
+    /** 组件实例*/
     private Object component;
+    /** 是否已经注入属性*/
+    private boolean injection;
 
     public Module(String id, Object component) {
         this.id = id;
@@ -28,6 +30,14 @@ public class Module {
         this.component = component;
         this.type = type;
         this.originalType=component.getClass();
+    }
+
+    public boolean isInjection() {
+        return injection;
+    }
+
+    public void setInjection(boolean injection) {
+        this.injection = injection;
     }
 
     public String getId() {

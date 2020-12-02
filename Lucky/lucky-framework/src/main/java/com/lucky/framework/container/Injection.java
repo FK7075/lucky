@@ -46,6 +46,9 @@ public abstract class Injection implements Namer {
     }
 
     public static void injection(Module mod){
+        if(mod.isInjection()){
+            return;
+        }
         Object bean=mod.getComponent();
         Class<?> beanClass=bean.getClass();
         String beanName=beanClass.getName();
@@ -77,9 +80,12 @@ public abstract class Injection implements Namer {
                     Object component = modules.get(0).getComponent();
                     FieldUtils.setValue(bean,field,component);
                     log.debug("Attribute injection [BY-CLASS] `"+beanName+"`「"+field.getName()+"」 <= "+component);
+
                 }
             }
         }
+
+        mod.setInjection(true);
     }
 
     public static void injection(Object bean,String beanType){
