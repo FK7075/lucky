@@ -1,4 +1,4 @@
-package com.lucky.web.filter;
+package com.lucky.web.utils;
 
 import java.awt.image.BufferedImage;
 

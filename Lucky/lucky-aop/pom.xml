@@ -13,11 +13,9 @@
 
   <artifactId>lucky-aop</artifactId>
   <name>lucky-aop</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>https://github.com/FK7075/lucky</url>
 
   <dependencies>
-
     <dependency>
       <groupId>com.lucky.jacklamb</groupId>
       <artifactId>lucky-framework</artifactId>

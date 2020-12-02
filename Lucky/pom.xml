@@ -14,7 +14,15 @@
         <module>lucky-web</module>
         <module>lucky-data</module>
         <module>lucky-parent</module>
+        <module>lucky-quartz</module>
+        <module>lucky-email</module>
+        <module>lucky-redis</module>
+        <module>lucky-boot</module>
+        <module>lucky-shiro</module>
+        <module>lucky-jsch</module>
+        <module>lucky-thymeleaf</module>
     </modules>
+    <url>https://github.com/FK7075/lucky</url>
 
     <properties>
         <java.version>1.8</java.version>

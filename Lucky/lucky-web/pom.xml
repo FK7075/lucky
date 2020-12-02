@@ -12,8 +12,7 @@
     </parent>
     <artifactId>lucky-web</artifactId>
     <name>lucky-web</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <url>https://github.com/FK7075/lucky</url>
 
     <dependencies>
         <dependency>
