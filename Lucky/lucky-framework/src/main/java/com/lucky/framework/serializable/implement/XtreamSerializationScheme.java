@@ -13,15 +13,13 @@ import java.lang.reflect.Type;
  */
 public class XtreamSerializationScheme implements XMLSerializationScheme {
 
-    private static LXML lxml=new LXML();
-
     @Override
     public String serialization(Object object) throws IOException {
-        return lxml.toXml(object);
+        return new LXML().toXml(object);
     }
 
     @Override
     public Object deserialization(Type objectType, String objectStr) throws Exception {
-        return lxml.fromXml(objectStr);
+        return new LXML().fromXml(objectStr);
     }
 }
