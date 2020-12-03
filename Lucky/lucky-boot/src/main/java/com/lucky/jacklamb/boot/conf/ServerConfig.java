@@ -193,6 +193,10 @@ public class ServerConfig extends LuckyConfig {
         this.listeners = listeners;
     }
 
+    public void addListener(EventListener listener){
+        this.listeners.add(listener);
+    }
+
     private ServerConfig(){
         servletList =new ArrayList<>();
         listeners=new HashSet<>();

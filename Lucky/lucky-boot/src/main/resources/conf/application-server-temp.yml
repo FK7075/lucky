@@ -20,3 +20,17 @@ server:
   shutdown: SHUTDOWN
   ##URL编码
   url-encoding: UTF-8
+  servlet:
+    servletName:
+      class: c
+      mapping: [/,/user/]
+      load-on-startup: 0
+  filter:
+    filterName:
+      class: c
+      mapping: m
+
+  listener:
+    listenerName: class
+
+

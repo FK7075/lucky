@@ -361,10 +361,10 @@ public abstract class AnnotationUtils {
             }
         }
         if(list.isEmpty()){
-
+            return null;
         }
         if(list.size()!=1){
-
+            throw new LuckyReflectionException("类被多个注解注解："+list);
         }
         return list.get(0);
     }

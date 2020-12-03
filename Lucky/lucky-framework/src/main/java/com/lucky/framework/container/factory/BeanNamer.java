@@ -1,6 +1,7 @@
 package com.lucky.framework.container.factory;
 
 import com.lucky.framework.annotation.*;
+import com.lucky.framework.exception.LuckyReflectionException;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.base.BaseUtils;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
@@ -21,7 +22,15 @@ public class BeanNamer implements Namer {
 
     @Override
     public String getBeanName(Class<?> beanClass) {
-        Annotation annotation = AnnotationUtils.getByArray(beanClass, COMPONENT_ANNOTATION);
+        Annotation annotation;
+        try {
+            annotation= AnnotationUtils.getByArray(beanClass, COMPONENT_ANNOTATION);
+        }catch (LuckyReflectionException e){
+            return getDefBeanName(beanClass);
+        }
+        if(Assert.isNull(annotation)){
+            return getDefBeanName(beanClass);
+        }
         String id = (String) AnnotationUtils.getValue(annotation, "id");
         String value= (String) AnnotationUtils.getValue(annotation,"value");
         if(!Assert.isBlankString(id)){

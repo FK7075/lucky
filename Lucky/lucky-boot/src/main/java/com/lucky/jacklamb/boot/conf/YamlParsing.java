@@ -13,10 +13,9 @@ import com.lucky.web.core.MappingPreprocess;
 import com.lucky.web.core.ParameterProcess;
 import com.lucky.web.core.parameter.ParameterAnalysis;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServlet;
+import java.util.*;
 
 /**
  * @author fk7075
@@ -72,6 +71,59 @@ public abstract class YamlParsing {
                 if(serverMap.containsKey("url-encoding")){
                     server.setURIEncoding(serverMap.get("url-encoding").toString());
                 }
+                if(serverMap.containsKey("listener")){
+                    Object obj = serverMap.get("listener");
+                    if(obj instanceof Map){
+                        Map<String,String> listenerMap= (Map<String, String>) obj;
+                        Collection<String> values = listenerMap.values();
+                        for (String value : values) {
+                            server.addListener((EventListener) ClassUtils.newObject(value));
+                        }
+                    }
+                }
+                if(serverMap.containsKey("servlet")){
+                    Object obj = serverMap.get("servlet");
+                    if(obj instanceof Map){
+                        Map<String,Map<String,Object>> servletMap= (Map<String, Map<String, Object>>) obj;
+                        Collection<Map<String, Object>> values = servletMap.values();
+                        for (Map<String, Object> value : values) {
+                            Object mapping = value.get("mapping");
+                            int loadOnStartUp=value.containsKey("load-on-startup")?(int)value.get("load-on-startup"):-1;
+                            if(mapping instanceof String){
+                                server.addServlet((HttpServlet)ClassUtils.newObject(value.get("class").toString()),loadOnStartUp,
+                                        mapping.toString());
+                            }else{
+                                ArrayList<String> m= (ArrayList<String>) mapping;
+                                String[] ma=new String[m.size()];
+                                m.toArray(ma);
+                                server.addServlet((HttpServlet)ClassUtils.newObject(value.get("class").toString()),loadOnStartUp,
+                                        ma);
+                            }
+                        }
+                    }
+                }
+                if(serverMap.containsKey("filter")){
+                    Object obj = serverMap.get("filter");
+                    if(obj instanceof Map){
+                        Map<String,Map<String,Object>> filterMap= (Map<String, Map<String, Object>>) obj;
+                        Collection<Map<String, Object>> values = filterMap.values();
+                        for (Map<String, Object> value : values) {
+                            Object mapping = value.get("mapping");
+                            if(mapping instanceof String){
+                                server.addFilter((Filter)ClassUtils.newObject(value.get("class").toString()),
+                                       mapping.toString());
+                            }else{
+                                ArrayList<String> m= (ArrayList<String>) mapping;
+                                String[] ma=new String[m.size()];
+                                m.toArray(ma);
+                                server.addFilter((Filter)ClassUtils.newObject(value.get("class").toString()),
+                                        ma);
+                            }
+
+                        }
+                    }
+                }
+
             }
         }
     }
