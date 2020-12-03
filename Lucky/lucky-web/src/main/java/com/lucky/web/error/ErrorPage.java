@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public abstract class ErrorPage {
 
-    private final static String LUCKY_STR="LUCKY_RDS_CHAR_DOLLAR_)&@!";
+    private final static String LUCKY_STR="LUCKY_RDS_CHAR_DOLLAR_\\)&@!";
     private static Map<String,String> errorPageMap;
 
     static {
@@ -44,6 +44,7 @@ public abstract class ErrorPage {
         errorPageHtml = errorPageHtml.replaceAll("@:time", BaseUtils.time());
         errorPageHtml = errorPageHtml.replaceAll("@:Message", errorMessage.replaceAll("\\$", LUCKY_STR));
         errorPageHtml = errorPageHtml.replaceAll("@:Description", errorDescription.replaceAll("\\$", LUCKY_STR));
+        errorPageHtml=errorPageHtml.replaceAll( LUCKY_STR,"\\$");
         return errorPageHtml;
     }
 

@@ -18,10 +18,10 @@ import java.util.*;
  * @version 1.0
  * @date 2020/11/19 9:58
  */
-public class WebConfig implements LuckyConfig {
+public class WebConfig extends LuckyConfig {
 
     private static WebConfig webConfig;
-    private boolean isFirst=true;
+
     /** 请求参数编码格式*/
     private String encoding;
     /** 设置单个文件大小为限制1M(单位：kb)*/
@@ -70,14 +70,6 @@ public class WebConfig implements LuckyConfig {
     private ParameterProcess parameterProcess;
     /** 定义转发与重定向*/
     private LuckyResponse response;
-
-    public boolean isFirst() {
-        return isFirst;
-    }
-
-    public void setFirst(boolean first) {
-        isFirst = first;
-    }
 
     public String getEncoding() {
         return encoding;
@@ -311,6 +303,7 @@ public class WebConfig implements LuckyConfig {
         conf.setGlobalResourcesIpRestrict(new HashSet<>());
         conf.setStaticResourcesIpRestrict(new HashSet<>());
         conf.setSpecifiResourcesIpRestrict(new HashMap<>());
+        conf.setFirst(true);
     }
 
     public static WebConfig defaultWebConfig() {

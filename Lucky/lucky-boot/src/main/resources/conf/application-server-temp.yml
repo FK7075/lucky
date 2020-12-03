@@ -1,0 +1,22 @@
+server:
+  ##启动端口
+  port: 8080
+  ##项目路径
+  context-path: \"\"
+  ##session超时时间（分钟）
+  session-timeout: 30
+  ##静态文件所在的文件夹
+  doc-base: classpath:/templates/
+  ##tomcat运行时临时文件所在的文件夹（默认在系统的临时文件夹）
+  base-dir: java.io.tmpdir:/tomcat.${port}/
+  webapp: /WebContent/
+  ##webapps目录中增加新的目录、war文件、修改WEB-INF/web.xml，autoDeploy="true"会新建或重新部署应用
+  auto-deploy: false
+  ##替换WEB-INF/lib目录中的jar文件或WEB-INF/classes目录中的class文件时，reloadable="true"会让修改生效
+  reloadable: false
+  ##关闭端口
+  close-port: 8005
+  ##关闭命令
+  shutdown: SHUTDOWN
+  ##URL编码
+  url-encoding: UTF-8

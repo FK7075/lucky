@@ -37,4 +37,6 @@ public interface ApplicationContext {
     boolean isIOCId(String id);
 
     boolean isIOCClass(Class<?> componentClass);
+
+    void put(Module module);
 }

@@ -9,7 +9,6 @@ import com.lucky.framework.uitls.base.Assert;
 import com.lucky.web.annotation.Controller;
 import com.lucky.web.annotation.ControllerAdvice;
 import com.lucky.web.annotation.RestController;
-import com.lucky.web.core.Model;
 import com.lucky.web.exception.AddMappingExpandException;
 import com.lucky.web.mapping.DefaultMappingAnalysis;
 import com.lucky.web.mapping.ExceptionMappingCollection;
@@ -30,20 +29,20 @@ import java.util.Set;
  * @version 1.0
  * @date 2020/12/2 0002 15:33
  */
-public abstract class ExpandController extends LuckyController{
+public abstract class JarExpandController extends LuckyController{
 
-    private static final Logger log = LogManager.getLogger(ExpandController.class);
+    private static final Logger log = LogManager.getLogger("c.l.web.controller.JarExpandController");
 
     /**
      *
      * 添加一个外部的JAR包扩展
-     * @param beanFactories beanFantory集合
+     * @param beanFactories BeanFactory集合
      * @param expandName 扩展名
      * @param jarFileUrl jar包的路径「jar:file:/绝对路径!/」「jar:http://网络路径」
      * @throws IOException
      */
-    protected void andExpandJar(Set<IOCBeanFactory> beanFactories,String expandName,String jarFileUrl)throws IOException {
-        andExpandJar(beanFactories, expandName, new URL(jarFileUrl));
+    protected void andExpandJar(Set<IOCBeanFactory> beanFactories,String expandName,String jarFileUrl,String groupId)throws IOException {
+        andExpandJar(beanFactories, expandName, new URL(jarFileUrl),groupId);
     }
 
     /**
@@ -51,12 +50,14 @@ public abstract class ExpandController extends LuckyController{
      * @param beanFactories beanFantory集合
      * @param expandName 扩展名
      * @param jarUrl jar包的路径
+     * @param groupId 项目的组织ID【最上层的包】
      * @throws IOException
      */
-    protected void andExpandJar(Set<IOCBeanFactory> beanFactories,String expandName,URL jarUrl) throws IOException {
+    protected void andExpandJar(Set<IOCBeanFactory> beanFactories,String expandName,URL jarUrl,String groupId) throws IOException {
         if(Assert.isNull(expandName)){
             throw new AddMappingExpandException("扩展名为NULL！");
         }
+        groupId=Assert.isNull(groupId)?"":groupId;
         Set<String> deleteExpandURL = model.getUrlMappingCollection().getDeleteExpand();
         Set<String> deleteExpandEXP = model.getExceptionMappingCollection().getDeleteExpand();
         if(deleteExpandURL.contains(expandName)||deleteExpandEXP.contains(expandName)){
@@ -69,7 +70,7 @@ public abstract class ExpandController extends LuckyController{
             if(urlMap.containsKey(expandName)||expMap.containsKey(expandName)){
                 log.warn("扩展集 `{}` 已存在，无法重复添加！",expandName);
             }else{
-                add(beanFactories, expandName, jarUrl);
+                add(beanFactories, expandName, jarUrl,groupId);
             }
         }
     }
@@ -84,13 +85,13 @@ public abstract class ExpandController extends LuckyController{
     }
 
 
-    private final boolean add(Set<IOCBeanFactory> beanFactories,String expandName,String jarFilePath) throws IOException {
+    private final boolean add(Set<IOCBeanFactory> beanFactories,String expandName,String jarFilePath,String groupId) throws IOException {
         URL url=new URL(jarFilePath);
-        return add(beanFactories, expandName, url);
+        return add(beanFactories, expandName, url,groupId);
     }
 
 
-    private final boolean add(Set<IOCBeanFactory> beanFactories,String expandName,URL jarUrl) throws IOException {
+    private final boolean add(Set<IOCBeanFactory> beanFactories,String expandName,URL jarUrl,String groupId) throws IOException {
         URL[] urls={jarUrl};
         URLClassLoader loader = new URLClassLoader(
                 urls, Thread.currentThread().getContextClassLoader());
@@ -99,7 +100,7 @@ public abstract class ExpandController extends LuckyController{
         //获取当前IOC的上下文对象
         AutoScanApplicationContext applicationContext=AutoScanApplicationContext.create();
         //使用当前上下文对象动态的加载由LuckyURLClassLoader扫描得到的jar包中的IOC组件
-        SingletonContainer singletonPool = applicationContext.getNewSingletonPool(beanFactories,luckyURLClassLoader.getComponentClass());
+        SingletonContainer singletonPool = applicationContext.getNewSingletonPool(beanFactories,luckyURLClassLoader.getComponentClass(groupId));
         //构造Lucky的Mapping解析器
         DefaultMappingAnalysis analysis = new DefaultMappingAnalysis();
         List<Module> controllers = singletonPool.getBeanByAnnotation(Controller.class, RestController.class);

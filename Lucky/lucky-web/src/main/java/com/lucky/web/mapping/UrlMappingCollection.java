@@ -247,7 +247,7 @@ public class UrlMappingCollection {
     public UrlMapping getMapping(Model model) throws IOException {
         List<UrlMapping> urlMappings =getUrlMappingByUrl(model);
         if(Assert.isEmptyCollection(urlMappings)){
-            if("/".equals(model.getUri())){
+            if("".equals(model.getUri())){
                 WebFileUtils.preview(model, Resources.getInputStream("/lucky-web/LUCKY.html"),"LUCKY.html");
                 return null;
             }

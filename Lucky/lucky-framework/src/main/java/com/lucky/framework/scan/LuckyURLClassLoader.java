@@ -3,7 +3,6 @@ package com.lucky.framework.scan;
 import com.lucky.framework.annotation.Component;
 import com.lucky.framework.exception.LuckyIOException;
 import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.file.FileUtils;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +14,9 @@ import java.lang.annotation.Annotation;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -35,11 +36,16 @@ public class LuckyURLClassLoader extends URLClassLoader {
     }
 
     public Set<Class<?>> getComponentClass(){
-        return findClass(url);
+        return findClass(url,"");
     }
 
-    private Set<Class<?>> findClass(URL url){
+    public Set<Class<?>> getComponentClass(String groupId){
+        return findClass(url,groupId);
+    }
+
+    private Set<Class<?>> findClass(URL url,String groupId){
         InputStream input = null;
+        groupId=groupId.replaceAll("\\.","/");
         Set<Class<?>> componentClasses=new HashSet<>(200);
         try{
             JarURLConnection conn = (JarURLConnection) url.openConnection();
@@ -50,7 +56,7 @@ public class LuckyURLClassLoader extends URLClassLoader {
                 JarEntry jarEntry = en.nextElement();
                 String name = jarEntry.getName();
                 //这里添加了路径扫描限制
-                if (!name.endsWith(".class")){
+                if (!name.startsWith(groupId)||!name.endsWith(".class")){
                     continue;
                 }
                 String className = name.replace(".class", "").replaceAll("/", ".");
@@ -102,4 +108,5 @@ public class LuckyURLClassLoader extends URLClassLoader {
         }
 
     }
+
 }

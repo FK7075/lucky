@@ -145,4 +145,9 @@ public class AutoScanApplicationContext implements ApplicationContext{
     public boolean isIOCClass(Class<?> componentClass) {
         return singletonPool.containsClass(componentClass);
     }
+
+    @Override
+    public void put(Module module) {
+        singletonPool.put(module.getId(),module);
+    }
 }
