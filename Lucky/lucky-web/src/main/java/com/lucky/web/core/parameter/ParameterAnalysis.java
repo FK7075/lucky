@@ -6,6 +6,7 @@ import com.lucky.web.core.Model;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 
 /**
  * 参数解析的基类模板
@@ -35,10 +36,11 @@ public interface ParameterAnalysis {
      * @param model 当前请求的Model对象
      * @param method 处理当前请求的Controller方法
      * @param parameter 当前要处理的方法参数
+     * @param genericParameterType 参数的类型
      * @param asmParamName ASM工具解析出的当前参数的参数名
      * @return
      */
-    Object analysis(Model model, Method method,Parameter parameter,String asmParamName) throws Exception;
+    Object analysis(Model model, Method method, Parameter parameter, Type genericParameterType, String asmParamName) throws Exception;
 
     /**
      * 得到参数的参数名

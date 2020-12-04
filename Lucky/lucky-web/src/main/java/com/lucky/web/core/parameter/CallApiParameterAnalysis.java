@@ -14,6 +14,7 @@ import com.lucky.web.httpclient.callcontroller.Api;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +39,8 @@ public class CallApiParameterAnalysis implements ParameterAnalysis {
     }
 
     @Override
-    public Object analysis(Model model, Method method, Parameter parameter, String asmParamName) throws Exception {
-        return httpClientParam(model,method,parameter);
+    public Object analysis(Model model, Method method, Parameter parameter, Type genericParameterType, String asmParamName) throws Exception {
+        return httpClientParam(model,method,parameter,genericParameterType);
     }
 
     /**
@@ -50,13 +51,13 @@ public class CallApiParameterAnalysis implements ParameterAnalysis {
      * @return
      * @throws IOException
      */
-    private Object httpClientParam(Model model,Method method,Parameter currParameter) throws Exception {
+    private Object httpClientParam(Model model,Method method,Parameter currParameter,Type genericParameterType) throws Exception {
         String callResult;
         Class<?> controllerClass=method.getDeclaringClass();
         String api = getCallApi(controllerClass, method);
         Map<String, Object> requestMap = getHttpClientRequestParam(model,method);
         callResult = HttpClientCall.call(api, model.getRequestMethod(), requestMap);
-        return callRestAndBody(model,currParameter, callResult);
+        return callRestAndBody(model,currParameter,genericParameterType, callResult);
     }
 
     /**
@@ -68,14 +69,13 @@ public class CallApiParameterAnalysis implements ParameterAnalysis {
      * @param callResult     远程服务响应的String类型结果
      * @return
      */
-    private Object callRestAndBody(Model model,Parameter currParameter, String callResult) throws Exception {
+    private Object callRestAndBody(Model model,Parameter currParameter,Type genericParameterType,  String callResult) throws Exception {
         Rest rest= AnnotationUtils.get(currParameter, CallBody.class).value();
-        Class<?> parameterClass = currParameter.getType();
         if(rest==Rest.JSON){
-            return model.fromJson(parameterClass,callResult);
+            return model.fromJson(genericParameterType,callResult);
         }
         if(rest==Rest.XML){
-            return model.fromXml(parameterClass,callResult);
+            return model.fromXml(genericParameterType,callResult);
         }
         return callResult;
     }

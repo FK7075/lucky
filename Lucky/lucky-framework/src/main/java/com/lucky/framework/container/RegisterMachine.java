@@ -121,6 +121,10 @@ public class RegisterMachine {
                 continue;
             }
 
+            if(BeanFactory.class.isAssignableFrom(componentClass)){
+                continue;
+            }
+
             //实例化所有的Bean，并注入到IOC容器
             Module module=new Module(namer.getBeanName(componentClass)
                     ,namer.getBeanType(componentClass)

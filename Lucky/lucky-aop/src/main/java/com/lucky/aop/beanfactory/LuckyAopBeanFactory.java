@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 public class LuckyAopBeanFactory extends AopBeanFactory {
 
-    private static final Logger log= LogManager.getLogger("c.l.aop.beanfactory.LuckyAopBeanFactory");
+    private static final Logger log= LogManager.getLogger("c.l.framework.beanfactory.LuckyAopBeanFactory");
     private Set<PointRun> pointRunSet;
     private static final String PROXY_NAME="$$LUCKY_PROXY$$";
     public LuckyAopBeanFactory(){

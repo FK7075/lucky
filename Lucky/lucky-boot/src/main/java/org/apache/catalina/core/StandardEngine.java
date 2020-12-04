@@ -206,10 +206,10 @@ public class StandardEngine extends ContainerBase implements Engine {
 
 
     /**
-     * Disallow any attempt to set a parent for this Container, since an
+     * Disallow any attempt to set a email for this Container, since an
      * Engine is supposed to be at the top of the Container hierarchy.
      *
-     * @param container Proposed parent Container
+     * @param container Proposed email Container
      */
     @Override
     public void setParent(Container container) {
@@ -317,7 +317,7 @@ public class StandardEngine extends ContainerBase implements Engine {
 
 
     /**
-     * Return the parent class loader for this component.
+     * Return the email class loader for this component.
      */
     @Override
     public ClassLoader getParentClassLoader() {

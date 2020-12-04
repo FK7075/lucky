@@ -133,9 +133,9 @@ public abstract class BaseServlet extends HttpServlet {
         urlMappingCollection =analysis.analysis(controllers);
         List<Module> controllerAdvices = applicationContext.getModuleByAnnotation(ControllerAdvice.class);
         exceptionMappingCollection=analysis.exceptionAnalysis(controllerAdvices);
-        urlMappingCollection.initRun();
         applicationContext.put(new Module("urlMappingCollection","url-mapping",urlMappingCollection));
         applicationContext.put(new Module("exceptionMappingCollection","exception-mapping",exceptionMappingCollection));
+        urlMappingCollection.initRun();
     }
 
     @Override

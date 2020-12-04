@@ -398,7 +398,7 @@ public class AopExecutionChecker {
     }
 
     public static void main(String[] args) {
-        String e="M:{AC[1u,2,3,3],N[show,query(int String)],A[com.lucky.aop.annotation.After,com.lucky.aop.annotation.Before]}";
+        String e="M:{AC[1u,2,3,3],N[show,query(int String)],A[com.lucky.framework.annotation.After,com.lucky.framework.annotation.Before]}";
         AopExecutionChecker a =new AopExecutionChecker(null,e);
     }
 

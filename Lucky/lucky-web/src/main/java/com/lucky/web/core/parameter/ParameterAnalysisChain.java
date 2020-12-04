@@ -5,6 +5,7 @@ import com.lucky.web.core.Model;
 import com.lucky.web.mapping.UrlMapping;
 
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -34,7 +35,7 @@ public class ParameterAnalysisChain {
         parameterAnalysesChain.add(new HttpParameterAnalysis());//1-ok
         parameterAnalysesChain.add(new CallApiParameterAnalysis());//2-ok
         parameterAnalysesChain.add(new RequestBodyParameterAnalysis());//3-ok
-        parameterAnalysesChain.add(new AnnotationFileParameterAnalysis());//4-ok
+        parameterAnalysesChain.add(new UploadAnnFileParameterAnalysis());//4-ok
         parameterAnalysesChain.add(new MultipartFileParameterAnalysis());//5-ok
         parameterAnalysesChain.add(new PojoParameterAnalysis());//6-ok
         parameterAnalysesChain.add(new BaseParameterAnalysis());//7-ok
@@ -54,12 +55,14 @@ public class ParameterAnalysisChain {
      */
     public Object[] analysis(Model model, UrlMapping urlMapping) throws Exception {
         String[] paramNames = ASMUtil.getMethodParamNames(urlMapping.getMapping());
+        Type[] genericParameterTypes = urlMapping.getMapping().getGenericParameterTypes();
         Parameter[] parameters = urlMapping.getParameters();
         Object[] paramObject=new Object[parameters.length];
         for (int i = 0,j=parameters.length; i < j; i++) {
             for (ParameterAnalysis parameterAnalysis : parameterAnalysesChain) {
                 if(parameterAnalysis.can(model, urlMapping.getMapping(),parameters[i],paramNames[i])){
-                    paramObject[i]=parameterAnalysis.analysis(model, urlMapping.getMapping(),parameters[i],paramNames[i]);
+                    paramObject[i]=parameterAnalysis.analysis(model, urlMapping.getMapping(),
+                                            parameters[i],genericParameterTypes[i],paramNames[i]);
                     break;
                 }
             }

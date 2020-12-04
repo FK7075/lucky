@@ -10,6 +10,7 @@ import com.lucky.web.core.Model;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 
 /**
  * 基本类型解析
@@ -40,7 +41,7 @@ public class BaseParameterAnalysis implements ParameterAnalysis{
     }
 
     @Override
-    public Object analysis(Model model, Method method, Parameter parameter,String asmParamName) {
+    public Object analysis(Model model, Method method, Parameter parameter,Type genericParameterType, String asmParamName) {
         String paramName=getParamName(parameter,asmParamName);
         Class<?> parameterType = parameter.getType();
 

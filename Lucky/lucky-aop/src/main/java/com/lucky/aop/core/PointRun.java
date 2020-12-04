@@ -311,10 +311,10 @@ public class PointRun {
 				}
 			}
 			if(cursor==0){
-				throw new AopParamsConfigurationException("环绕增强方法中必须要带有一个`com.lucky.aop.core.AopChain`类型的参数，该方法中没有AopChain参数，错误位置："+method);
+				throw new AopParamsConfigurationException("环绕增强方法中必须要带有一个`com.lucky.framework.core.AopChain`类型的参数，该方法中没有AopChain参数，错误位置："+method);
 			}
 			if(cursor>1){
-				throw new AopParamsConfigurationException("环绕增强方法中有且只能有一个`com.lucky.aop.core.AopChain`类型的参数，该方法中包含"+cursor+"个AopChain参数，错误位置："+method);
+				throw new AopParamsConfigurationException("环绕增强方法中有且只能有一个`com.lucky.framework.core.AopChain`类型的参数，该方法中包含"+cursor+"个AopChain参数，错误位置："+method);
 			}
 
 		}

@@ -12,6 +12,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 
 /**
  * 包装类型解析
@@ -35,7 +36,7 @@ public class PojoParameterAnalysis implements ParameterAnalysis{
     }
 
     @Override
-    public Object analysis(Model model, Method method, Parameter parameter,String asmParamName) {
+    public Object analysis(Model model, Method method, Parameter parameter, Type genericParameterType, String asmParamName) {
         Class<?> parameterClass = parameter.getType();
         Object result=ClassUtils.newObject(parameterClass);
         createObject(model,result);

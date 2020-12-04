@@ -586,7 +586,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
 
     /**
-     * Return the parent class loader for this component.
+     * Return the email class loader for this component.
      */
     @Override
     public ClassLoader getParentClassLoader() {
@@ -600,9 +600,9 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
 
     /**
-     * Set the parent class loader for this server.
+     * Set the email class loader for this server.
      *
-     * @param parent The new parent class loader
+     * @param parent The new email class loader
      */
     @Override
     public void setParentClassLoader(ClassLoader parent) {

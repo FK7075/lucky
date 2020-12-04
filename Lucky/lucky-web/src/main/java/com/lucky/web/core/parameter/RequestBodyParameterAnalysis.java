@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 
 /**
  * 序列化参数解析
@@ -37,7 +38,7 @@ public class RequestBodyParameterAnalysis implements ParameterAnalysis{
     }
 
     @Override
-    public Object analysis(Model model, Method method, Parameter parameter, String asmParamName) throws Exception{
+    public Object analysis(Model model, Method method, Parameter parameter, Type genericParameterType, String asmParamName) throws Exception{
         HttpServletRequest request = model.getRequest();
         BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
         StringWriter sw = new StringWriter();
@@ -47,7 +48,7 @@ public class RequestBodyParameterAnalysis implements ParameterAnalysis{
         Class<?> parameterType = parameter.getType();
         if("APPLICATION/JSON".equals(contentType)){
             try {
-                return model.fromJson(parameterType,requestBody);
+                return model.fromJson(genericParameterType,requestBody);
             }catch (Exception e){
                 throw new ParameterAnalysisException("参数转化异常[`application/json`]! 格式错误的请求参数：`"+requestBody+"`",e);
             }
@@ -55,7 +56,7 @@ public class RequestBodyParameterAnalysis implements ParameterAnalysis{
         }
         if("APPLICATION/XML".equals(contentType)){
             try {
-                return model.fromXml(parameterType,requestBody);
+                return model.fromXml(genericParameterType,requestBody);
             }catch (Exception e){
                 throw new ParameterAnalysisException("参数转化异常[`application/xml`]! 格式错误的请求参数：`"+requestBody+"`",e);
             }

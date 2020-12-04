@@ -1,10 +1,7 @@
 package com.lucky.web.httpclient.callcontroller;
 
 import com.lucky.framework.proxy.ASMUtil;
-import com.lucky.framework.uitls.reflect.AnnotationUtils;
-import com.lucky.framework.uitls.reflect.ClassUtils;
-import com.lucky.framework.uitls.reflect.MethodUtils;
-import com.lucky.framework.uitls.reflect.ParameterUtils;
+import com.lucky.framework.uitls.reflect.*;
 import com.lucky.web.annotation.CallController;
 import com.lucky.web.annotation.FileDownload;
 import com.lucky.web.annotation.FileUpload;
@@ -24,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -57,10 +55,12 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
         if(methodApi.startsWith("${")||methodApi.startsWith("http://")||methodApi.startsWith("https://")){
             apiUrl=Api.getApi(methodApi);
         }else{
-            if(!callControllerApi.endsWith("/"))
+            if(!callControllerApi.endsWith("/")) {
                 callControllerApi+="/";
-            if(methodApi.startsWith("/"))
+            }
+            if(methodApi.startsWith("/")) {
                 methodApi=methodApi.substring(1);
+            }
             apiUrl=callControllerApi+methodApi;
         }
 
@@ -73,7 +73,7 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
         String callResult=call(apiUrl,method,callapiMap,md.method[0]);
 
         //封装返回结果
-        Class<?> returnClass=method.getReturnType();
+        Type returnClass=method.getGenericReturnType();
         if(returnClass!=void.class){
             if(returnClass==String.class){
                 return callResult;
@@ -81,7 +81,7 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
                 try{
                     return webConfig.getJsonSerializationScheme().deserialization(returnClass,callResult);
                 }catch (Exception e){
-                    throw new JsonConversionException(apiUrl,returnClass,callResult,e);
+                    throw new JsonConversionException(apiUrl,(Class)returnClass,callResult,e);
                 }
             }
         }
@@ -100,8 +100,9 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
      * @throws URISyntaxException
      */
     private static String call(String url, Method method, Map<String,Object> params, RequestMethod requestMethod) throws IOException, URISyntaxException {
-        if(!method.isAnnotationPresent(FileUpload.class))
+        if(!method.isAnnotationPresent(FileUpload.class)) {
             return HttpClientCall.call(url,requestMethod,params);
+        }
         return HttpClientCall.uploadFile(url,params);
     }
 
@@ -128,10 +129,10 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
                 Field[] fields = ClassUtils.getAllFields(paramClass);
                 Object fieldValue;
                 for(Field field:fields){
-                    field.setAccessible(true);
-                    fieldValue=field.get(params[i]);
-                    if(fieldValue!=null)
+                    fieldValue=FieldUtils.getValue(params[i],field);
+                    if(fieldValue!=null) {
                         callapiMap.put(field.getName(),fieldValue.toString());
+                    }
                 }
             }
         }

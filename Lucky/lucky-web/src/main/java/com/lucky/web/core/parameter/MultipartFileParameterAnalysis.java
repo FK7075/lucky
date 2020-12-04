@@ -5,6 +5,7 @@ import com.lucky.web.webfile.MultipartFile;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 
 /**
  * @author fk7075
@@ -20,22 +21,21 @@ public class MultipartFileParameterAnalysis extends FileParameterAnalysis{
     @Override
     public boolean can(Model model, Method method, Parameter parameter, String asmParamName) {
         Class<?> parameterClass = parameter.getType();
-        String paramName = getParamName(parameter, asmParamName);
-        boolean isKey=model.multipartFileMapContainsKey(paramName);
-        return isKey && (parameterClass== MultipartFile.class||parameterClass== MultipartFile[].class);
+        return parameterClass== MultipartFile.class||parameterClass== MultipartFile[].class;
     }
 
     @Override
-    public Object analysis(Model model, Method method, Parameter parameter, String asmParamName) throws Exception {
+    public Object analysis(Model model, Method method, Parameter parameter, Type genericParameterType, String asmParamName) throws Exception {
         String paramName = getParamName(parameter, asmParamName);
         Class<?> parameterClass = parameter.getType();
-        MultipartFile[] multipartFileArray = model.getMultipartFileArray(paramName);
-        if(parameterClass== MultipartFile.class){
-            return multipartFileArray[multipartFileArray.length-1];
-        }else if(parameterClass== MultipartFile[].class){
-            return multipartFileArray;
-        }else{
-            return null;
+        if(model.multipartFileMapContainsKey(paramName)){
+            MultipartFile[] multipartFileArray = model.getMultipartFileArray(paramName);
+            if(parameterClass== MultipartFile.class){
+                return multipartFileArray[multipartFileArray.length-1];
+            }else{
+                return multipartFileArray;
+            }
         }
+        return null;
     }
 }
