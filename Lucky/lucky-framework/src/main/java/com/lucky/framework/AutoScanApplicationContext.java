@@ -3,6 +3,8 @@ package com.lucky.framework;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.RegisterMachine;
 import com.lucky.framework.container.SingletonContainer;
+import com.lucky.framework.container.factory.BeanFactory;
+import com.lucky.framework.container.factory.Destroy;
 import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.scan.ScanFactory;
@@ -14,9 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -27,9 +27,18 @@ import java.util.stream.Collectors;
 public class AutoScanApplicationContext implements ApplicationContext{
 
     private static AutoScanApplicationContext autoScanApplicationContext;
+    private static final Set<Destroy> destroys;
     private static final RuntimeMXBean mxb = ManagementFactory.getRuntimeMXBean();
     public Class<?> applicationBootClass;
     public SingletonContainer singletonPool;
+
+    static {
+        destroys=new HashSet<>();
+        ServiceLoader<Destroy> services=ServiceLoader.load(Destroy.class);
+        for(Destroy destroy:services){
+            destroys.add(destroy);
+        }
+    }
 
     public static AutoScanApplicationContext create(){
         if(autoScanApplicationContext==null){
@@ -149,5 +158,10 @@ public class AutoScanApplicationContext implements ApplicationContext{
     @Override
     public void put(Module module) {
         singletonPool.put(module.getId(),module);
+    }
+
+    @Override
+    public void destroy() {
+        destroys.stream().forEach(d->d.destroy());
     }
 }

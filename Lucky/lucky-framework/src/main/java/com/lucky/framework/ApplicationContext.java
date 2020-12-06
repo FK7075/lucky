@@ -1,6 +1,7 @@
 package com.lucky.framework;
 
 import com.lucky.framework.container.Module;
+import com.lucky.framework.container.factory.Destroy;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * @version 1.0.0
  * @date 2020/11/14 7:04 上午
  */
-public interface ApplicationContext {
+public interface ApplicationContext extends Destroy {
 
     Object getBean(String id);
 

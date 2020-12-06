@@ -71,9 +71,9 @@ public class PojoParameterAnalysis implements ParameterAnalysis{
                 if(fieldClass.isArray()){
                     FieldUtils.setValue(result,fi,model.getParams(fieldName,fieldClass));
                 }
-                return JavaConversion.strToBasic(model.getParameter(fieldName),fieldClass);
+                FieldUtils.setValue(result,fi,JavaConversion.strToBasic(model.getParameter(fieldName),fieldClass));
             }else if(model.restMapContainsKey(fieldName)){
-                return JavaConversion.strToBasic(model.getRestParam(fieldName),fieldClass);
+                FieldUtils.setValue(result,fi,JavaConversion.strToBasic(model.getRestParam(fieldName),fieldClass));
             }
 
         }

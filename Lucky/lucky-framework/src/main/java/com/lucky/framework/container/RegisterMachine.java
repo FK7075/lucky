@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 注册机
@@ -19,6 +20,15 @@ import java.util.*;
 public class RegisterMachine {
 
     private static final Logger log= LogManager.getLogger("c.l.framework.container.RegisterMachine");
+    private static final Set<Module> autoConfigBeanFactory;
+
+    static {
+        autoConfigBeanFactory=new HashSet<>();
+        ServiceLoader<BeanFactory> services=ServiceLoader.load(BeanFactory.class);
+        for(BeanFactory beanFactory:services){
+            autoConfigBeanFactory.add(new Module(beanFactory.getClass().getName(),"auto-config-beanfactory",beanFactory));
+        }
+    }
 
     private static RegisterMachine registerMachine;
     private SingletonContainer singletonPool;
@@ -85,7 +95,9 @@ public class RegisterMachine {
         });
 
         //找到IOC容器中所有的BeanFactory，并将这些BeanFactory生产的Bean实例注入IOC容器
-        singletonPool.getBeanByClass(BeanFactory.class).stream().sorted(Comparator.comparing((m)->{
+        Set<Module> collect = singletonPool.getBeanByClass(BeanFactory.class).stream().collect(Collectors.toSet());
+        collect.addAll(autoConfigBeanFactory);
+        collect.stream().sorted(Comparator.comparing((m)->{
             BeanFactory beanFactory=(BeanFactory)m.getComponent();
             return beanFactory.priority();
         })).forEach(beanFactoryModule->{

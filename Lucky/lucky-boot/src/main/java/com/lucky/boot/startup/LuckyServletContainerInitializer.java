@@ -44,12 +44,12 @@ public class LuckyServletContainerInitializer implements ServletContainerInitial
 			mapping=new String[fm.getRequestMapping().size()];
 			mapping=fm.getRequestMapping().toArray(mapping);
 			filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true,mapping);
-			log.info("Add Filter `[name="+fm.getFilterName()+" mapping="+Arrays.toString(mapping)+" class="+ fm.getFilter().getClass().getName()+"]`");
+			log.info("Add Filter `name="+fm.getFilterName()+" mapping="+Arrays.toString(mapping)+" class="+ fm.getFilter().getClass().getName()+"`");
 		}
 		
 		for(EventListener l:serverCfg.getListeners()) {
 			ctx.addListener(l);
-			log.info("Add Listener `[class="+l.getClass().getName()+"]`");
+			log.info("Add Listener `class="+l.getClass().getName()+"`");
 		}
 		log.info("Tomcat SessionTimeOut \"" +serverCfg.getSessionTimeout()+"min\"");
 		if(!Assert.isNull(serverCfg.getClosePort())){

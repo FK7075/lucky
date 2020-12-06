@@ -1,9 +1,11 @@
 package com.lucky.web.httpclient;
 
+import com.lucky.framework.uitls.base.Assert;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.exception.HttpClientRequestException;
 import com.lucky.web.exception.NotFindRequestException;
+import com.lucky.web.httpclient.callcontroller.JSONObject;
 import com.lucky.web.webfile.MultipartFile;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -16,6 +18,7 @@ import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -30,13 +33,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HttpClientCall {
 
@@ -60,7 +59,6 @@ public class HttpClientCall {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpRequestBase method = getHttpRequestObject(url, params, requestMethod);
         method.setConfig(getRequestConfig());
-        method.addHeader("Content-Type", "application/x-www-form-urlencoded");
         HttpResponse response = client.execute(method, getHttpClientContext(auth));
         String methodResult = responseToString(response);
         client.close();
@@ -136,6 +134,7 @@ public class HttpClientCall {
     public static String postCall(String url, Map<String, Object> params, String... auth) throws IOException, URISyntaxException {
         return call(url, RequestMethod.POST, params, auth);
     }
+
 
     /**
      * 方法体说明：向远程接口发起POST请求，返回byte[]类型结果
@@ -220,7 +219,7 @@ public class HttpClientCall {
      * @return 返回对象类型的结果
      * @throws IOException
      */
-    public static Object getCall(String url, Map<String, Object> params, Type type, String... auth) throws Exception {
+    public static Object getCall(String url, Map<String, Object> params, java.lang.reflect.Type type, String... auth) throws Exception {
         String result = call(url, RequestMethod.GET, params, auth);
         return webConfig.getJsonSerializationScheme().deserialization(type,result);
     }
@@ -236,7 +235,7 @@ public class HttpClientCall {
      * @return 返回对象类型的结果
      * @throws IOException
      */
-    public static Object getCall(String url, Type type, String... auth) throws Exception {
+    public static Object getCall(String url, java.lang.reflect.Type type, String... auth) throws Exception {
         String result = call(url, RequestMethod.GET, new HashMap<>(), auth);
         return webConfig.getJsonSerializationScheme().deserialization(type,result);
     }
@@ -253,7 +252,7 @@ public class HttpClientCall {
      * @return 返回对象类型的结果
      * @throws IOException
      */
-    public static Object postCall(String url, Map<String, Object> params, Type type, String... auth) throws Exception {
+    public static Object postCall(String url, Map<String, Object> params, java.lang.reflect.Type type, String... auth) throws Exception {
         String result = call(url, RequestMethod.POST, params, auth);
         return webConfig.getJsonSerializationScheme().deserialization(type,result);
     }
@@ -270,7 +269,7 @@ public class HttpClientCall {
      * @return 返回对象类型的结果
      * @throws IOException
      */
-    public static Object putCall(String url, Map<String, Object> params, Type type, String... auth) throws Exception {
+    public static Object putCall(String url, Map<String, Object> params, java.lang.reflect.Type type, String... auth) throws Exception {
         String result = call(url, RequestMethod.PUT, params, auth);
         return webConfig.getJsonSerializationScheme().deserialization(type,result);
     }
@@ -287,7 +286,7 @@ public class HttpClientCall {
      * @return 返回对象类型的结果
      * @throws IOException
      */
-    public static Object deleteCall(String url, Map<String, Object> params, Type type, String... auth) throws Exception {
+    public static Object deleteCall(String url, Map<String, Object> params, java.lang.reflect.Type type, String... auth) throws Exception {
         String result = call(url, RequestMethod.DELETE, params, auth);
         return webConfig.getJsonSerializationScheme().deserialization(type,result);
     }
@@ -303,14 +302,13 @@ public class HttpClientCall {
      * @return 返回对象类型的结果
      * @throws IOException
      */
-    public static Object deleteCall(String url, Type type, String... auth) throws Exception {
+    public static Object deleteCall(String url, java.lang.reflect.Type type, String... auth) throws Exception {
         String result = call(url, RequestMethod.DELETE, new HashMap<>(), auth);
         return webConfig.getJsonSerializationScheme().deserialization(type,result);
     }
 
     /**
      * 获取httpClient本地上下文
-     *
      * @param auth
      * @return HttpClientContext对象
      */
@@ -391,40 +389,74 @@ public class HttpClientCall {
     private static HttpRequestBase getHttpRequestObject(String url, Map<String, Object> params, RequestMethod requestMethod) throws IOException, URISyntaxException {
         if (requestMethod == RequestMethod.GET) {
             log.debug("HttpClient Request => [-GET-] " + url);
-            if (isNullParam(params)) {
-                return new HttpGet(url);
+            HttpGet method;
+            if (Assert.isEmptyMap(params)) {
+                method=new HttpGet(url);
             } else {
                 URIBuilder builder = new URIBuilder(url);
-                for (String key : params.keySet())
+                for (String key : params.keySet()) {
                     builder.addParameter(key, params.get(key).toString());
-                return new HttpGet(builder.build());
+                }
+                method=new HttpGet(builder.build());
             }
+            method.addHeader("Content-Type", Type.FROMKV.getContentType());
+            return method;
         } else if (requestMethod == RequestMethod.DELETE) {
             log.debug("HttpClient Request => [-DELETE-] " + url);
-            if (isNullParam(params)) {
-                return new HttpDelete(url);
+            HttpDelete method;
+            if (Assert.isEmptyMap(params)) {
+                method=new HttpDelete(url);
             } else {
                 URIBuilder builder = new URIBuilder(url);
-                for (String key : params.keySet())
+                for (String key : params.keySet()) {
                     builder.addParameter(key, params.get(key).toString());
-                return new HttpDelete(builder.build());
+                }
+                method=new HttpDelete(builder.build());
             }
+            method.addHeader("Content-Type", Type.FROMKV.getContentType());
+            return method;
         } else if (requestMethod == RequestMethod.POST) {
             log.debug("HttpClient Request => [-POST-] " + url);
-            if (isNullParam(params)) {
-                return new HttpPost(url);
+            HttpPost post;
+            if (Assert.isEmptyMap(params)) {
+                post=new HttpPost(url);
+                post.addHeader("Content-Type",  Type.FROMKV.getContentType());
+                return post;
             } else {
-                HttpPost post = new HttpPost(url);
-                post.setEntity(getUrlEncodedFormEntity(params));
+                JSONObject jsonObject = getJSONObject(params);
+                if(Assert.isNull(jsonObject)){
+                    post = new HttpPost(url);
+                    post.setEntity(getUrlEncodedFormEntity(params));
+                    post.addHeader("Content-Type",  Type.FROMKV.getContentType());
+                    return post;
+                }
+                post=new HttpPost(getUrl(url,params));
+                post.addHeader("Content-Type",  Type.JSON.getContentType());
+                StringEntity stringEntity = new StringEntity(jsonObject.getJsonObject());
+                stringEntity.setContentType("application/json");
+                post.setEntity(stringEntity);
                 return post;
             }
         } else if (requestMethod == RequestMethod.PUT) {
             log.debug("HttpClient Request => [-PUT-] " + url);
-            if (isNullParam(params)) {
-                return new HttpPut(url);
+            HttpPut put;
+            if (Assert.isEmptyMap(params)) {
+                put=new HttpPut(url);
+                put.addHeader("Content-Type",  Type.FROMKV.getContentType());
+                return put;
             } else {
-                HttpPut put = new HttpPut(url);
-                put.setEntity(getUrlEncodedFormEntity(params));
+                JSONObject jsonObject = getJSONObject(params);
+                if(Assert.isNull(jsonObject)){
+                    put = new HttpPut(url);
+                    put.setEntity(getUrlEncodedFormEntity(params));
+                    put.addHeader("Content-Type",  Type.FROMKV.getContentType());
+                    return put;
+                }
+                put=new HttpPut(getUrl(url,params));
+                put.addHeader("Content-Type",  Type.JSON.getContentType());
+                StringEntity stringEntity = new StringEntity(jsonObject.getJsonObject());
+                stringEntity.setContentType("application/json");
+                put.setEntity(stringEntity);
                 return put;
             }
         } else {
@@ -433,17 +465,6 @@ public class HttpClientCall {
         }
     }
 
-    /**
-     * 判断是否有参数
-     *
-     * @param params map
-     * @return
-     */
-    private static boolean isNullParam(Map<String, Object> params) {
-        if (params == null || params.isEmpty())
-            return true;
-        return false;
-    }
 
     /**
      * 得到POST、PUT请求的参数
@@ -454,8 +475,9 @@ public class HttpClientCall {
      */
     private static UrlEncodedFormEntity getUrlEncodedFormEntity(Map<String, Object> params) throws UnsupportedEncodingException {
         List<BasicNameValuePair> list = new ArrayList<>();
-        for (String key : params.keySet())
+        for (String key : params.keySet()) {
             list.add(new BasicNameValuePair(key, params.get(key).toString()));
+        }
         return new UrlEncodedFormEntity(list);
     }
 
@@ -498,15 +520,17 @@ public class HttpClientCall {
                     builder.addBinaryBody(e.getKey(), new FileInputStream(file), ContentType.MULTIPART_FORM_DATA, file.getName());//文件参数-File
                 } else if (File[].class == paramValueClass) {
                     File[] files = (File[]) e.getValue();
-                    for (File file : files)
+                    for (File file : files) {
                         builder.addBinaryBody(e.getKey(), new FileInputStream(file), ContentType.MULTIPART_FORM_DATA, file.getName());//文件参数-File[]
+                    }
                 } else if (MultipartFile.class == paramValueClass) {
                     MultipartFile mf = (MultipartFile) e.getValue();
                     builder.addBinaryBody(e.getKey(), mf.getInputStream(), ContentType.MULTIPART_FORM_DATA, mf.getFileName());//文件参数-MultipartFile
                 } else if (MultipartFile[].class == paramValueClass) {
                     MultipartFile[] mfs = (MultipartFile[]) e.getValue();
-                    for (MultipartFile mf : mfs)
+                    for (MultipartFile mf : mfs) {
                         builder.addBinaryBody(e.getKey(), mf.getInputStream(), ContentType.MULTIPART_FORM_DATA, mf.getFileName());//文件参数-MultipartFile[]
+                    }
                 } else {
                     builder.addTextBody(e.getKey(), e.getValue().toString(), ContentType.APPLICATION_JSON);// 设置请求中String类型的参数
                 }
@@ -532,6 +556,35 @@ public class HttpClientCall {
             }
         }
         return result;
+    }
+
+    private static JSONObject getJSONObject(Map<String,Object> param){
+        Collection<Object> values = param.values();
+        for (Object value : values) {
+            if(JSONObject.class.equals(value.getClass())){
+                return (JSONObject)value;
+            }
+        }
+        return null;
+    }
+
+    private static String getUrl(String url,Map<String,Object> param){
+        if(Assert.isEmptyMap(param)){
+            return url;
+        }
+        StringBuilder params=new StringBuilder();
+        for(Map.Entry<String,Object> entry:param.entrySet()){
+            if(JSONObject.class.equals(entry.getValue().getClass())){
+                continue;
+            }
+            params.append(entry.getKey()).append("=").append(entry.getValue().toString()).append("&");
+        }
+        String paramStr = params.toString();
+        paramStr=paramStr.endsWith("&")?paramStr.substring(0,paramStr.length()-1):paramStr;
+        if(url.contains("?")){
+            return url+"&"+paramStr;
+        }
+        return url+"?"+paramStr;
     }
 
 }

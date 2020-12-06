@@ -46,7 +46,7 @@ public class RequestBodyParameterAnalysis implements ParameterAnalysis{
         String requestBody = sw.toString();
         String contentType = new ServletRequestContext(request).getContentType().toUpperCase();
         Class<?> parameterType = parameter.getType();
-        if("APPLICATION/JSON".equals(contentType)){
+        if(contentType.startsWith("APPLICATION/JSON")){
             try {
                 return model.fromJson(genericParameterType,requestBody);
             }catch (Exception e){
@@ -54,7 +54,7 @@ public class RequestBodyParameterAnalysis implements ParameterAnalysis{
             }
 
         }
-        if("APPLICATION/XML".equals(contentType)){
+        if(contentType.startsWith("APPLICATION/XML")){
             try {
                 return model.fromXml(genericParameterType,requestBody);
             }catch (Exception e){

@@ -2,10 +2,7 @@ package com.lucky.web.httpclient.callcontroller;
 
 import com.lucky.framework.proxy.ASMUtil;
 import com.lucky.framework.uitls.reflect.*;
-import com.lucky.web.annotation.CallController;
-import com.lucky.web.annotation.FileDownload;
-import com.lucky.web.annotation.FileUpload;
-import com.lucky.web.annotation.RequestMapping;
+import com.lucky.web.annotation.*;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.exception.JsonConversionException;
@@ -26,6 +23,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class CallControllerMethodInterceptor implements MethodInterceptor {
 
@@ -120,9 +118,14 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
         List<String> paramName= ASMUtil.getInterfaceMethodParamNames(method);
         String key=null;
         for(int i=0;i<parameters.length;i++) {
+            if(AnnotationUtils.isExist(parameters[i], RequestBody.class)){
+                String serialization = webConfig.getJsonSerializationScheme().serialization(params[i]);
+                callapiMap.put(UUID.randomUUID().toString(),new JSONObject(serialization));
+                continue;
+            }
             Class<?> paramClass=params[i].getClass();
             //可以直接put的类型：JDK自带的类型、MultipartFile、MultipartFile[]
-            if(paramClass.getClassLoader()==null||paramClass== MultipartFile.class||paramClass== MultipartFile[].class){
+            if(ClassUtils.isBasic(paramClass)||paramClass== MultipartFile.class||paramClass== MultipartFile[].class){
                 key = ParameterUtils.getParamName(parameters[i],paramName.get(i));
                 callapiMap.put(key, params[i]);
             }else{

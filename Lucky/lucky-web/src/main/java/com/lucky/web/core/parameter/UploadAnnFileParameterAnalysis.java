@@ -6,6 +6,7 @@ import com.lucky.web.core.Model;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class UploadAnnFileParameterAnalysis extends FileParameterAnalysis{
     }
 
     @Override
-    public Object analysis(Model model, Method method, Parameter parameter, String asmParamName) throws Exception {
+    public Object analysis(Model model, Method method, Parameter parameter, Type genericParameterType, String asmParamName) throws Exception {
         String paramName = getParamName(parameter, asmParamName);
         Class<?> parameterClass = parameter.getType();
         File[] uploadFileArray = model.getUploadFileArray(paramName);

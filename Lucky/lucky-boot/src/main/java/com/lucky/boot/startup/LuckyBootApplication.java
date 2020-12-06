@@ -107,8 +107,7 @@ public class LuckyBootApplication {
 
     private static void doShutDownWork(ApplicationContext applicationContext) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            UrlMappingCollection urlMappingCollection = (UrlMappingCollection) applicationContext.getBean("urlMappingCollection");
-            urlMappingCollection.closeRun();
+            applicationContext.destroy();
         }));
     }
 

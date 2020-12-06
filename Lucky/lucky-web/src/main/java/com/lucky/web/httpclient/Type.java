@@ -5,7 +5,7 @@ package com.lucky.web.httpclient;
  * @version 1.0
  * @date 2020/12/4 0004 16:53
  */
-public enum ContentType implements IContentType {
+public enum Type implements IContentType {
 
     JSON("application/json;charset=UTF-8"),
     FROMKV("application/x-www-form-urlencoded");
@@ -13,7 +13,7 @@ public enum ContentType implements IContentType {
 
     private String contentType;
 
-    ContentType(String contentType) {
+    Type(String contentType) {
         this.contentType = contentType;
     }
 

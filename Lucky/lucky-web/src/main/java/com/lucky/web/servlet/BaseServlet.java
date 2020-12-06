@@ -120,7 +120,7 @@ public abstract class BaseServlet extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        urlMappingCollection.closeRun();
+        AutoScanApplicationContext.create().destroy();
     }
 
     @Override
