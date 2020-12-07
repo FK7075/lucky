@@ -21,15 +21,15 @@ public interface ApplicationContext extends Destroy {
 
     List<Module> getModule(Class<?>...aClass);
 
-    List<Object> getBeanByAnnotation(Class<?extends Annotation>...annotationClasses);
+    List<?> getBeanByAnnotation(Class<?extends Annotation>...annotationClasses);
 
     List<Module> getModuleByAnnotation(Class<?extends Annotation>...annotationClasses);
 
-    List<Object> getBeans();
+    List<?> getBeans();
 
     List<Module> getModules();
 
-    List<Object> getBeanByType(String...iocType);
+    List<?> getBeanByType(String...iocType);
 
     List<Module> getModuleByType(String...iocType);
 

@@ -23,13 +23,21 @@ server:
   servlet:
     servletName:
       class: c
-      mapping: [/,/user/]
+      url-patterns: [/,/user/]
       load-on-startup: 0
+      async-supported: false
+      init-params:
+        k1: v1
+        k2: v2
   filter:
     filterName:
       class: c
-      mapping: m
-
+      url-patterns: [/*,/user/*]
+      servlet-names: [servletName1,servletName2]
+      dispatcher-types: [FORWARD,INCLUDE,REQUEST,ASYNC,ERROR]
+      init-params:
+        k1: v1
+        k2: v2
   listener:
     listenerName: class
 

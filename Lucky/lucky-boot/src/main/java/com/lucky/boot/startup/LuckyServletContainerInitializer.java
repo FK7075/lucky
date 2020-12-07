@@ -1,6 +1,7 @@
 package com.lucky.boot.startup;
 
 import com.lucky.boot.conf.ServerConfig;
+import com.lucky.boot.web.ListenerMapping;
 import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.boot.web.FilterMapping;
@@ -29,27 +30,28 @@ public class LuckyServletContainerInitializer implements ServletContainerInitial
 	public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
 		ServletRegistration.Dynamic servlet;
 		FilterRegistration.Dynamic filter;
-		String[] mapping;
 		for(ServletMapping sm:serverCfg.getServletList()) {
-			servlet=ctx.addServlet(sm.getServletName(), sm.getServlet());
+			servlet=ctx.addServlet(sm.getName(), sm.getServlet());
 			servlet.setLoadOnStartup(sm.getLoadOnStartup());
-			mapping=new String[sm.getRequestMapping().size()];
-			mapping=sm.getRequestMapping().toArray(mapping);
-			servlet.addMapping(mapping);
-			log.info("Add Servlet `name="+sm.getServletName()+" mapping="+Arrays.toString(mapping)+" class="+sm.getServlet().getClass().getName()+"`");
+			servlet.addMapping(sm.getUrlPatterns());
+			servlet.setAsyncSupported(sm.isAsyncSupported());
+			servlet.setInitParameters(sm.getInitParams());
+			log.info("Add Servlet `name="+sm.getName()+" mapping="+Arrays.toString(sm.getUrlPatterns())+" class="+sm.getServlet().getClass().getName()+"`");
 		}
 		
 		for(FilterMapping fm:serverCfg.getFilterList()) {
-			filter=ctx.addFilter(fm.getFilterName(), fm.getFilter());
-			mapping=new String[fm.getRequestMapping().size()];
-			mapping=fm.getRequestMapping().toArray(mapping);
-			filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true,mapping);
-			log.info("Add Filter `name="+fm.getFilterName()+" mapping="+Arrays.toString(mapping)+" class="+ fm.getFilter().getClass().getName()+"`");
+			DispatcherType dispatcherTypes = fm.getDispatcherTypes()[0];
+			filter=ctx.addFilter(fm.getName(), fm.getFilter());
+			filter.setAsyncSupported(fm.isAsyncSupported());
+			filter.setInitParameters(fm.getInitParams());
+			filter.addMappingForUrlPatterns(EnumSet.of(dispatcherTypes), true,fm.getUrlPatterns());
+			filter.addMappingForServletNames(EnumSet.of(dispatcherTypes), true,fm.getServletNames());
+			log.info("Add Filter `name="+fm.getName()+" mapping="+Arrays.toString(fm.getUrlPatterns())+" class="+ fm.getFilter().getClass().getName()+"`");
 		}
 		
-		for(EventListener l:serverCfg.getListeners()) {
-			ctx.addListener(l);
-			log.info("Add Listener `class="+l.getClass().getName()+"`");
+		for(ListenerMapping lm:serverCfg.getListenerList()) {
+			ctx.addListener(lm.getListener());
+			log.info("Add Listener `class="+lm.getListener().getClass().getName()+"`");
 		}
 		log.info("Tomcat SessionTimeOut \"" +serverCfg.getSessionTimeout()+"min\"");
 		if(!Assert.isNull(serverCfg.getClosePort())){

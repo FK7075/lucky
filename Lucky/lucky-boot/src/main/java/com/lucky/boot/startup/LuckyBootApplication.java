@@ -5,7 +5,6 @@ import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.welcome.JackLamb;
 import com.lucky.boot.conf.ServerConfig;
-import com.lucky.web.mapping.UrlMappingCollection;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
@@ -82,8 +81,8 @@ public class LuckyBootApplication {
             context.setDocBase(docBase);
         }
         context.setSessionCookieName("LUCKY-SESSION-ID");
-        context.addLifecycleListener(new Tomcat.DefaultWebXmlListener());
         context.addLifecycleListener(new Tomcat.FixContextListener());
+        context.addLifecycleListener(new Tomcat.DefaultWebXmlListener());
         context.addServletContainerInitializer(new LuckyServletContainerInitializer(applicationContext), null);
         Set<Class<?>> websocketSet=new HashSet<>();
         applicationContext.getModuleByAnnotation(ServerEndpoint.class).stream().forEach(m->websocketSet.add(m.getOriginalType()));

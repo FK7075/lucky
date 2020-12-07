@@ -18,8 +18,8 @@ public abstract class LuckyShutdown {
         OutputStream stream = socket.getOutputStream();
         for(int i = 0;i < command.length();i++){
             stream.write(command.charAt(i));
-            stream.flush();
         }
+        stream.flush();
         stream.close();
         socket.close();
 	}

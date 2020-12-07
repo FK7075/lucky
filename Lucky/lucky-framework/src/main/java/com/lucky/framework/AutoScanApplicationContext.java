@@ -98,7 +98,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
     }
 
     @Override
-    public List<Object> getBeanByAnnotation(Class<? extends Annotation>...annotationClasses) {
+    public List<?> getBeanByAnnotation(Class<? extends Annotation>...annotationClasses) {
         return singletonPool.getBeanByAnnotation(annotationClasses)
                 .stream()
                 .map(m->m.getComponent())
@@ -111,7 +111,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
     }
 
     @Override
-    public List<Object> getBeans() {
+    public List<?> getBeans() {
         return singletonPool.values()
                 .stream()
                 .map(m->m.getComponent())
@@ -124,7 +124,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
     }
 
     @Override
-    public List<Object> getBeanByType(String...iocType) {
+    public List<?> getBeanByType(String...iocType) {
         return singletonPool.getBeanByType(iocType)
                 .stream()
                 .map(m->m.getComponent())

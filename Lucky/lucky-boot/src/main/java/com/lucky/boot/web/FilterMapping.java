@@ -1,46 +1,36 @@
 package com.lucky.boot.web;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import java.util.Set;
 
-public class FilterMapping {
-	
-	private Set<String> requestMapping;
-	
-	private String filterName;
+public class FilterMapping extends WebMapping{
 	
 	private Filter filter;
-	
-	
-	public FilterMapping(Set<String> requestMapping, String filterName, Filter filter) {
-		this.requestMapping = requestMapping;
-		this.filterName = filterName;
-		this.filter = filter;
-	}
-	
-	public Set<String> getRequestMapping() {
-		return requestMapping;
-	}
+	private String[] servletNames={};
+	private DispatcherType[] dispatcherTypes={DispatcherType.REQUEST};
 
-	public void setRequestMapping(Set<String> requestMapping) {
-		this.requestMapping = requestMapping;
-	}
-
-	public String getFilterName() {
-		return filterName;
-	}
-	
-	public void setFilterName(String filterName) {
-		this.filterName = filterName;
-	}
-	
 	public Filter getFilter() {
 		return filter;
 	}
-	
+
 	public void setFilter(Filter filter) {
 		this.filter = filter;
 	}
-	
 
+	public String[] getServletNames() {
+		return servletNames;
+	}
+
+	public void setServletNames(String[] servletNames) {
+		this.servletNames = servletNames;
+	}
+
+	public DispatcherType[] getDispatcherTypes() {
+		return dispatcherTypes;
+	}
+
+	public void setDispatcherTypes(DispatcherType[] dispatcherTypes) {
+		this.dispatcherTypes = dispatcherTypes;
+	}
 }

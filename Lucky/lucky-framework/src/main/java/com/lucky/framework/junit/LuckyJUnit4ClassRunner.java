@@ -36,5 +36,6 @@ public class LuckyJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 	@Override
 	protected void runChild(FrameworkMethod method, RunNotifier notifier) {
 		super.runChild(method, notifier);
+		AutoScanApplicationContext.create().destroy();
 	}
 }

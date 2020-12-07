@@ -9,6 +9,7 @@ import com.lucky.web.mapping.UrlMapping;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * @version 1.0
  * @date 2020/11/17 18:52
  */
-
+@WebServlet(urlPatterns = "/",loadOnStartup = 0,name = "LUCKY_SERVLET")
 public class LuckyDispatcherServlet extends BaseServlet {
 
     private static final Logger log = LogManager.getLogger(LuckyDispatcherServlet.class);

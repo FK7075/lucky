@@ -1,18 +1,22 @@
 package com.lucky.boot.conf;
 
-import com.lucky.boot.annotation.LuckyFilter;
-import com.lucky.boot.annotation.LuckyServlet;
 import com.lucky.boot.web.FilterMapping;
+import com.lucky.boot.web.ListenerMapping;
 import com.lucky.boot.web.ServletMapping;
 import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.confanalysis.LuckyConfig;
+import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.base.BaseUtils;
-import com.lucky.web.servlet.LuckyDispatcherServlet;
 
 import javax.servlet.Filter;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.List;
 
 /**
  * 服务器的配置信息
@@ -57,7 +61,7 @@ public class ServerConfig extends LuckyConfig {
 
     private List<FilterMapping> filterList;
 
-    private Set<EventListener> listeners;
+    private List<ListenerMapping> listenerList;
 
     public int getPort() {
         return port;
@@ -111,10 +115,6 @@ public class ServerConfig extends LuckyConfig {
         return filterList;
     }
 
-    public Set<EventListener> getListeners() {
-        return listeners;
-    }
-
     public void setPort(int port) {
         this.port = port;
         serverConfig.setBaseDir("java.io.tmpdir:/tomcat."+serverConfig.getPort()+File.separator);
@@ -150,6 +150,18 @@ public class ServerConfig extends LuckyConfig {
 
     public void setURIEncoding(String URIEncoding) {
         this.URIEncoding = URIEncoding;
+    }
+
+    public List<ListenerMapping> getListenerList() {
+        return listenerList;
+    }
+
+    public void setListenerList(List<ListenerMapping> listenerList) {
+        this.listenerList = listenerList;
+    }
+
+    public void addListener(ListenerMapping listenerMapping){
+        this.listenerList.add(listenerMapping);
     }
 
     public void setDocBase(String docbase) {
@@ -188,42 +200,18 @@ public class ServerConfig extends LuckyConfig {
         this.filterList = filterList;
     }
 
-    public void setListeners(Set<EventListener> listeners) {
-        this.listeners = listeners;
-    }
-
-    public void addListener(EventListener listener){
-        this.listeners.add(listener);
-    }
 
     private ServerConfig(){
         servletList =new ArrayList<>();
-        listeners=new HashSet<>();
+        listenerList=new ArrayList<>();
         filterList =new ArrayList<>();
     }
 
-    private Set<String> getMapping(String className,String[] mapStrArray){
-        if(mapStrArray.length!=0){
-            return new HashSet<>(Arrays.asList(mapStrArray));
-        }
-        Set<String> mapping=new HashSet<>(1);
-        mapping.add("/"+className);
-        return mapping;
-    }
-
-    public void addFilter(Filter filter,String...mappings) {
-        String filterName=BaseUtils.lowercaseFirstLetter(filter.getClass().getSimpleName());
-        FilterMapping filterMapping=new FilterMapping(getMapping(filterName,mappings),filterName,filter);
+    public void addFilter(FilterMapping filterMapping) {
         filterList.add(filterMapping);
     }
 
-    public void addServlet(HttpServlet servlet,String...mappings) {
-        addServlet(servlet,-1,mappings);
-    }
-
-    public void addServlet(HttpServlet servlet,int loadOnStartup,String...mappings) {
-        String servletName=BaseUtils.lowercaseFirstLetter(servlet.getClass().getSimpleName());
-        ServletMapping servletMapping=new ServletMapping(getMapping(servletName,mappings),servletName,servlet,loadOnStartup);
+    public void addServlet(ServletMapping servletMapping) {
         servletList.add(servletMapping);
     }
 
@@ -235,7 +223,6 @@ public class ServerConfig extends LuckyConfig {
             serverConfig.setShutdown(null);
             serverConfig.setSessionTimeout(30);
             serverConfig.setWebapp("/WebContent");
-            serverConfig.addServlet(new LuckyDispatcherServlet(),0,"/");
             serverConfig.setContextPath("");
             serverConfig.setURIEncoding("UTF-8");
             serverConfig.setAutoDeploy(false);
@@ -263,39 +250,85 @@ public class ServerConfig extends LuckyConfig {
      * 注解版Listener注册
      */
     private void listenerInit(ApplicationContext applicationContext) {
-        List<EventListener> listeners = applicationContext.getBean(EventListener.class);
-        listeners.stream().forEach(a->this.listeners.add(a));
+        List<EventListener> listeners = (List<EventListener>) applicationContext.getBeanByAnnotation(WebListener.class);
+        WebListener listenerAnn;
+        for (EventListener listener : listeners) {
+            Class<? extends EventListener> listenerClass = listener.getClass();
+            listenerAnn=listenerClass.getAnnotation(WebListener.class);
+            String listenerName=Assert.isBlankString(listenerAnn.value())?
+                    BaseUtils.lowercaseFirstLetter(listenerClass.getSimpleName()):listenerAnn.value();
+            listenerList.add(new ListenerMapping(listenerName,listener));
+        }
     }
 
     /**
      * 注解版Servlet注册
      */
     private void servletInit(ApplicationContext applicationContext) {
-        List<HttpServlet> servlets = applicationContext.getBean(HttpServlet.class);
-        ServletMapping servletMap;
-        Set<String> smapping;
+        List<HttpServlet> servlets = ( List<HttpServlet>)applicationContext.getBeanByAnnotation(WebServlet.class);
         for(HttpServlet servlet:servlets) {
-            LuckyServlet annServlet=servlet.getClass().getAnnotation(LuckyServlet.class);
-            smapping=new HashSet<>(Arrays.asList(annServlet.value()));
-            servletMap=new ServletMapping(smapping, BaseUtils.lowercaseFirstLetter(servlet.getClass().getSimpleName()),servlet,annServlet.loadOnStartup());
-            servletList.add(servletMap);
+            servletList.add(createServletMapping(servlet));
         }
+    }
+
+    private ServletMapping createServletMapping(HttpServlet servlet){
+        ServletMapping servletMap=new ServletMapping();
+        servletMap.setServlet(servlet);
+        Class<? extends HttpServlet> servletClass = servlet.getClass();
+        WebServlet annServlet=servletClass.getAnnotation(WebServlet.class);
+        String servletClassName = BaseUtils.lowercaseFirstLetter(servletClass.getSimpleName());
+        String servletName= Assert.isBlankString(annServlet.name())?servletClassName:annServlet.name();
+        servletMap.setName(servletName);
+        String[] servletMapping=Assert.isEmptyArray(annServlet.urlPatterns()) ?annServlet.value():annServlet.urlPatterns();
+        if(Assert.isEmptyArray(servletMapping)){
+            servletMapping=new String[1];
+            servletMapping[0]="/"+servletClassName;
+        }
+        servletMap.setUrlPatterns(servletMapping);
+        servletMap.setLoadOnStartup(annServlet.loadOnStartup());
+        servletMap.setAsyncSupported(annServlet.asyncSupported());
+        servletMap.setSmallIcon(annServlet.smallIcon());
+        servletMap.setLargeIcon(annServlet.largeIcon());
+        servletMap.setDescription(annServlet.description());
+        servletMap.setDisplayName(annServlet.displayName());
+        servletMap.setInitParams(annServlet.initParams());
+        return servletMap;
     }
 
     /**
      * 注解版Filter注册
      */
     private void filterInit(ApplicationContext applicationContext) {
-        List<Filter> filters = applicationContext.getBean(Filter.class);
-        FilterMapping filterMap;
-        Set<String> fmapping;
-        LuckyFilter annFilter;
+        List<Filter> filters = (List<Filter>) applicationContext.getBeanByAnnotation(WebFilter.class);
         for(Filter filter:filters) {
-            annFilter=filter.getClass().getAnnotation(LuckyFilter.class);
-            fmapping=new HashSet<>(Arrays.asList(annFilter.value()));
-            filterMap=new FilterMapping(fmapping,BaseUtils.lowercaseFirstLetter(filter.getClass().getSimpleName()),filter);
-            filterList.add(filterMap);
+            filterList.add(createFilterMappng(filter));
         }
+    }
+
+    private FilterMapping createFilterMappng(Filter filter) {
+        FilterMapping fm=new FilterMapping();
+        fm.setFilter(filter);
+        Class<? extends Filter> filterClass = filter.getClass();
+        WebFilter filterAnn=filterClass.getAnnotation(WebFilter.class);
+        String filterClassName = BaseUtils.lowercaseFirstLetter(filterClass.getSimpleName());
+        String filterName=Assert.isBlankString(filterAnn.filterName())?filterClassName:filterAnn.filterName();
+        fm.setName(filterName);
+
+        String[] filterMapping=Assert.isEmptyArray(filterAnn.urlPatterns()) ?filterAnn.value():filterAnn.urlPatterns();
+        if(Assert.isEmptyArray(filterMapping)){
+            filterMapping=new String[1];
+            filterMapping[0]="/"+filterClassName;
+        }
+        fm.setUrlPatterns(filterMapping);
+        fm.setServletNames(filterAnn.servletNames());
+        fm.setDispatcherTypes(filterAnn.dispatcherTypes());
+        fm.setInitParams(filterAnn.initParams());
+        fm.setDescription(filterAnn.description());
+        fm.setDisplayName(filterAnn.displayName());
+        fm.setSmallIcon(filterAnn.smallIcon());
+        fm.setLargeIcon(filterAnn.largeIcon());
+        fm.setAsyncSupported(filterAnn.asyncSupported());
+        return fm;
     }
 
 
