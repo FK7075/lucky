@@ -1,6 +1,6 @@
 package com.lucky.framework.container.factory;
 
-import com.lucky.framework.FusionStrategy;
+import com.lucky.framework.container.FusionStrategy;
 
 /**
  * @author fk7075

@@ -76,12 +76,21 @@ public abstract class JarExpandController extends LuckyController{
     }
 
     /**
-     * 移除一个外部扩展
+     * 【逻辑删除】移除一个外部扩展
      * @param expandName 扩展名
      */
     protected void deleteExpandJar(String expandName){
         model.getUrlMappingCollection().deleteExpand(expandName);
         model.getExceptionMappingCollection().deleteExpand(expandName);
+    }
+
+    /**
+     * 【物理删除】移除一个外部扩展
+     * @param expandName 扩展名
+     */
+    protected void removerExpandJar(String expandName){
+        model.getUrlMappingCollection().removerExpand(expandName);
+        model.getExceptionMappingCollection().removerExpand(expandName);
     }
 
 

@@ -1,10 +1,9 @@
 package com.lucky.framework.container.factory;
 
-import com.lucky.framework.FusionStrategy;
+import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.RegisterMachine;
 import com.lucky.framework.container.SingletonContainer;
-import com.lucky.framework.container.enums.Strategy;
 import com.lucky.framework.uitls.base.BaseUtils;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 

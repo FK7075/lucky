@@ -24,12 +24,7 @@
     <dependency>
       <groupId>com.lucky.jacklamb</groupId>
       <artifactId>lucky-framework</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.lucky.jacklamb</groupId>
-      <artifactId>lucky-web</artifactId>
+      <scope>provided</scope>
       <version>1.0-SNAPSHOT</version>
     </dependency>
 

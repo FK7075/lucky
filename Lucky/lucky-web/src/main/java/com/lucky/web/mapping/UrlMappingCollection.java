@@ -222,7 +222,20 @@ public class UrlMappingCollection {
             return false;
         }
         deleteExpand.add(expandName);
-        log.info("URL扩展集 `{}` 已删除！",expandName);
+        log.info("URL扩展集 `{}` 已被逻辑删除！",expandName);
+        return true;
+    }
+
+    public boolean removerExpand(String expandName){
+        if(!expandMap.containsKey(expandName)){
+            log.warn("不存在扩展名为 `{}` 的URL扩展集,删除操作无效！",expandName);
+            return false;
+        }
+        expandMap.remove(expandName);
+        if(deleteExpand.contains(expandName)){
+            deleteExpand.remove(expandName);
+        }
+        log.info("URL扩展集 `{}` 已被物理删除！",expandName);
         return true;
     }
 

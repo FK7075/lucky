@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Plugin
-@Component(type = "framework")
+@Component(type = "aspect")
 public @interface Aspect {
 	
 	/**

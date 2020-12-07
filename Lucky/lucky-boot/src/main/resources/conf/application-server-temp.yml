@@ -20,21 +20,37 @@ server:
   shutdown: SHUTDOWN
   ##URL编码
   url-encoding: UTF-8
+  ##配置Servlet
   servlet:
+    ##Servlet名字
     servletName:
-      class: c
+      ##Servlet的全限定类名
+      class: org.jack.servlet.MyServlet
+      ##监听的路径
       url-patterns: [/,/user/]
-      load-on-startup: 0
+      ##初始化方法执行的优先级，大于0表示在服务器启动时初始化该Servlet
+      load-on-startup: -1
+      ##是否支持异步
       async-supported: false
+      ##配置参数
       init-params:
         k1: v1
         k2: v2
+  ##配置Filter
   filter:
+    ##Filter名字
     filterName:
-      class: c
+      ##Filter的全限定类名
+      class: org.jack.servlet.MyFilter
+      ##监听的路径
       url-patterns: [/*,/user/*]
+      ##监听的Servlet
       servlet-names: [servletName1,servletName2]
+      ##是否支持异步
+      async-supported: false
+      ##调度的类型
       dispatcher-types: [FORWARD,INCLUDE,REQUEST,ASYNC,ERROR]
+      ##配置参数
       init-params:
         k1: v1
         k2: v2

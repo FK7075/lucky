@@ -1,6 +1,6 @@
 package com.lucky.framework.container.enums;
 
-import com.lucky.framework.FusionStrategy;
+import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.SingletonContainer;
 
 import java.util.Set;

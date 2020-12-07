@@ -1,6 +1,4 @@
-package com.lucky.framework;
-
-import com.lucky.framework.container.SingletonContainer;
+package com.lucky.framework.container;
 
 import java.util.Set;
 

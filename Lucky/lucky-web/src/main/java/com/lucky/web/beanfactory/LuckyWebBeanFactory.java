@@ -1,6 +1,6 @@
 package com.lucky.web.beanfactory;
 
-import com.lucky.framework.FusionStrategy;
+import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.annotation.Component;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
@@ -16,7 +16,6 @@ import com.lucky.web.httpclient.callcontroller.CallControllerProxy;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author fk7075
