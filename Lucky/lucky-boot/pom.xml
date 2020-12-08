@@ -25,7 +25,6 @@
       <groupId>com.lucky.jacklamb</groupId>
       <artifactId>lucky-framework</artifactId>
       <scope>provided</scope>
-      <version>1.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>

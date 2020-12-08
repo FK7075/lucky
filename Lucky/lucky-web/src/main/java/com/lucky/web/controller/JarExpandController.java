@@ -133,6 +133,7 @@ public abstract class JarExpandController extends LuckyController{
         //将解析后的映射添加到映射扩展中
         getUrlMappingCollection().addExpand(jarExpand,urlMappingCollection);
         getExceptionMappingCollection().addExpand(jarExpand,exceptionMappingCollection);
+        urlMappingCollection.initRun();
         return true;
     }
 

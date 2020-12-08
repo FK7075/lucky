@@ -1,9 +1,14 @@
 package com.lucky.web.controller;
 
 import com.lucky.web.annotation.GetMapping;
+import com.lucky.web.annotation.InitRun;
 import com.lucky.web.annotation.ResponseBody;
+import com.lucky.web.enums.Rest;
+import com.lucky.web.mapping.UrlMapping;
 import com.lucky.web.mapping.UrlMappingCollection;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.*;
 
 /**
@@ -39,26 +44,4 @@ public abstract class JarExpandDetailsController extends JarExpandController{
         }
         return invalid;
     }
-
-    /**
-     * 获取所有扩展中的URL映射
-     * @return
-     */
-    @ResponseBody
-    @GetMapping("/allJarExpandUrlMapping")
-    public Map<String, UrlMappingCollection> getAllJarExpandUrlMapping(){
-        return getUrlMappingCollection().getExpandMap();
-    }
-
-    /**
-     * 获取所有扩展中的Exception处理器映射
-     * @return
-     */
-    @ResponseBody
-    @GetMapping("/allJarExpandExcMapping")
-    public Map<String, UrlMappingCollection> getAllJarExpandExceptionMapping(){
-        return getUrlMappingCollection().getExpandMap();
-    }
-
-
 }
