@@ -1,6 +1,5 @@
 package com.lucky.framework.confanalysis;
 
-import java.io.Reader;
 import java.util.Map;
 
 /**
@@ -11,4 +10,11 @@ import java.util.Map;
 public interface ConfAnalysis {
 
     Map<String, Object> getMap();
+
+//    Object getObject(String prefix);
+
+    default boolean isExpression(String prefix){
+        prefix=prefix.trim();
+        return prefix.startsWith("${")&&prefix.endsWith("}");
+    }
 }

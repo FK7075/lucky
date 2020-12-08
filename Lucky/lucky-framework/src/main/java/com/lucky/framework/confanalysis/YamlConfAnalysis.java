@@ -35,4 +35,14 @@ public class YamlConfAnalysis implements ConfAnalysis{
         return map;
     }
 
+//    @Override
+    public Object getObject(String prefix) {
+        if(isExpression(prefix)){
+
+        }else{
+
+        }
+        return null;
+    }
+
 }

@@ -34,6 +34,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
 
     static {
         destroys=new HashSet<>();
+        //spi机制
         ServiceLoader<Destroy> services=ServiceLoader.load(Destroy.class);
         for(Destroy destroy:services){
             destroys.add(destroy);

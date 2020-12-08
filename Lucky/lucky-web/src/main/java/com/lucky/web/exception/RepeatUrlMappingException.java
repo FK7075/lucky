@@ -12,10 +12,10 @@ import java.util.Arrays;
 public class RepeatUrlMappingException extends RuntimeException{
 
     public RepeatUrlMappingException(UrlMapping urlMapping){
-        String.format("URL映射重复定义异常！[%s]/%s 已经被定义!错误位置：Controller:[%s] Method:[%s]"
+        super(String.format("URL映射重复定义异常！[%s],%s 已经被定义!错误位置：Controller:[%s] Method:[%s]"
                 , urlMapping.getUrl()
                 ,Arrays.toString(urlMapping.getMethods())
                 , urlMapping.getObject().getClass()
-                , urlMapping.getMapping().getName());
+                , urlMapping.getMapping().getName()));
     }
 }

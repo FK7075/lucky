@@ -64,10 +64,6 @@ public class Model {
     private Map<String, String> restMap;
     /** Servlet输出流*/
     private ServletOutputStream outputStream;
-    /** URL映射集*/
-    private UrlMappingCollection urlMappingCollection;
-    /** 异常处理映射集*/
-    private ExceptionMappingCollection exceptionMappingCollection;
 
     /**
      * Model构造器
@@ -123,23 +119,6 @@ public class Model {
             outputStream=getResponse().getOutputStream();
         }
         return outputStream;
-    }
-
-
-    public UrlMappingCollection getUrlMappingCollection() {
-        return urlMappingCollection;
-    }
-
-    public void setUrlMappingCollection(UrlMappingCollection urlMappingCollection) {
-        this.urlMappingCollection = urlMappingCollection;
-    }
-
-    public ExceptionMappingCollection getExceptionMappingCollection() {
-        return exceptionMappingCollection;
-    }
-
-    public void setExceptionMappingCollection(ExceptionMappingCollection exceptionMappingCollection) {
-        this.exceptionMappingCollection = exceptionMappingCollection;
     }
 
     /**

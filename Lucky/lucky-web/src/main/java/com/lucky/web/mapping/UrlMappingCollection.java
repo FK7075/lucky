@@ -6,6 +6,7 @@ import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.MethodUtils;
 import com.lucky.web.annotation.CloseRun;
 import com.lucky.web.annotation.InitRun;
+import com.lucky.web.controller.JarExpand;
 import com.lucky.web.core.Model;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.exception.CloseRunException;
@@ -36,6 +37,8 @@ public class UrlMappingCollection {
     private Map<String,UrlMappingCollection> expandMap;
     /** 被逻辑删除的扩展名*/
     private Set<String> deleteExpand;
+    /** URL扩展的具体信息*/
+    private Map<String, JarExpand> expandInfoMap;
 
 
     public UrlMappingCollection(){
@@ -43,6 +46,7 @@ public class UrlMappingCollection {
         runList=new ArrayList<>(10);
         expandMap=new HashMap<>();
         deleteExpand=new HashSet<>();
+        expandInfoMap=new HashMap<>();
     }
 
     public List<UrlMapping> getRunList() {
@@ -83,6 +87,14 @@ public class UrlMappingCollection {
 
     public void setDeleteExpand(Set<String> deleteExpand) {
         this.deleteExpand = deleteExpand;
+    }
+
+    public Map<String, JarExpand> getExpandInfoMap() {
+        return expandInfoMap;
+    }
+
+    public void setExpandInfoMap(Map<String, JarExpand> expandInfoMap) {
+        this.expandInfoMap = expandInfoMap;
     }
 
     /**
@@ -177,11 +189,12 @@ public class UrlMappingCollection {
 
     /***
      * 添加一个URL映射集的扩展
-     * @param expandName 扩展名
+     * @param jarExpand 扩展信息
      * @param expand URL映射集
      * @return
      */
-    public boolean addExpand(String expandName,UrlMappingCollection expand){
+    public boolean addExpand(JarExpand jarExpand,UrlMappingCollection expand){
+        String expandName=jarExpand.getExpandName();
         if(deleteExpand.contains(expandName)){
             deleteExpand.remove(expandName);
             return true;
@@ -204,6 +217,7 @@ public class UrlMappingCollection {
             });
         }
         expandMap.put(expandName,expand);
+        expandInfoMap.put(expandName,jarExpand);
         log.info("URL扩展集 `{}` 添加成功！URL映射总数为：{}",expandName,expand.size());
         return true;
     }
@@ -232,6 +246,7 @@ public class UrlMappingCollection {
             return false;
         }
         expandMap.remove(expandName);
+        expandInfoMap.remove(expandName);
         if(deleteExpand.contains(expandName)){
             deleteExpand.remove(expandName);
         }

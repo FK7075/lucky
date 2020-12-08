@@ -64,8 +64,8 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
             urlMappingCollection.add(new UrlMapping(url,module.getId(),
                                 module.getType(),controller,
                                 method,getRequestMethod(method),
-                                getRest(method),getIps(method),
-                                getIpSection(method)));
+                                getRest(controllerClass,method),getIps(controllerClass,method),
+                                getIpSection(controllerClass,method)));
         }
         List<Method> runMethods = ClassUtils.getMethodByAnnotationArrayOR(controllerClass, RUN_ANNOTATIONS);
         for (Method runMethod : runMethods) {
@@ -83,7 +83,7 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
         List<Method> exceptionMethods = ClassUtils.getMethodByAnnotation(adviceClass, ExceptionHandler.class);
         for (Method method : exceptionMethods) {
             exceptionMappingCollection.add(new ExceptionMapping(controllerAdvice,method,scopes,
-                                            getRest(method),getException(method)));
+                                            getRest(adviceClass,method),getException(method)));
         }
         return exceptionMappingCollection;
     }
@@ -131,30 +131,30 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
 
     /**
      * 获取当前Controller方法支持的IP段
+     * @param controllerClass ControllerClass
      * @param method Controller方法
      * @return
      */
-    protected String[] getIpSection(Method method){
+    protected String[] getIpSection(Class<?> controllerClass,Method method){
         Annotation mappingAnn = AnnotationUtils.getByArray(method, MAPPING_ANNOTATIONS);
         String[] methodIpSection=(String[])AnnotationUtils.getValue(mappingAnn,"ipSection");
         if(!Assert.isEmptyArray(methodIpSection)){
             return methodIpSection;
         }
-        Class<?> controllerClass=method.getDeclaringClass();
         Annotation controllerAnnotation = AnnotationUtils.getByArray(controllerClass, CONTROLLER_ANNOTATIONS);
         return (String[]) AnnotationUtils.getValue(controllerAnnotation,"ipSection");
     }
 
     /**
      * 获取当前Controller方法支持的IP
+     * @param controllerClass ControllerClass
      * @param method Controller方法
      * @return
      */
-    protected Set<String> getIps(Method method){
+    protected Set<String> getIps(Class<?> controllerClass,Method method){
         Set<String> ips=new HashSet<>();
         Annotation mappingAnn = AnnotationUtils.getByArray(method, MAPPING_ANNOTATIONS);
         String[] methodIpSection=(String[])AnnotationUtils.getValue(mappingAnn,"ip");
-        Class<?> controllerClass=method.getDeclaringClass();
         Annotation controllerAnnotation = AnnotationUtils.getByArray(controllerClass, CONTROLLER_ANNOTATIONS);
         String[] controllerIpSection = (String[]) AnnotationUtils.getValue(controllerAnnotation,"ip");
         Stream.of(methodIpSection).forEach(ip->{
@@ -174,14 +174,14 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
 
     /**
      * 获取当前Controller的响应处理方式
+     * @param controllerClass ControllerClass
      * @param method Controller方法
      * @return
      */
-    protected Rest getRest(Method method){
+    protected Rest getRest(Class<?> controllerClass,Method method){
         if(AnnotationUtils.isExist(method,ResponseBody.class)){
             return AnnotationUtils.get(method,ResponseBody.class).value();
         }
-        Class<?> controllerClass = method.getDeclaringClass();
         if(AnnotationUtils.isExist(controllerClass,Controller.class)){
             return Rest.NO;
         }

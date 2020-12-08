@@ -1,14 +1,13 @@
 package com.lucky.web.controller;
 
+import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.SingletonContainer;
 import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.scan.LuckyURLClassLoader;
 import com.lucky.framework.uitls.base.Assert;
-import com.lucky.web.annotation.Controller;
-import com.lucky.web.annotation.ControllerAdvice;
-import com.lucky.web.annotation.RestController;
+import com.lucky.web.annotation.*;
 import com.lucky.web.exception.AddMappingExpandException;
 import com.lucky.web.mapping.DefaultMappingAnalysis;
 import com.lucky.web.mapping.ExceptionMappingCollection;
@@ -32,6 +31,24 @@ import java.util.Set;
 public abstract class JarExpandController extends LuckyController{
 
     private static final Logger log = LogManager.getLogger("c.l.web.controller.JarExpandController");
+    private static UrlMappingCollection urlMappingCollection;
+    private static ExceptionMappingCollection exceptionMappingCollection;
+
+    protected UrlMappingCollection getUrlMappingCollection(){
+        if(urlMappingCollection==null){
+            ApplicationContext applicationContext=AutoScanApplicationContext.create();
+            urlMappingCollection=(UrlMappingCollection) applicationContext.getBean("lucky_UrlMappingCollection");
+        }
+        return urlMappingCollection;
+    }
+
+    protected ExceptionMappingCollection getExceptionMappingCollection(){
+        if(exceptionMappingCollection==null){
+            ApplicationContext applicationContext=AutoScanApplicationContext.create();
+            exceptionMappingCollection= (ExceptionMappingCollection) applicationContext.getBean("lucky_ExceptionMappingCollection");
+        }
+        return exceptionMappingCollection;
+    }
 
     /**
      *
@@ -42,35 +59,36 @@ public abstract class JarExpandController extends LuckyController{
      * @throws IOException
      */
     protected void andExpandJar(Set<IOCBeanFactory> beanFactories,String expandName,String jarFileUrl,String groupId)throws IOException {
-        andExpandJar(beanFactories, expandName, new URL(jarFileUrl),groupId);
+        andExpandJar(beanFactories, new JarExpand(expandName,jarFileUrl,groupId));
     }
 
     /**
      * 添加一个外部的JAR包扩展
      * @param beanFactories beanFantory集合
-     * @param expandName 扩展名
-     * @param jarUrl jar包的路径
-     * @param groupId 项目的组织ID【最上层的包】
+     * @param jarExpand 扩展信息
      * @throws IOException
      */
-    protected void andExpandJar(Set<IOCBeanFactory> beanFactories,String expandName,URL jarUrl,String groupId) throws IOException {
+    protected void andExpandJar(Set<IOCBeanFactory> beanFactories,JarExpand jarExpand) throws IOException {
+        String expandName=jarExpand.getExpandName();
+        String groupId=jarExpand.getGroupId();
         if(Assert.isNull(expandName)){
             throw new AddMappingExpandException("扩展名为NULL！");
         }
         groupId=Assert.isNull(groupId)?"":groupId;
-        Set<String> deleteExpandURL = model.getUrlMappingCollection().getDeleteExpand();
-        Set<String> deleteExpandEXP = model.getExceptionMappingCollection().getDeleteExpand();
+        jarExpand.setGroupId(groupId);
+        Set<String> deleteExpandURL = getUrlMappingCollection().getDeleteExpand();
+        Set<String> deleteExpandEXP = getExceptionMappingCollection().getDeleteExpand();
         if(deleteExpandURL.contains(expandName)||deleteExpandEXP.contains(expandName)){
             deleteExpandURL.remove(expandName);
             deleteExpandEXP.remove(expandName);
             log.info("扩展集 `{}` 恢复使用！",expandName);
         }else{
-            Map<String, UrlMappingCollection> urlMap = model.getUrlMappingCollection().getExpandMap();
-            Map<String, ExceptionMappingCollection> expMap = model.getExceptionMappingCollection().getExpandMap();
+            Map<String, UrlMappingCollection> urlMap = getUrlMappingCollection().getExpandMap();
+            Map<String, ExceptionMappingCollection> expMap = getExceptionMappingCollection().getExpandMap();
             if(urlMap.containsKey(expandName)||expMap.containsKey(expandName)){
                 log.warn("扩展集 `{}` 已存在，无法重复添加！",expandName);
             }else{
-                add(beanFactories, expandName, jarUrl,groupId);
+                add(beanFactories, jarExpand);
             }
         }
     }
@@ -80,8 +98,8 @@ public abstract class JarExpandController extends LuckyController{
      * @param expandName 扩展名
      */
     protected void deleteExpandJar(String expandName){
-        model.getUrlMappingCollection().deleteExpand(expandName);
-        model.getExceptionMappingCollection().deleteExpand(expandName);
+        getUrlMappingCollection().deleteExpand(expandName);
+        getExceptionMappingCollection().deleteExpand(expandName);
     }
 
     /**
@@ -89,19 +107,13 @@ public abstract class JarExpandController extends LuckyController{
      * @param expandName 扩展名
      */
     protected void removerExpandJar(String expandName){
-        model.getUrlMappingCollection().removerExpand(expandName);
-        model.getExceptionMappingCollection().removerExpand(expandName);
+        getUrlMappingCollection().removerExpand(expandName);
+        getExceptionMappingCollection().removerExpand(expandName);
     }
 
 
-    private final boolean add(Set<IOCBeanFactory> beanFactories,String expandName,String jarFilePath,String groupId) throws IOException {
-        URL url=new URL(jarFilePath);
-        return add(beanFactories, expandName, url,groupId);
-    }
-
-
-    private final boolean add(Set<IOCBeanFactory> beanFactories,String expandName,URL jarUrl,String groupId) throws IOException {
-        URL[] urls={jarUrl};
+    private final boolean add(Set<IOCBeanFactory> beanFactories,JarExpand jarExpand) throws IOException {
+        URL[] urls={new URL(jarExpand.getJarPath())};
         URLClassLoader loader = new URLClassLoader(
                 urls, Thread.currentThread().getContextClassLoader());
         //创建LuckyURLClassLoader,用于获取目标jar包中的所有IOC组件
@@ -109,7 +121,7 @@ public abstract class JarExpandController extends LuckyController{
         //获取当前IOC的上下文对象
         AutoScanApplicationContext applicationContext=AutoScanApplicationContext.create();
         //使用当前上下文对象动态的加载由LuckyURLClassLoader扫描得到的jar包中的IOC组件
-        SingletonContainer singletonPool = applicationContext.getNewSingletonPool(beanFactories,luckyURLClassLoader.getComponentClass(groupId));
+        SingletonContainer singletonPool = applicationContext.getNewSingletonPool(beanFactories,luckyURLClassLoader.getComponentClass(jarExpand.getGroupId()));
         //构造Lucky的Mapping解析器
         DefaultMappingAnalysis analysis = new DefaultMappingAnalysis();
         List<Module> controllers = singletonPool.getBeanByAnnotation(Controller.class, RestController.class);
@@ -119,8 +131,8 @@ public abstract class JarExpandController extends LuckyController{
         //解析得到所有的异常处理映射
         ExceptionMappingCollection exceptionMappingCollection=analysis.exceptionAnalysis(controllerAdvices);
         //将解析后的映射添加到映射扩展中
-        model.getUrlMappingCollection().addExpand(expandName,urlMappingCollection);
-        model.getExceptionMappingCollection().addExpand(expandName,exceptionMappingCollection);
+        getUrlMappingCollection().addExpand(jarExpand,urlMappingCollection);
+        getExceptionMappingCollection().addExpand(jarExpand,exceptionMappingCollection);
         return true;
     }
 

@@ -1,9 +1,7 @@
 package com.lucky.web.beanfactory;
 
 import com.lucky.framework.AutoScanApplicationContext;
-import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.Destroy;
-import com.lucky.framework.uitls.base.Assert;
 import com.lucky.web.mapping.UrlMappingCollection;
 
 /**
@@ -15,9 +13,9 @@ public class WebDestroy implements Destroy {
 
     @Override
     public void destroy() {
-        Module module = AutoScanApplicationContext.create().getModule("urlMappingCollection");
-        if(Assert.isNotNull(module)){
-            UrlMappingCollection urlMappingCollection = (UrlMappingCollection) module.getComponent();
+        AutoScanApplicationContext applicationContext = AutoScanApplicationContext.create();
+        if(applicationContext.isIOCId("lucky_UrlMappingCollection")){
+            UrlMappingCollection urlMappingCollection = (UrlMappingCollection) applicationContext.getBean("lucky_UrlMappingCollection");
             urlMappingCollection.closeRun();
         }
     }

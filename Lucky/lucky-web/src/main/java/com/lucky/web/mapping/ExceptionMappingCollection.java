@@ -2,6 +2,7 @@ package com.lucky.web.mapping;
 
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.base.ExceptionUtils;
+import com.lucky.web.controller.JarExpand;
 import com.lucky.web.exception.RepeatUrlMappingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,11 +24,14 @@ public class ExceptionMappingCollection {
     private Map<String,ExceptionMappingCollection> expandMap;
     /** 被逻辑删除的扩展名*/
     private Set<String> deleteExpand;
+    /** ExceptionHandler扩展的具体信息*/
+    private Map<String, JarExpand> expandInfoMap;
 
     public ExceptionMappingCollection(){
         list=new ArrayList<>(10);
         expandMap=new HashMap<>();
         deleteExpand=new HashSet<>();
+        expandInfoMap=new HashMap<>();
     }
 
     public int size() {
@@ -60,6 +64,14 @@ public class ExceptionMappingCollection {
 
     public void setDeleteExpand(Set<String> deleteExpand) {
         this.deleteExpand = deleteExpand;
+    }
+
+    public Map<String, JarExpand> getExpandInfoMap() {
+        return expandInfoMap;
+    }
+
+    public void setExpandInfoMap(Map<String, JarExpand> expandInfoMap) {
+        this.expandInfoMap = expandInfoMap;
     }
 
     /**
@@ -102,11 +114,12 @@ public class ExceptionMappingCollection {
 
     /***
      * 添加一个ExceptionHandler映射集的扩展
-     * @param expandName 扩展名
+     * @param jarExpand 扩展信息
      * @param expand ExceptionHandler映射集
      * @return
      */
-    public boolean addExpand(String expandName,ExceptionMappingCollection expand){
+    public boolean addExpand(JarExpand jarExpand,ExceptionMappingCollection expand){
+        String expandName=jarExpand.getExpandName();
         if(deleteExpand.contains(expandName)){
             deleteExpand.remove(expandName);
             return true;
@@ -123,6 +136,7 @@ public class ExceptionMappingCollection {
             expandMap.values().stream().forEach(umc->umc.exclusionCheck(urlMapping));
         }
         expandMap.put(expandName,expand);
+        expandInfoMap.put(expandName,jarExpand);
         log.info("ExceptionHandler扩展集 `{}` 添加成功！ExceptionHandler处理器总数为：{}",expandName,expand.size());
         return true;
     }
@@ -145,12 +159,18 @@ public class ExceptionMappingCollection {
         return true;
     }
 
+    /**
+     * 删除一个ExceptionHandler集的扩【物理删除】
+     * @param expandName 扩展名
+     * @return
+     */
     public boolean removerExpand(String expandName){
         if(!expandMap.containsKey(expandName)){
             log.warn("不存在扩展名为 `{}` 的ExceptionHandler扩展集,删除操作无效！",expandName);
             return false;
         }
         expandMap.remove(expandName);
+        expandInfoMap.remove(expandName);
         if(deleteExpand.contains(expandName)){
             deleteExpand.remove(expandName);
         }

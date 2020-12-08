@@ -15,7 +15,10 @@ import com.lucky.web.enums.Rest;
 import com.lucky.web.exception.FileSizeCrossingException;
 import com.lucky.web.exception.FileTypeIllegalException;
 import com.lucky.web.exception.RequestFileSizeCrossingException;
-import com.lucky.web.mapping.*;
+import com.lucky.web.mapping.DefaultMappingAnalysis;
+import com.lucky.web.mapping.ExceptionMappingCollection;
+import com.lucky.web.mapping.UrlMapping;
+import com.lucky.web.mapping.UrlMappingCollection;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,8 +98,6 @@ public abstract class BaseServlet extends HttpServlet {
      */
     protected void afterDispose(Model model, UrlMapping urlMapping) throws FileUploadException, FileTypeIllegalException, FileSizeCrossingException, RequestFileSizeCrossingException, IOException {
         webConfig.getMappingPreprocess().afterDispose(model,webConfig, urlMapping);
-        model.setExceptionMappingCollection(exceptionMappingCollection);
-        model.setUrlMappingCollection(urlMappingCollection);
     }
 
     /**
@@ -133,8 +134,8 @@ public abstract class BaseServlet extends HttpServlet {
         urlMappingCollection =analysis.analysis(controllers);
         List<Module> controllerAdvices = applicationContext.getModuleByAnnotation(ControllerAdvice.class);
         exceptionMappingCollection=analysis.exceptionAnalysis(controllerAdvices);
-        applicationContext.put(new Module("urlMappingCollection","url-mapping",urlMappingCollection));
-        applicationContext.put(new Module("exceptionMappingCollection","exception-mapping",exceptionMappingCollection));
+        applicationContext.put(new Module("lucky_UrlMappingCollection","url-mapping",urlMappingCollection));
+        applicationContext.put(new Module("lucky_ExceptionMappingCollection","exception-mapping",exceptionMappingCollection));
         urlMappingCollection.initRun();
     }
 
