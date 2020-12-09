@@ -184,6 +184,10 @@ public abstract class ClassUtils {
         return newObject(getClass(fullPath));
     }
 
+    public static Object newObject(String fullPath,Object...params){
+        return newObject(getClass(fullPath),params);
+    }
+
     /**
      * 得到一个类中被特定注解标注的所有属性
      * @param clzz 类CLass

@@ -7,16 +7,12 @@ import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -28,6 +24,8 @@ import java.util.jar.JarFile;
 public class LuckyURLClassLoader extends URLClassLoader {
 
     private static final Logger log= LogManager.getLogger(LuckyURLClassLoader.class);
+    private static final String JAR_EXPAND_FILE_PREFIX="META-INF/jarexpands/";
+    private static final String JAR_EXPAND_FILE_SUFFIX=".lucky";
     private URL url;
 
     public LuckyURLClassLoader(URL[] urls, ClassLoader parent){
@@ -35,18 +33,18 @@ public class LuckyURLClassLoader extends URLClassLoader {
         this.url=urls[0];
     }
 
-    public Set<Class<?>> getComponentClass(){
+    public JarExpandChecklist getComponentClass(){
         return findClass(url,"");
     }
 
-    public Set<Class<?>> getComponentClass(String groupId){
+    public JarExpandChecklist getComponentClass(String groupId){
         return findClass(url,groupId);
     }
 
-    private Set<Class<?>> findClass(URL url,String groupId){
+    private JarExpandChecklist findClass(URL url,String groupId){
         InputStream input = null;
         groupId=groupId.replaceAll("\\.","/");
-        Set<Class<?>> componentClasses=new HashSet<>(200);
+        JarExpandChecklist jar=new JarExpandChecklist();
         try{
             JarURLConnection conn = (JarURLConnection) url.openConnection();
             JarFile jarFile = conn.getJarFile();
@@ -55,6 +53,21 @@ public class LuckyURLClassLoader extends URLClassLoader {
             while (en.hasMoreElements()) {
                 JarEntry jarEntry = en.nextElement();
                 String name = jarEntry.getName();
+
+                if(name.startsWith(JAR_EXPAND_FILE_PREFIX)&&name.endsWith(JAR_EXPAND_FILE_SUFFIX)){
+                    input = jarFile.getInputStream(jarEntry);
+                    BufferedReader br=new BufferedReader(new InputStreamReader(input,"UTF-8"));
+                    br.lines().map(str ->str.contains("#")?str.substring(0,str.indexOf("#")):str)
+                              .filter(str->!Assert.isBlankString(str)&&!str.startsWith("#"))
+                              .forEach((str)->{
+                        String[] split = str.split(":");
+                        jar.addBeanFactory(this,split[0].trim(),split[1].trim());
+                    });
+                    br.close();
+                    input.close();
+                    continue;
+                }
+
                 //这里添加了路径扫描限制
                 if (!name.startsWith(groupId)||!name.endsWith(".class")){
                     continue;
@@ -80,10 +93,10 @@ public class LuckyURLClassLoader extends URLClassLoader {
                     continue;
                 }
                 if(AnnotationUtils.strengthenIsExist(aClass, Component.class)){
-                    componentClasses.add(aClass);
+                    jar.addBeanClass(aClass);
                 }
             }
-            return componentClasses;
+            return jar;
         } catch (IOException e) {
             throw new LuckyIOException(e);
         } finally {
@@ -101,7 +114,7 @@ public class LuckyURLClassLoader extends URLClassLoader {
 
     //重写loadClass方法
     public Class<?> loadClass(String name,byte[] bytes) throws ClassNotFoundException {
-        if(findLoadedClass(name)==null){
+        if(findLoadedClass(name)!=null){
             return super.loadClass(name);
         }else{
             return defineClass(name,bytes,0,bytes.length);

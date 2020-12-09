@@ -6,6 +6,7 @@ import com.lucky.framework.container.SingletonContainer;
 import com.lucky.framework.container.factory.BeanFactory;
 import com.lucky.framework.container.factory.Destroy;
 import com.lucky.framework.container.factory.IOCBeanFactory;
+import com.lucky.framework.scan.JarExpandChecklist;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.scan.ScanFactory;
 import com.lucky.framework.welcome.JackLamb;
@@ -137,8 +138,8 @@ public class AutoScanApplicationContext implements ApplicationContext{
         return singletonPool.getBeanByType(iocType);
     }
 
-    public SingletonContainer getNewSingletonPool(Set<IOCBeanFactory> iocBeanFactories,Set<Class<?>> componentClassSet) throws IOException {
-        return RegisterMachine.dynamicAssembly(iocBeanFactories,componentClassSet);
+    public SingletonContainer getNewSingletonPool(JarExpandChecklist jarExpandChecklist) throws IOException {
+        return RegisterMachine.dynamicAssembly(jarExpandChecklist);
     }
 
     @Override

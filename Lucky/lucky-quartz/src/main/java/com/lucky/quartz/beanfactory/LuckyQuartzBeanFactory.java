@@ -1,5 +1,6 @@
 package com.lucky.quartz.beanfactory;
 
+import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.uitls.base.Assert;
@@ -17,6 +18,14 @@ import java.util.Map;
  * @date 2020/12/9 上午2:14
  */
 public class LuckyQuartzBeanFactory extends IOCBeanFactory {
+
+
+    public LuckyQuartzBeanFactory() {
+    }
+
+    public LuckyQuartzBeanFactory(FusionStrategy fusionStrategy) {
+        super(fusionStrategy);
+    }
 
     @Override
     public Map<String, Module> replaceBean() {

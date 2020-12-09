@@ -2,6 +2,7 @@ package com.lucky.framework.container;
 
 import com.lucky.framework.annotation.Plugin;
 import com.lucky.framework.container.factory.*;
+import com.lucky.framework.scan.JarExpandChecklist;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
@@ -118,11 +119,13 @@ public class RegisterMachine {
 
     /**
      * 动态组装，在运行期间动态组装一些Bean的实例到IOC容器中
-     * @param componentClasses 需要动态加载的组件
+     * @param jarExpandChecklist 需要动态加载的组件
      */
-    public static SingletonContainer dynamicAssembly(Set<IOCBeanFactory> beanFactorys, Set<Class<?>> componentClasses){
+    public static SingletonContainer dynamicAssembly(JarExpandChecklist jarExpandChecklist){
         //动态插件库
         Set<Class<?>> plugins=new HashSet<>(20);
+        Set<Class<?>> componentClasses=jarExpandChecklist.getBeanClass();
+        Set<IOCBeanFactory> beanFactorys=jarExpandChecklist.getBeanFactories();
         //动态容器
         SingletonContainer singletonPool=new SingletonContainer();
         for (Class<?> componentClass : componentClasses) {

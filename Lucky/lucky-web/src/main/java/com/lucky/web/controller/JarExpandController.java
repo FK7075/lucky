@@ -4,10 +4,11 @@ import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.SingletonContainer;
-import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.scan.LuckyURLClassLoader;
 import com.lucky.framework.uitls.base.Assert;
-import com.lucky.web.annotation.*;
+import com.lucky.web.annotation.Controller;
+import com.lucky.web.annotation.ControllerAdvice;
+import com.lucky.web.annotation.RestController;
 import com.lucky.web.exception.AddMappingExpandException;
 import com.lucky.web.mapping.DefaultMappingAnalysis;
 import com.lucky.web.mapping.ExceptionMappingCollection;
@@ -53,22 +54,20 @@ public abstract class JarExpandController extends LuckyController{
     /**
      *
      * 添加一个外部的JAR包扩展
-     * @param beanFactories BeanFactory集合
      * @param expandName 扩展名
      * @param jarFileUrl jar包的路径「jar:file:/绝对路径!/」「jar:http://网络路径」
      * @throws IOException
      */
-    protected void andExpandJar(Set<IOCBeanFactory> beanFactories,String expandName,String jarFileUrl,String groupId)throws IOException {
-        andExpandJar(beanFactories, new JarExpand(expandName,jarFileUrl,groupId));
+    protected void andExpandJar(String expandName,String jarFileUrl,String groupId)throws IOException {
+        andExpandJar(new JarExpand(expandName,jarFileUrl,groupId));
     }
 
     /**
      * 添加一个外部的JAR包扩展
-     * @param beanFactories beanFantory集合
      * @param jarExpand 扩展信息
      * @throws IOException
      */
-    protected void andExpandJar(Set<IOCBeanFactory> beanFactories,JarExpand jarExpand) throws IOException {
+    protected void andExpandJar(JarExpand jarExpand) throws IOException {
         String expandName=jarExpand.getExpandName();
         String groupId=jarExpand.getGroupId();
         if(Assert.isNull(expandName)){
@@ -88,7 +87,7 @@ public abstract class JarExpandController extends LuckyController{
             if(urlMap.containsKey(expandName)||expMap.containsKey(expandName)){
                 log.warn("扩展集 `{}` 已存在，无法重复添加！",expandName);
             }else{
-                add(beanFactories, jarExpand);
+                add(jarExpand);
             }
         }
     }
@@ -112,7 +111,7 @@ public abstract class JarExpandController extends LuckyController{
     }
 
 
-    private final boolean add(Set<IOCBeanFactory> beanFactories,JarExpand jarExpand) throws IOException {
+    private final boolean add(JarExpand jarExpand) throws IOException {
         URL[] urls={new URL(jarExpand.getJarPath())};
         URLClassLoader loader = new URLClassLoader(
                 urls, Thread.currentThread().getContextClassLoader());
@@ -121,7 +120,7 @@ public abstract class JarExpandController extends LuckyController{
         //获取当前IOC的上下文对象
         AutoScanApplicationContext applicationContext=AutoScanApplicationContext.create();
         //使用当前上下文对象动态的加载由LuckyURLClassLoader扫描得到的jar包中的IOC组件
-        SingletonContainer singletonPool = applicationContext.getNewSingletonPool(beanFactories,luckyURLClassLoader.getComponentClass(jarExpand.getGroupId()));
+        SingletonContainer singletonPool = applicationContext.getNewSingletonPool(luckyURLClassLoader.getComponentClass(jarExpand.getGroupId()));
         //构造Lucky的Mapping解析器
         DefaultMappingAnalysis analysis = new DefaultMappingAnalysis();
         List<Module> controllers = singletonPool.getBeanByAnnotation(Controller.class, RestController.class);

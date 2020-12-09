@@ -19,16 +19,23 @@ import java.util.stream.Collectors;
 public abstract class IOCBeanFactory implements BeanFactory,Namer {
 
     private FusionStrategy fusionStrategy;
+    private SingletonContainer singletonPool= RegisterMachine.getRegisterMachine().getSingletonPool();
+    private Set<Class<?>> plugins=RegisterMachine.getRegisterMachine().getPlugins();
 
     public IOCBeanFactory() {
     }
 
-    protected IOCBeanFactory(FusionStrategy fusionStrategy) {
+    public IOCBeanFactory(FusionStrategy fusionStrategy) {
         this.fusionStrategy = fusionStrategy;
     }
 
-    private SingletonContainer singletonPool= RegisterMachine.getRegisterMachine().getSingletonPool();
-    private Set<Class<?>> plugins=RegisterMachine.getRegisterMachine().getPlugins();
+    public FusionStrategy getFusionStrategy() {
+        return fusionStrategy;
+    }
+
+    public void setFusionStrategy(FusionStrategy fusionStrategy) {
+        this.fusionStrategy = fusionStrategy;
+    }
 
     public  void setSingletonPool(SingletonContainer singletonPool) {
         this.singletonPool=fusionStrategy.singletonPoolStrategy(this.singletonPool,singletonPool);
