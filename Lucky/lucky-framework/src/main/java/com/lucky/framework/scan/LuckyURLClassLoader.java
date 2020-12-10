@@ -17,6 +17,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
+ * 组件Bean的Class -> 扫描Jar包中的所有 .class文件，并过滤掉没有没@Conponent注解标注的Class
+ * BeanFactory    -> 扩展外部Jar包需要的BeanFactory为特殊的BeanFactory，这些BeanFactory
+ * 可操作的组件Class和插件Class的范围是不同的！
+ * 这些特殊的BeanFactory配置在各个框架组件的 META-INF/jarexpands/**_factory.lucky中
  * @author fk7075
  * @version 1.0.0
  * @date 2020/11/26 上午4:03
@@ -25,7 +29,7 @@ public class LuckyURLClassLoader extends URLClassLoader {
 
     private static final Logger log= LogManager.getLogger(LuckyURLClassLoader.class);
     private static final String JAR_EXPAND_FILE_PREFIX="META-INF/jarexpands/";
-    private static final String JAR_EXPAND_FILE_SUFFIX=".lucky";
+    private static final String JAR_EXPAND_FILE_SUFFIX="factory.lucky";
     private URL url;
 
     public LuckyURLClassLoader(URL[] urls, ClassLoader parent){

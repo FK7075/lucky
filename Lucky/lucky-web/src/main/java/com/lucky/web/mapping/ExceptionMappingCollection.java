@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @date 2020/11/24 9:15
  */
-public class ExceptionMappingCollection {
+public class ExceptionMappingCollection implements Iterable<ExceptionMapping> {
     private static final Logger log= LogManager.getLogger("c.l.w.mapping.ExceptionMappingCollection");
 
     /** 异常处理器的集合【ExceptionHandler集】*/

@@ -20,6 +20,20 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>com.lucky.jacklamb</groupId>
+      <artifactId>lucky-framework</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- -PROVIDED- Redis开发需要的依赖 -->
+    <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+      <version>3.1.0</version>
+    </dependency>
+
   </dependencies>
 
   <build>
