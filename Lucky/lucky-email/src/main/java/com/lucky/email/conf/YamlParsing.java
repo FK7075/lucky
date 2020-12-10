@@ -30,7 +30,7 @@ public abstract class YamlParsing {
         if(emailNode instanceof Map){
             Map<String,Object> emailMap= (Map<String, Object>) emailNode;
             if(emailMap.containsKey("smtp-host")){
-                web.setSmtpHost(emailMap.get("emailMap").toString());
+                web.setSmtpHost(emailMap.get("smtp-host").toString());
             }
             if(emailMap.containsKey("smtp-port")){
                 web.setSmtpPort((int) JavaConversion.strToBasic(emailMap.get("smtp-port").toString(),int.class));
