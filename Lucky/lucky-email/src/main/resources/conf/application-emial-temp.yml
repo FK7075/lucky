@@ -1,0 +1,18 @@
+emial:
+  ##SMTP服务器地址
+  smtp-host: smtp.qq.com
+  ##SMTP服务端口
+  smtp-port: 25
+  ##POP3服务器地址
+  pop-host: pop.qq.com
+  ##POP3服务端口
+  pop-port: 110
+  ##用户邮箱
+  username: 用户邮箱
+  ##发送邮件时展示的用户名
+  alias: 发邮件时的用户名
+  ##邮箱密码
+  password: 密码
+  smtp-auth: true
+  smtp-starttls-enable: true
+  smtp-starttls-required: true

@@ -3,12 +3,11 @@ package com.lucky.framework;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.RegisterMachine;
 import com.lucky.framework.container.SingletonContainer;
-import com.lucky.framework.container.factory.BeanFactory;
 import com.lucky.framework.container.factory.Destroy;
-import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.scan.JarExpandChecklist;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.scan.ScanFactory;
+import com.lucky.framework.spi.LuckyServiceLoader;
 import com.lucky.framework.welcome.JackLamb;
 import org.apache.logging.log4j.ThreadContext;
 
@@ -16,8 +15,10 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.net.MalformedURLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +37,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
     static {
         destroys=new HashSet<>();
         //spi机制
-        ServiceLoader<Destroy> services=ServiceLoader.load(Destroy.class);
+        LuckyServiceLoader<Destroy> services=LuckyServiceLoader.load(Destroy.class);
         for(Destroy destroy:services){
             destroys.add(destroy);
         }

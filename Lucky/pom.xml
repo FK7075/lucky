@@ -20,6 +20,7 @@
         <module>lucky-shiro</module>
         <module>lucky-jsch</module>
         <module>lucky-thymeleaf</module>
+        <module>lucky-boot-maven-plugin</module>
     </modules>
     <url>https://github.com/FK7075/lucky</url>
 
@@ -190,35 +191,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.2</version>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>shade</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <transformers>
-<!--                            <transformer-->
-<!--                                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
-<!--                                <mainClass>com.***.***.ProcessingMain</mainClass>-->
-<!--                            </transformer>-->
-                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                <resource>META-INF/services/com.lucky.framework.container.factory.BeanFactory</resource>
-                            </transformer>
-                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                <resource>META-INF/services/com.lucky.framework.container.factory.Destroy</resource>
-                            </transformer>
-                        </transformers>
-                    </configuration>
-                </plugin>
-
             </plugins>
         </pluginManagement>
     </build>

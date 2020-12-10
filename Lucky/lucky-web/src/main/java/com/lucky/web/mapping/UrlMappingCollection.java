@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @date 2020/11/17 10:03
  */
-public class UrlMappingCollection {
+public class UrlMappingCollection implements Iterable<UrlMapping> {
 
     private static final Logger log= LogManager.getLogger("c.l.web.mapping.UrlMappingCollection");
     /** URL映射集合*/
@@ -205,8 +205,7 @@ public class UrlMappingCollection {
         }
         Iterator<UrlMapping> iterator = expand.iterator();
         //添加前的重复映射校验
-        while (iterator.hasNext()){
-            UrlMapping urlMapping = iterator.next();
+        for (UrlMapping urlMapping : expand) {
             if(contains(urlMapping)){
                 throw new RepeatUrlMappingException(urlMapping);
             }
@@ -347,9 +346,8 @@ public class UrlMappingCollection {
      * @return
      */
     public boolean merge(UrlMappingCollection collection){
-        Iterator<UrlMapping> iterator = collection.iterator();
-        while (iterator.hasNext()){
-            add(iterator.next(),false);
+        for (UrlMapping urlMapping : collection) {
+            add(urlMapping,false);
         }
         return true;
     }

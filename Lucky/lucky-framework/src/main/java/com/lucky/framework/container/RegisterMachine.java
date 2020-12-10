@@ -4,6 +4,7 @@ import com.lucky.framework.annotation.Plugin;
 import com.lucky.framework.container.factory.*;
 import com.lucky.framework.scan.JarExpandChecklist;
 import com.lucky.framework.scan.Scan;
+import com.lucky.framework.spi.LuckyServiceLoader;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +26,7 @@ public class RegisterMachine {
 
     static {
         autoConfigBeanFactory=new HashSet<>();
-        ServiceLoader<BeanFactory> services=ServiceLoader.load(BeanFactory.class);
+        LuckyServiceLoader<BeanFactory> services=LuckyServiceLoader.load(BeanFactory.class);
         for(BeanFactory beanFactory:services){
             autoConfigBeanFactory.add(new Module(beanFactory.getClass().getName(),"auto-config-beanfactory",beanFactory));
         }

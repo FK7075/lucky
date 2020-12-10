@@ -59,16 +59,6 @@ public class PackageScan extends Scan {
 		String className=file.getAbsolutePath().replaceAll("\\\\", "/").replaceAll(projectPath, "").replaceAll("/", "\\.");
 		className=className.substring(0,className.length()-6);
 		Class<?> fileClass=Class.forName(className);
-//		if(className.startsWith("classes.")) {
-//			className=className.substring(8);
-//			fileClass=Class.forName(className);
-//		}else if(className.startsWith("test-classes.")) {
-//			luckyClassLoader=new LuckyClassLoader(projectPath +File.separator+"test-classes");
-//			className=className.substring(13);
-//			fileClass=luckyClassLoader.loadClass(className);
-//		}else{
-//			fileClass=Class.forName(className);
-//		}
 		return  fileClass;
 	}
 }
