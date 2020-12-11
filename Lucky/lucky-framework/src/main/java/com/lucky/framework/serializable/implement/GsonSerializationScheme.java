@@ -17,9 +17,6 @@ public class GsonSerializationScheme implements JSONSerializationScheme {
 
     @Override
     public String serialization(Object object) throws IOException {
-        if(object instanceof String){
-            return object.toString();
-        }
         return lson.toJson(object);
     }
 

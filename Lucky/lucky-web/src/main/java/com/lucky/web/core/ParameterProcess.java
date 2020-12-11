@@ -7,7 +7,9 @@ import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ParameterUtils;
 import com.lucky.framework.uitls.regula.Regular;
 import com.lucky.web.annotation.Check;
+import com.lucky.web.annotation.Escape;
 import com.lucky.web.annotation.MD5;
+import com.lucky.web.enums.EscapeType;
 import com.lucky.web.exception.ControllerParameterCheckException;
 import com.lucky.web.mapping.UrlMapping;
 
@@ -45,6 +47,7 @@ public class ParameterProcess {
      */
     protected Object process(Parameter parameter,Object runParam,String paramName){
         check(parameter, runParam,paramName);
+        runParam=escape(parameter, runParam,paramName);
         return md5(parameter, runParam,paramName);
     }
 
@@ -62,6 +65,24 @@ public class ParameterProcess {
         }
         return runParam;
     }
+
+    /**
+     * 特殊格式的字符转译（防止恶意脚本的注入）
+     * @param parameter 方法参数类型
+     * @param runParam 参数值
+     * @param paramName 参数名
+     * @return
+     */
+    protected Object escape(Parameter parameter,Object runParam,String paramName){
+        if(AnnotationUtils.isExist(parameter, Escape.class)){
+            Escape escape = parameter.getAnnotation(Escape.class);
+            EscapeType escapeType = escape.value();
+            runParam=escapeType.escape(runParam.toString());
+        }
+        return runParam;
+    }
+
+
 
     /**
      * 参数格式校验

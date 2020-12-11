@@ -8,8 +8,6 @@ import com.lucky.web.conf.WebConfig;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.error.ErrorPage;
 import com.lucky.web.exception.RealPathNotFoundException;
-import com.lucky.web.mapping.ExceptionMappingCollection;
-import com.lucky.web.mapping.UrlMappingCollection;
 import com.lucky.web.webfile.MultipartFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -394,7 +392,7 @@ public class Model {
      * @param pojo 模型数据
      */
     public void writerJs(Object pojo){
-        getResponse().setContentType("application/x-javascript");
+        getResponse().setContentType("text/html");
         StringBuilder js=new StringBuilder("<script>").append(pojo).append("</script>");
         writer(js.toString());
     }
@@ -701,7 +699,7 @@ public class Model {
     }
 
     public boolean docBaseIsExist(){
-        return Assert.isNull(getServletContext().getRealPath(""));
+        return Assert.isNotNull(getServletContext().getRealPath(""));
     }
 
     public File getRealFile(String uri) {

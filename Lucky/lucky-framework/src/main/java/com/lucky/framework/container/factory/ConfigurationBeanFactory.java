@@ -52,7 +52,7 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
                     });
         }
 
-        //执行@Configuration 的无参@Bean方法，并收集所有非空返回结果（等待注册）
+        //执行@Configuration 的有参@Bean方法，并收集所有非空返回结果（等待注册）
         for (Object conf : configBeans) {
             Class<?> confClass = conf.getClass();
             List<Method> haveParamBeanMethods = ClassUtils.getMethodByAnnotation(confClass, Bean.class)
@@ -81,6 +81,8 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
                         }
                     }
                 }
+                Object invoke=MethodUtils.invoke(conf,beanMethod,params);
+                list.add(new Module(beanId,beanType,invoke));
             }
         }
 

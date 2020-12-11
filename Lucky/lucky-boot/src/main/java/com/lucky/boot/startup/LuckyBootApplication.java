@@ -43,7 +43,7 @@ public class LuckyBootApplication {
         ThreadContext.put("pid", pid);
         String classpath= Assert.isNotNull(applicationClass.getClassLoader().getResource(""))
                 ?applicationClass.getClassLoader().getResource("").getPath():applicationClass.getResource("").getPath();
-        log.info("Starting {} on localhost with PID {} ( {} started by {} in {} )"
+        log.info("Starting {} on localhost with PID {} ({} started by {} in {})"
                 ,applicationClass.getSimpleName()
                 ,pid
                 ,classpath

@@ -7,7 +7,10 @@ import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -46,7 +49,6 @@ public class LuckyURLClassLoader extends URLClassLoader {
     }
 
     private JarExpandChecklist findClass(URL url,String groupId){
-        InputStream input = null;
         groupId=groupId.replaceAll("\\.","/");
         JarExpandChecklist jar=new JarExpandChecklist();
         try{
@@ -59,7 +61,7 @@ public class LuckyURLClassLoader extends URLClassLoader {
                 String name = jarEntry.getName();
 
                 if(name.startsWith(JAR_EXPAND_FILE_PREFIX)&&name.endsWith(JAR_EXPAND_FILE_SUFFIX)){
-                    input = jarFile.getInputStream(jarEntry);
+                    InputStream input = jarFile.getInputStream(jarEntry);
                     BufferedReader br=new BufferedReader(new InputStreamReader(input,"UTF-8"));
                     br.lines().map(str ->str.contains("#")?str.substring(0,str.indexOf("#")):str)
                               .filter(str->!Assert.isBlankString(str)&&!str.startsWith("#"))
@@ -77,18 +79,9 @@ public class LuckyURLClassLoader extends URLClassLoader {
                     continue;
                 }
                 String className = name.replace(".class", "").replaceAll("/", ".");
-                input = jarFile.getInputStream(jarEntry);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                int bufferSize = 4096;
-                byte[] buffer = new byte[bufferSize];
-                int bytesNumRead = 0;
-                while ((bytesNumRead = input.read(buffer)) != -1) {
-                    baos.write(buffer, 0, bytesNumRead);
-                }
-                byte[] classBytes = baos.toByteArray();
                 Class<?> aClass;
                 try {
-                    aClass = loadClass(className, classBytes);
+                    aClass = loadClass(className);
                 }catch (Throwable e){
                     System.err.println("[ERROR] --"+e.getClass().getSimpleName()+"-- CLASS LOAD ERROR："+className);
                     continue;
@@ -103,27 +96,7 @@ public class LuckyURLClassLoader extends URLClassLoader {
             return jar;
         } catch (IOException e) {
             throw new LuckyIOException(e);
-        } finally {
-            if(input!=null){
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    throw new LuckyIOException(e);
-                }
-            }
         }
-    }
-
-
-
-    //重写loadClass方法
-    public Class<?> loadClass(String name,byte[] bytes) throws ClassNotFoundException {
-        if(findLoadedClass(name)!=null){
-            return super.loadClass(name);
-        }else{
-            return defineClass(name,bytes,0,bytes.length);
-        }
-
     }
 
 }

@@ -1,5 +1,6 @@
 package com.lucky.web.controller;
 
+import com.lucky.framework.uitls.base.Assert;
 import com.lucky.web.utils.ImagAndString;
 import com.lucky.web.utils.VerificationCode;
 
@@ -53,7 +54,13 @@ public abstract class VerificationCodeController extends LuckyController{
      * @return
      */
     protected String getVerificationCode(String sessionName){
-        return (String) model.getSessionAttribute(sessionName);
+        Object code = model.getSessionAttribute(sessionName);
+        if(Assert.isNull(code)){
+            return null;
+        }
+        String notnullCore= (String) code;
+        model.getSession().removeAttribute(sessionName);
+        return notnullCore;
     }
 
     /**
@@ -71,6 +78,7 @@ public abstract class VerificationCodeController extends LuckyController{
      * @return
      */
     protected boolean codeInspection(String inputCode,String SESSION_NAME){
+        if(Assert.isNull(inputCode))return false;
         return inputCode.equals(getVerificationCode(SESSION_NAME));
     }
 
@@ -80,6 +88,7 @@ public abstract class VerificationCodeController extends LuckyController{
      * @return
      */
     protected boolean codeInspection(String inputCode){
+        if(Assert.isNull(inputCode))return false;
         return codeInspection(inputCode,this.getClass().getName());
     }
 
@@ -90,6 +99,7 @@ public abstract class VerificationCodeController extends LuckyController{
      * @return
      */
     protected boolean codeInspectionIgnoreCase(String inputCode,String SESSION_NAME){
+        if(Assert.isNull(inputCode))return false;
         return inputCode.equalsIgnoreCase(getVerificationCode(SESSION_NAME));
     }
 
@@ -99,6 +109,7 @@ public abstract class VerificationCodeController extends LuckyController{
      * @return
      */
     protected boolean codeInspectionIgnoreCase(String inputCode){
+        if(Assert.isNull(inputCode))return false;
         return codeInspectionIgnoreCase(inputCode,this.getClass().getName());
     }
 

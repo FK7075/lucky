@@ -35,31 +35,35 @@ public class LuckyServiceLoader<S> implements Iterable<S> {
     // The class loader used to locate, load, and instantiate providers
     private final ClassLoader loader;
 
-    private List<S> serviceImpls;
+    private static Map<String,Set<Class<?>>> cacheServiceImpls;
 
     private LuckyServiceLoader(Class<S> svc, ClassLoader cl) {
+        if(cacheServiceImpls==null)cacheServiceImpls=new HashMap<>();
         service = Objects.requireNonNull(svc, "Service interface cannot be null");
         loader = (cl == null) ? ClassLoader.getSystemClassLoader() : cl;
         SUFFIX=svc.getName();
-        serviceImpls=new ArrayList<>();
-        findResources();
+        if(!cacheServiceImpls.containsKey(SUFFIX)){
+            findResources();
+        }
     }
 
     private void findResources(){
         try {
             Enumeration<URL> resources = loader.getResources(PREFIX);
+            Set<Class<?>> impls=new HashSet<>();
             while (resources.hasMoreElements()){
                 URL url = resources.nextElement();
                 JarURLConnection conn = (JarURLConnection) url.openConnection();
                 JarFile jarFile = conn.getJarFile();
-                findJarFile(jarFile);
+                findJarFile(impls,jarFile);
             }
+            cacheServiceImpls.put(SUFFIX,impls);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void findJarFile(JarFile jarFile){
+    private void findJarFile(Set<Class<?>> impls,JarFile jarFile){
         Enumeration<JarEntry> en = jarFile.entries();
         InputStream input = null;
         try {
@@ -76,7 +80,7 @@ public class LuckyServiceLoader<S> implements Iterable<S> {
                                 try {
                                     Class<?> aClass = loader.loadClass(str);
                                     if(service.isAssignableFrom(aClass)){
-                                        serviceImpls.add((S) ClassUtils.newObject(aClass));
+                                        impls.add(aClass);
                                     }
                                 } catch (ClassNotFoundException e) {
                                     e.printStackTrace();
@@ -103,6 +107,25 @@ public class LuckyServiceLoader<S> implements Iterable<S> {
 
     @Override
     public Iterator<S> iterator() {
-        return serviceImpls.iterator();
+        return new Iterator<S>() {
+            Set<Class<?>> serviceClassSet=cacheServiceImpls.get(SUFFIX);
+            Iterator<Class<?>> serviceClassIterator=serviceClassSet.iterator();
+
+            @Override
+            public boolean hasNext() {
+                return serviceClassIterator.hasNext();
+            }
+
+            @Override
+            public S next() {
+                Class<?> serviceClass = serviceClassIterator.next();
+                return (S) ClassUtils.newObject(serviceClass);
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 }
