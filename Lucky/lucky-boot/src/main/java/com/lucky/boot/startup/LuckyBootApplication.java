@@ -11,16 +11,11 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
-import org.apache.tomcat.websocket.server.WsSci;
 
-import javax.websocket.Endpoint;
-import javax.websocket.server.ServerApplicationConfig;
-import javax.websocket.server.ServerEndpoint;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author fk
@@ -57,7 +52,6 @@ public class LuckyBootApplication {
 
     private static void run(Class<?> applicationClass, ApplicationContext applicationContext, ServerConfig serverConf, long start) {
         log= LogManager.getLogger(applicationClass);
-
         Tomcat tomcat = new Tomcat();
         tomcat.setPort(serverConf.getPort());
         tomcat.setBaseDir(serverConf.getBaseDir());
@@ -83,11 +77,18 @@ public class LuckyBootApplication {
         context.setSessionCookieName("LUCKY-SESSION-ID");
         context.addLifecycleListener(new Tomcat.FixContextListener());
         context.addLifecycleListener(new Tomcat.DefaultWebXmlListener());
-        context.addServletContainerInitializer(new LuckyServletContainerInitializer(applicationContext), null);
-        Set<Class<?>> websocketSet=new HashSet<>();
-        applicationContext.getModuleByAnnotation(ServerEndpoint.class).stream().forEach(m->websocketSet.add(m.getOriginalType()));
-        applicationContext.getModule(ServerApplicationConfig.class, Endpoint.class).stream().forEach(m->websocketSet.add(m.getOriginalType()));
-        context.addServletContainerInitializer(new WsSci(), websocketSet);
+        ServletContainerInitializerController initializerController = ServletContainerInitializerController.create(applicationContext);
+        List<ServletContainerInitializerController.ServletContainerInitializerAndHandlesTypes> servletContainerInitializerAndHandlesTypes
+                = initializerController.getServletContainerInitializerAndHandlesTypes();
+        for (ServletContainerInitializerController.ServletContainerInitializerAndHandlesTypes initializerAndHandlesType : servletContainerInitializerAndHandlesTypes) {
+            context.addServletContainerInitializer(initializerAndHandlesType.getServletContainerInitializer(),
+                    initializerAndHandlesType.getHandlesTypes());
+        }
+//        context.addServletContainerInitializer(new LuckyServletContainerInitializer(applicationContext), null);
+//        Set<Class<?>> websocketSet=new HashSet<>();
+//        applicationContext.getModuleByAnnotation(ServerEndpoint.class).stream().forEach(m->websocketSet.add(m.getOriginalType()));
+//        applicationContext.getModule(ServerApplicationConfig.class, Endpoint.class).stream().forEach(m->websocketSet.add(m.getOriginalType()));
+//        context.addServletContainerInitializer(new WsSci(), websocketSet);
         tomcat.getHost().addChild(context);
         try {
             tomcat.getConnector();
@@ -109,6 +110,5 @@ public class LuckyBootApplication {
             applicationContext.destroy();
         }));
     }
-
 }
 

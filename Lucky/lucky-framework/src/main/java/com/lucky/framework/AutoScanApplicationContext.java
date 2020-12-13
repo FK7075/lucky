@@ -33,6 +33,8 @@ public class AutoScanApplicationContext implements ApplicationContext{
     private static final RuntimeMXBean mxb = ManagementFactory.getRuntimeMXBean();
     public Class<?> applicationBootClass;
     public SingletonContainer singletonPool;
+    private Set<Class<?>> allComponentClasses;
+
 
     static {
         destroys=new HashSet<>();
@@ -49,6 +51,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
         }
         return autoScanApplicationContext;
     }
+
 
     public static AutoScanApplicationContext create(Class<?> applicationBootClass){
         if(autoScanApplicationContext==null){
@@ -71,6 +74,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
         String pid = mxb.getName().split("@")[0];
         ThreadContext.put("pid", pid);
         Scan scan= ScanFactory.createScan(applicationBootClass);
+        allComponentClasses=scan.getAllClasses();
         RegisterMachine registerMachine=RegisterMachine.getRegisterMachine();
         registerMachine.setScan(scan);
         registerMachine.init();
@@ -161,6 +165,25 @@ public class AutoScanApplicationContext implements ApplicationContext{
     @Override
     public void put(Module module) {
         singletonPool.put(module.getId(),module);
+    }
+
+    @Override
+    public Set<Class<?>> getClasses(Class<?>... aClasses) {
+        Set<Class<?>> classes=new HashSet<>();
+        for (Class<?> componentClass : allComponentClasses) {
+            for (Class<?> aClass : aClasses) {
+                if(aClass.isAnnotation()){
+                    if(componentClass.isAnnotationPresent((Class<? extends Annotation>)aClass)){
+                        classes.add(componentClass);
+                    }
+                }else {
+                    if(aClass.isAssignableFrom(componentClass)){
+                        classes.add(componentClass);
+                    }
+                }
+            }
+        }
+        return classes;
     }
 
     @Override

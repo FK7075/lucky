@@ -71,6 +71,7 @@ public class RegisterMachine {
      */
     public void register(){
         Set<Class<?>> componentClasses=scan.getComponentClass();
+
         //实例化所有扫描到的Bean实例，并注入到IOC容器中
         for (Class<?> componentClass : componentClasses) {
             //将所有插件Class过滤到插件集合中

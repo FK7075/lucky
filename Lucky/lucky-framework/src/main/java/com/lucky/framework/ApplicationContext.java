@@ -5,6 +5,7 @@ import com.lucky.framework.container.factory.Destroy;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author fk7075
@@ -40,4 +41,6 @@ public interface ApplicationContext extends Destroy {
     boolean isIOCClass(Class<?> componentClass);
 
     void put(Module module);
+
+    Set<Class<?>> getClasses(Class<?>...Class);
 }

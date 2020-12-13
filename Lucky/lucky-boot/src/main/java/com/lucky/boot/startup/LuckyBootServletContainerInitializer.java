@@ -1,33 +1,29 @@
 package com.lucky.boot.startup;
 
 import com.lucky.boot.conf.ServerConfig;
+import com.lucky.boot.web.FilterMapping;
 import com.lucky.boot.web.ListenerMapping;
+import com.lucky.boot.web.ServletMapping;
 import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.uitls.base.Assert;
-import com.lucky.boot.web.FilterMapping;
-import com.lucky.boot.web.ServletMapping;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.*;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.EventListener;
-import java.util.Set;
+import java.util.*;
 
-public class LuckyServletContainerInitializer implements ServletContainerInitializer {
-	
+
+public class LuckyBootServletContainerInitializer implements ServletContainerInitializer {
+
+	private static final Logger log= LogManager.getLogger("c.l.b.startup.LuckyBootServletContainerInitializer");
 	public final ServerConfig serverCfg=ServerConfig.getServerConfig();
 
-	private static final Logger log= LogManager.getLogger("c.l.j.s.LuckyServletContainerInitializer");
-	
-	public LuckyServletContainerInitializer(ApplicationContext applicationContext) {
+	public LuckyBootServletContainerInitializer(ApplicationContext applicationContext) {
 		serverCfg.init(applicationContext);
 	}
 
-
 	@Override
-	public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
+	public void onStartup(Set<Class<?>> classSet, ServletContext ctx) throws ServletException {
 		ServletRegistration.Dynamic servlet;
 		FilterRegistration.Dynamic filter;
 		for(ServletMapping sm:serverCfg.getServletList()) {
@@ -36,9 +32,9 @@ public class LuckyServletContainerInitializer implements ServletContainerInitial
 			servlet.addMapping(sm.getUrlPatterns());
 			servlet.setAsyncSupported(sm.isAsyncSupported());
 			servlet.setInitParameters(sm.getInitParams());
-			log.info("Add Servlet `name="+sm.getName()+" mapping="+Arrays.toString(sm.getUrlPatterns())+" class="+sm.getServlet().getClass().getName()+"`");
+			log.info("Add Servlet `name="+sm.getName()+" mapping="+ Arrays.toString(sm.getUrlPatterns())+" class="+sm.getServlet().getClass().getName()+"`");
 		}
-		
+
 		for(FilterMapping fm:serverCfg.getFilterList()) {
 			DispatcherType dispatcherTypes = fm.getDispatcherTypes()[0];
 			filter=ctx.addFilter(fm.getName(), fm.getFilter());
@@ -48,7 +44,7 @@ public class LuckyServletContainerInitializer implements ServletContainerInitial
 			filter.addMappingForServletNames(EnumSet.of(dispatcherTypes), true,fm.getServletNames());
 			log.info("Add Filter `name="+fm.getName()+" mapping="+Arrays.toString(fm.getUrlPatterns())+" class="+ fm.getFilter().getClass().getName()+"`");
 		}
-		
+
 		for(ListenerMapping lm:serverCfg.getListenerList()) {
 			ctx.addListener(lm.getListener());
 			log.info("Add Listener `class="+lm.getListener().getClass().getName()+"`");
@@ -66,5 +62,4 @@ public class LuckyServletContainerInitializer implements ServletContainerInitial
 		}
 		log.info("Tomcat ContextPath : \"" +serverCfg.getContextPath()+"\"");
 	}
-
 }

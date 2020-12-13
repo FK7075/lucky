@@ -6,10 +6,12 @@
  import org.apache.logging.log4j.Logger;
 
  import java.io.IOException;
+ import java.lang.reflect.Modifier;
  import java.net.*;
  import java.util.*;
  import java.util.jar.JarEntry;
  import java.util.jar.JarFile;
+ import java.util.stream.Collectors;
 
  /**
  * 包扫描的基类
@@ -23,7 +25,13 @@ public abstract class Scan {
 	protected Set<Class<?>> componentClass;
 
 	 public Set<Class<?>> getComponentClass() {
-		 return componentClass;
+		 return componentClass.stream()
+				 .filter(c->AnnotationUtils.strengthenIsExist(c,Component.class))
+				 .collect(Collectors.toSet());
+	 }
+
+	 public Set<Class<?>> getAllClasses(){
+	 	return componentClass;
 	 }
 
 	 public Scan(Class<?> applicationBootClass) {
@@ -39,8 +47,6 @@ public abstract class Scan {
 		if(beanClass.isAnnotation()){
 			return;
 		}
-		if(AnnotationUtils.strengthenIsExist(beanClass, Component.class)){
-			componentClass.add(beanClass);
-		}
+		componentClass.add(beanClass);
 	}
 }
