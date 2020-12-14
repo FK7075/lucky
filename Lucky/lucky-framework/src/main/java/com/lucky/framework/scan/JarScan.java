@@ -29,9 +29,6 @@ public class JarScan extends Scan {
 				jarpath=jarpath.substring(0, jarpath.indexOf(".jar!")+4);
 			}
 		}
-
-		System.out.println("prefix: ==> "+prefix);
-		System.out.println("jarpath: ==> "+jarpath);
 	}
 
 	@Override

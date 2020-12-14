@@ -188,17 +188,17 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>2.1.5.RELEASE</version>
-                    <configuration>
-<!--                        <mainClass>orjg.jack.test.demo.App</mainClass>-->
-                        <layout>JAR</layout>
-                    </configuration>
                     <executions>
                         <execution>
+                            <id>repackage</id>
                             <goals>
                                 <goal>repackage</goal>
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <mainClass>${start-class}</mainClass>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
