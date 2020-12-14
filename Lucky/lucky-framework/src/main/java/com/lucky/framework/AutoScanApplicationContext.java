@@ -15,10 +15,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +36,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
     static {
         destroys=new HashSet<>();
         //spi机制
-        LuckyServiceLoader<Destroy> services=LuckyServiceLoader.load(Destroy.class);
+        ServiceLoader<Destroy> services=ServiceLoader.load(Destroy.class);
         for(Destroy destroy:services){
             destroys.add(destroy);
         }

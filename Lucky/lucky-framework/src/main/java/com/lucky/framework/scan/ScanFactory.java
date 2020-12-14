@@ -1,6 +1,7 @@
 package com.lucky.framework.scan;
 
 import java.net.URISyntaxException;
+import java.net.URL;
 
 public class ScanFactory {
 	
@@ -8,17 +9,8 @@ public class ScanFactory {
 	private static JarScan jar;
 
 	public static Scan createScan(Class<?> applicationBootClass){
-		if(PackageScan.class.getClassLoader().getResource("")==null) {
-			if(jar==null) {
-				try {
-					jar= new JarScan(applicationBootClass);
-				} catch (URISyntaxException e) {
-					throw new RuntimeException(e);
-				}
-				jar.autoScan();
-			}
-			return jar;	
-		}else {
+		URL resource = ScanFactory.class.getClassLoader().getResource("");
+		if(resource!=null&&!resource.getPath().contains(".jar!/")) {
 			if(pack==null) {
 				try {
 					pack= new PackageScan(applicationBootClass);
@@ -28,6 +20,17 @@ public class ScanFactory {
 				pack.autoScan();
 			}
 			return pack;
+
+		}else {
+			if(jar==null) {
+				try {
+					jar= new JarScan(applicationBootClass);
+				} catch (URISyntaxException e) {
+					throw new RuntimeException(e);
+				}
+				jar.autoScan();
+			}
+			return jar;
 		}
 	}
 

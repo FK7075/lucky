@@ -21,6 +21,7 @@
 public abstract class Scan {
 
 	private static final Logger log= LogManager.getLogger(Scan.class);
+	protected static ClassLoader loader;
 	/** Component组件*/
 	protected Set<Class<?>> componentClass;
 
@@ -35,6 +36,8 @@ public abstract class Scan {
 	 }
 
 	 public Scan(Class<?> applicationBootClass) {
+	 	ClassLoader cl = Thread.currentThread().getContextClassLoader();
+	 	loader = (cl == null) ? ClassLoader.getSystemClassLoader() : cl;
 		componentClass=new HashSet<>(225);
 	}
 	

@@ -29,6 +29,9 @@ public class JarScan extends Scan {
 				jarpath=jarpath.substring(0, jarpath.indexOf(".jar!")+4);
 			}
 		}
+
+		System.out.println("prefix: ==> "+prefix);
+		System.out.println("jarpath: ==> "+jarpath);
 	}
 
 	@Override
@@ -44,10 +47,11 @@ public class JarScan extends Scan {
 			while (entrys.hasMoreElements()) {
 				JarEntry entry = entrys.nextElement();
 				String name = entry.getName();
+				name=name.startsWith("BOOT-INF/classes/")?name.substring(17):name;
 				if (name.endsWith(".class") && name.startsWith(prefix)) {
 					name = name.substring(0, name.length() - 6);
 					String clzzName = name.replaceAll("/", "\\.");
-					Class<?> fileClass = Class.forName(clzzName);
+					Class<?> fileClass = loader.loadClass(clzzName);
 					load(fileClass);
 				}
 			}

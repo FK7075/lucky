@@ -58,7 +58,7 @@ public class PackageScan extends Scan {
 	private Class<?> getFileClass(File file) throws ClassNotFoundException {
 		String className=file.getAbsolutePath().replaceAll("\\\\", "/").replaceAll(projectPath, "").replaceAll("/", "\\.");
 		className=className.substring(0,className.length()-6);
-		Class<?> fileClass=Class.forName(className);
+		Class<?> fileClass=loader.loadClass(className);
 		return  fileClass;
 	}
 }

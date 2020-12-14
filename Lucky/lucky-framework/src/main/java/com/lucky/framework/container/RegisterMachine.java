@@ -26,7 +26,7 @@ public class RegisterMachine {
 
     static {
         autoConfigBeanFactory=new HashSet<>();
-        LuckyServiceLoader<BeanFactory> services=LuckyServiceLoader.load(BeanFactory.class);
+        ServiceLoader<BeanFactory> services=ServiceLoader.load(BeanFactory.class);
         for(BeanFactory beanFactory:services){
             autoConfigBeanFactory.add(new Module(beanFactory.getClass().getName(),"auto-config-beanfactory",beanFactory));
         }

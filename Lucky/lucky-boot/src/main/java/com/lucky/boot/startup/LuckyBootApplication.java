@@ -1,12 +1,13 @@
 package com.lucky.boot.startup;
 
+import com.lucky.boot.conf.ServerConfig;
 import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.welcome.JackLamb;
-import com.lucky.boot.conf.ServerConfig;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +67,7 @@ public class LuckyBootApplication {
         context.setSessionTimeout(serverConf.getSessionTimeout());
         context.setPath(serverConf.getContextPath());
         context.setReloadable(serverConf.isReloadable());
+        context.setLoader(new WebappLoader(Thread.currentThread().getContextClassLoader()));
         String docBase = serverConf.getDocBase();
         if(docBase!=null){
             File docFile=new File(docBase);
@@ -84,11 +86,6 @@ public class LuckyBootApplication {
             context.addServletContainerInitializer(initializerAndHandlesType.getServletContainerInitializer(),
                     initializerAndHandlesType.getHandlesTypes());
         }
-//        context.addServletContainerInitializer(new LuckyServletContainerInitializer(applicationContext), null);
-//        Set<Class<?>> websocketSet=new HashSet<>();
-//        applicationContext.getModuleByAnnotation(ServerEndpoint.class).stream().forEach(m->websocketSet.add(m.getOriginalType()));
-//        applicationContext.getModule(ServerApplicationConfig.class, Endpoint.class).stream().forEach(m->websocketSet.add(m.getOriginalType()));
-//        context.addServletContainerInitializer(new WsSci(), websocketSet);
         tomcat.getHost().addChild(context);
         try {
             tomcat.getConnector();
