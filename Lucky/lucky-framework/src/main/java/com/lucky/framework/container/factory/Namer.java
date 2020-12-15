@@ -1,7 +1,5 @@
 package com.lucky.framework.container.factory;
 
-import com.lucky.framework.uitls.base.BaseUtils;
-
 /**
  * 起名器，用于给需要注册的Bean起名字
  * @author fk7075

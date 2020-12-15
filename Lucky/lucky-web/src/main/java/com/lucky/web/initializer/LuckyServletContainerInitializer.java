@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @HandlesTypes(WebApplicationInitializer.class)
 public class LuckyServletContainerInitializer implements ServletContainerInitializer {
 
-    private static Logger log= LogManager.getLogger("c.l.w.initializer.LuckyServletContainerInitializer");
+    private static Logger log= LogManager.getLogger("c.l.w.i.LuckyServletContainerInitializer");
 
     @Override
     public void onStartup(Set<Class<?>> webAppInitializerClasses, ServletContext servletContext) throws ServletException {

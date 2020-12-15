@@ -37,3 +37,13 @@ public abstract class AopPoint {
 	public abstract Object proceed(AopChain chain) throws Throwable;
 
 }
+
+class MyAopPoint extends AopPoint{
+
+	@Override
+	public Object proceed(AopChain chain) throws Throwable {
+		chain.proceed();
+		return null;
+	}
+
+}

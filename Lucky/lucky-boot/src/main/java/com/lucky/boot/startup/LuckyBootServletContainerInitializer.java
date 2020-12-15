@@ -5,6 +5,7 @@ import com.lucky.boot.web.FilterMapping;
 import com.lucky.boot.web.ListenerMapping;
 import com.lucky.boot.web.ServletMapping;
 import com.lucky.framework.ApplicationContext;
+import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.uitls.base.Assert;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,11 +16,11 @@ import java.util.*;
 
 public class LuckyBootServletContainerInitializer implements ServletContainerInitializer {
 
-	private static final Logger log= LogManager.getLogger("c.l.b.startup.LuckyBootServletContainerInitializer");
+	private static final Logger log= LogManager.getLogger("c.s.LuckyBootServletContainerInitializer");
 	public final ServerConfig serverCfg=ServerConfig.getServerConfig();
 
-	public LuckyBootServletContainerInitializer(ApplicationContext applicationContext) {
-		serverCfg.init(applicationContext);
+	public LuckyBootServletContainerInitializer() {
+		serverCfg.init(AutoScanApplicationContext.create());
 	}
 
 	@Override
