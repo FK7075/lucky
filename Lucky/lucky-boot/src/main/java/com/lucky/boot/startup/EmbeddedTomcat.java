@@ -8,7 +8,6 @@ import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Tomcat;
 
 import java.io.File;
@@ -39,6 +38,7 @@ public class EmbeddedTomcat {
     public void run(){
         doShutDownWork();
         conf();
+        init();
         start();
     }
 
@@ -64,6 +64,7 @@ public class EmbeddedTomcat {
     private void start(){
         try {
             tomcat.getConnector();
+            tomcat.init();
             tomcat.start();
         } catch (LifecycleException e) {
             e.printStackTrace();
@@ -107,7 +108,20 @@ public class EmbeddedTomcat {
         context.setSessionCookieName("LUCKY-SESSION-ID");
         context.addLifecycleListener(new Tomcat.FixContextListener());
         context.addLifecycleListener(new Tomcat.DefaultWebXmlListener());
-        context.addLifecycleListener(new ContextConfig());
+//        context.addLifecycleListener(new ContextConfig());
+    }
+
+    /**
+     * 初始化所有ServletContainerInitializer
+     */
+    private void init(){
+        ServletContainerInitializerController initializerController = ServletContainerInitializerController.create(applicationContext);
+        List<ServletContainerInitializerController.ServletContainerInitializerAndHandlesTypes> servletContainerInitializerAndHandlesTypes
+                = initializerController.getServletContainerInitializerAndHandlesTypes();
+        for (ServletContainerInitializerController.ServletContainerInitializerAndHandlesTypes initializerAndHandlesType : servletContainerInitializerAndHandlesTypes) {
+            context.addServletContainerInitializer(initializerAndHandlesType.getServletContainerInitializer(),
+                    initializerAndHandlesType.getHandlesTypes());
+        }
     }
 
     /**
