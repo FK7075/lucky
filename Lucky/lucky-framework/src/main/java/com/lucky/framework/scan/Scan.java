@@ -12,6 +12,7 @@
  import java.util.jar.JarEntry;
  import java.util.jar.JarFile;
  import java.util.stream.Collectors;
+ import java.util.stream.Stream;
 
  /**
  * 包扫描的基类
@@ -39,6 +40,10 @@ public abstract class Scan {
 	 	ClassLoader cl = Thread.currentThread().getContextClassLoader();
 	 	loader = (cl == null) ? ClassLoader.getSystemClassLoader() : cl;
 		componentClass=new HashSet<>(225);
+		ServiceLoader<ConfigClass> services=ServiceLoader.load(ConfigClass.class);
+		for (ConfigClass configClass : services) {
+			Stream.of(configClass.getClasses()).forEach(componentClass::add);
+		}
 	}
 	
 	/**

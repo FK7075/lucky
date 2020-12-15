@@ -41,8 +41,14 @@ public class LuckyBootServletContainerInitializer implements ServletContainerIni
 			filter=ctx.addFilter(fm.getName(), fm.getFilter());
 			filter.setAsyncSupported(fm.isAsyncSupported());
 			filter.setInitParameters(fm.getInitParams());
-			filter.addMappingForUrlPatterns(EnumSet.of(dispatcherTypes), true,fm.getUrlPatterns());
-			filter.addMappingForServletNames(EnumSet.of(dispatcherTypes), true,fm.getServletNames());
+			String[] urlPatterns = fm.getUrlPatterns();
+			if(!Assert.isEmptyArray(urlPatterns)){
+				filter.addMappingForUrlPatterns(EnumSet.of(dispatcherTypes), true,urlPatterns);
+			}
+			String[] servletNames = fm.getServletNames();
+			if(!Assert.isEmptyArray(servletNames)){
+				filter.addMappingForServletNames(EnumSet.of(dispatcherTypes), true,fm.getServletNames());
+			}
 			log.info("Add Filter `name="+fm.getName()+" mapping="+Arrays.toString(fm.getUrlPatterns())+" class="+ fm.getFilter().getClass().getName()+"`");
 		}
 

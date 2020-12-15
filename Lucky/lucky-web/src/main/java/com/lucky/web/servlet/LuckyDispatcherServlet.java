@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
  * @version 1.0
  * @date 2020/11/17 18:52
  */
-@WebServlet(urlPatterns = "/",loadOnStartup = 0,name = "LuckyDispatcherServlet")
 public class LuckyDispatcherServlet extends BaseServlet {
 
     private static final Logger log = LogManager.getLogger(LuckyDispatcherServlet.class);

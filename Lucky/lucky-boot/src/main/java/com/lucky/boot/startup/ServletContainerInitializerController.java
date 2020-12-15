@@ -20,7 +20,6 @@ public class ServletContainerInitializerController {
     private ServletContainerInitializerController(ApplicationContext applicationContext){
         this.applicationContext = applicationContext;
         servletContainerInitializers=new ArrayList<>();
-        servletContainerInitializers.add(new LuckyBootServletContainerInitializer());
         ServiceLoader<ServletContainerInitializer> spiServletContainerInitializer
                 = ServiceLoader.load(ServletContainerInitializer.class);
         for (ServletContainerInitializer servletContainerInitializer : spiServletContainerInitializer) {

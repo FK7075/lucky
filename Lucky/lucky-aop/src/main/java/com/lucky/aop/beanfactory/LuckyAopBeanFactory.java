@@ -6,6 +6,7 @@ import com.lucky.aop.core.AopPoint;
 import com.lucky.aop.core.AopProxyFactory;
 import com.lucky.aop.core.InjectionAopPoint;
 import com.lucky.aop.core.PointRun;
+import com.lucky.framework.annotation.Component;
 import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.AopBeanFactory;

@@ -7,6 +7,7 @@ import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.confanalysis.LuckyConfig;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.base.BaseUtils;
+import com.lucky.framework.uitls.reflect.ClassUtils;
 
 import javax.servlet.Filter;
 import javax.servlet.annotation.WebFilter;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 服务器的配置信息
@@ -250,14 +252,14 @@ public class ServerConfig extends LuckyConfig {
      * 注解版Listener注册
      */
     private void listenerInit(ApplicationContext applicationContext) {
-        List<EventListener> listeners = (List<EventListener>) applicationContext.getBeanByAnnotation(WebListener.class);
+        Set<Class<?>> listenerClasses = applicationContext.getClasses(WebListener.class);
         WebListener listenerAnn;
-        for (EventListener listener : listeners) {
-            Class<? extends EventListener> listenerClass = listener.getClass();
+        for (Class<?> aClass : listenerClasses) {
+            Class<? extends EventListener> listenerClass = typeInspection(aClass,EventListener.class,"Listener");
             listenerAnn=listenerClass.getAnnotation(WebListener.class);
             String listenerName=Assert.isBlankString(listenerAnn.value())?
                     BaseUtils.lowercaseFirstLetter(listenerClass.getSimpleName()):listenerAnn.value();
-            listenerList.add(new ListenerMapping(listenerName,listener));
+            listenerList.add(new ListenerMapping(listenerName, ClassUtils.newObject(listenerClass)));
         }
     }
 
@@ -265,9 +267,10 @@ public class ServerConfig extends LuckyConfig {
      * 注解版Servlet注册
      */
     private void servletInit(ApplicationContext applicationContext) {
-        List<HttpServlet> servlets = ( List<HttpServlet>)applicationContext.getBeanByAnnotation(WebServlet.class);
-        for(HttpServlet servlet:servlets) {
-            servletList.add(createServletMapping(servlet));
+        Set<Class<?>> servletClasses = applicationContext.getClasses(WebServlet.class);
+        for(Class<?> aClass:servletClasses) {
+            Class<? extends HttpServlet> servlet = typeInspection(aClass, HttpServlet.class, "Servlet");
+            servletList.add(createServletMapping(ClassUtils.newObject(servlet)));
         }
     }
 
@@ -299,9 +302,10 @@ public class ServerConfig extends LuckyConfig {
      * 注解版Filter注册
      */
     private void filterInit(ApplicationContext applicationContext) {
-        List<Filter> filters = (List<Filter>) applicationContext.getBeanByAnnotation(WebFilter.class);
-        for(Filter filter:filters) {
-            filterList.add(createFilterMappng(filter));
+        Set<Class<?>> filterClasses = applicationContext.getClasses(WebFilter.class);
+        for(Class<?> aClass:filterClasses) {
+            Class<? extends Filter> filter = typeInspection(aClass, Filter.class, "Filter");
+            filterList.add(createFilterMappng(ClassUtils.newObject(filter)));
         }
     }
 
@@ -329,6 +333,13 @@ public class ServerConfig extends LuckyConfig {
         fm.setLargeIcon(filterAnn.largeIcon());
         fm.setAsyncSupported(filterAnn.asyncSupported());
         return fm;
+    }
+
+    private <T> Class<T> typeInspection(Class<?> ic,Class<T> sc,String type){
+        if(sc.isAssignableFrom(ic)){
+            return (Class<T>) ic;
+        }
+        throw new WrongWebComponentTypeException(sc,ic,type);
     }
 
 
