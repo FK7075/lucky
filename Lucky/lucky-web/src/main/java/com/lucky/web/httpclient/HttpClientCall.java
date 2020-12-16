@@ -26,8 +26,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,7 +39,7 @@ import java.util.*;
 
 public class HttpClientCall {
 
-    private static final Logger log = LogManager.getLogger(HttpClientCall.class);
+    private static final Logger log= LoggerFactory.getLogger(HttpClientCall.class);
     /** Web配置类*/
     private static WebConfig webConfig = WebConfig.getWebConfig();
 

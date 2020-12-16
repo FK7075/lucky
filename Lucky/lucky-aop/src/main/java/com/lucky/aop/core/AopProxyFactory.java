@@ -1,15 +1,13 @@
 package com.lucky.aop.core;
 
 
-import com.lucky.aop.annotation.*;
-import com.lucky.aop.exception.AopParamsConfigurationException;
+import com.lucky.aop.annotation.Expand;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -21,7 +19,7 @@ import java.util.*;
  */
 public class AopProxyFactory {
 
-    private static final Logger log = LogManager.getLogger(AopProxyFactory.class);
+    private static final Logger log= LoggerFactory.getLogger(AopProxyFactory.class);
 
     public static  Set<InjectionAopPoint> injectionAopPointSet=new HashSet<>(10);
 

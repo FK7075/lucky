@@ -2,8 +2,8 @@ package com.lucky.web.controller;
 
 import com.lucky.framework.uitls.file.ZipUtils;
 import com.lucky.web.webfile.WebFileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  */
 public class ZipFileController extends FileController{
 
-    private static final Logger log = LogManager.getLogger(ZipFileController.class);
+    private static final Logger log= LoggerFactory.getLogger(ZipFileController.class);
 
     protected static String baseDir=System.getProperty("java.io.tmpdir");
     static {

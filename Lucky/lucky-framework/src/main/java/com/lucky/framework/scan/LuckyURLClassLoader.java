@@ -4,8 +4,8 @@ import com.lucky.framework.annotation.Component;
 import com.lucky.framework.exception.LuckyIOException;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,7 +30,7 @@ import java.util.jar.JarFile;
  */
 public class LuckyURLClassLoader extends URLClassLoader {
 
-    private static final Logger log= LogManager.getLogger(LuckyURLClassLoader.class);
+    private static final Logger log= LoggerFactory.getLogger(LuckyURLClassLoader.class);
     private static final String JAR_EXPAND_FILE_PREFIX="META-INF/jarexpands/";
     private static final String JAR_EXPAND_FILE_SUFFIX="factory.lucky";
     private URL url;

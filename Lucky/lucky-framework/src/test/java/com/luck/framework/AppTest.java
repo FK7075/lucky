@@ -2,10 +2,10 @@ package com.luck.framework;
 
 import com.lucky.framework.confanalysis.ConfigUtils;
 import com.lucky.framework.junit.LuckyRunner;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Unit test for simple App.
@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 @RunWith(LuckyRunner.class)
 public class AppTest {
 
-    private static final Logger log= LogManager.getLogger(AppTest.class);
+    private static final Logger log= LoggerFactory.getLogger(AppTest.class);
 
     /**
      * Rigorous Test :-)

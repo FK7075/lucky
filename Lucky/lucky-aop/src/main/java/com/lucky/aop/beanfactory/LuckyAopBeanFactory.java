@@ -6,7 +6,6 @@ import com.lucky.aop.core.AopPoint;
 import com.lucky.aop.core.AopProxyFactory;
 import com.lucky.aop.core.InjectionAopPoint;
 import com.lucky.aop.core.PointRun;
-import com.lucky.framework.annotation.Component;
 import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.AopBeanFactory;
@@ -14,8 +13,8 @@ import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.base.BaseUtils;
 import com.lucky.framework.uitls.reflect.AnnotationUtils;
 import com.lucky.framework.uitls.reflect.ClassUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -29,7 +28,7 @@ import java.util.stream.Collectors;
  */
 public class LuckyAopBeanFactory extends AopBeanFactory {
 
-    private static final Logger log= LogManager.getLogger("c.l.framework.beanfactory.LuckyAopBeanFactory");
+    private static final Logger log= LoggerFactory.getLogger("c.l.f.beanfactory.LuckyAopBeanFactory");
     private Set<PointRun> pointRunSet;
     private static final String PROXY_NAME="$$LUCKY_PROXY$$";
     public LuckyAopBeanFactory(){

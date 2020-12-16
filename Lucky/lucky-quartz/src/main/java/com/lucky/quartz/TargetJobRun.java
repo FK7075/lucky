@@ -1,12 +1,12 @@
 package com.lucky.quartz;
 
 import net.sf.cglib.proxy.MethodProxy;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TargetJobRun{
 
-    private static final Logger log = LogManager.getLogger(TargetJobRun.class);
+    private static final Logger log= LoggerFactory.getLogger(TargetJobRun.class);
 
     private Object job;
 

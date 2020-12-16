@@ -3,17 +3,16 @@ package com.lucky.framework.uitls.reflect;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.exception.LuckyReflectionException;
 import com.lucky.framework.proxy.ASMUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.function.DoubleToIntFunction;
 
 public abstract class MethodUtils {
 
-    private static final Logger log= LogManager.getLogger(MethodUtils.class);
+    private static final Logger log= LoggerFactory.getLogger(MethodUtils.class);
     private static final Method[] objectMethods=Object.class.getDeclaredMethods();
 
     /**

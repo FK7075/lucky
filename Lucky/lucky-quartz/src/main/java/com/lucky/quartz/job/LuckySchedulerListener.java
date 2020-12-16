@@ -1,8 +1,8 @@
 package com.lucky.quartz.job;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author fk7075
@@ -11,7 +11,7 @@ import org.quartz.*;
  */
 public class LuckySchedulerListener implements SchedulerListener {
 
-    private static final Logger log = LogManager.getLogger("c.l.quartz.job.LuckySchedulerListener");
+    private static final Logger log= LoggerFactory.getLogger("c.l.quartz.job.LuckySchedulerListener");
 
     @Override
     public void jobScheduled(Trigger trigger) {

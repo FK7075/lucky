@@ -9,9 +9,9 @@ import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.error.ErrorPage;
 import com.lucky.web.exception.RealPathNotFoundException;
 import com.lucky.web.webfile.MultipartFile;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.IOUtils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public class Model {
 
-    private static final Logger log = LogManager.getLogger(Model.class);
+    private static final Logger log= LoggerFactory.getLogger(Model.class);
     private static final JSONSerializationScheme jsonSerialization= WebConfig.getWebConfig().getJsonSerializationScheme();
     private static final XMLSerializationScheme xmlSerialization=WebConfig.getWebConfig().getXmlSerializationScheme();
 

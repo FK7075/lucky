@@ -3,9 +3,8 @@ package com.lucky.web.mapping;
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.uitls.base.ExceptionUtils;
 import com.lucky.web.controller.JarExpand;
-import com.lucky.web.exception.RepeatUrlMappingException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
  * @date 2020/11/24 9:15
  */
 public class ExceptionMappingCollection implements Iterable<ExceptionMapping> {
-    private static final Logger log= LogManager.getLogger("c.l.w.mapping.ExceptionMappingCollection");
+    private static final Logger log= LoggerFactory.getLogger("c.l.w.mapping.ExceptionMappingCollection");
 
     /** 异常处理器的集合【ExceptionHandler集】*/
     private List<ExceptionMapping> list;
@@ -97,7 +96,7 @@ public class ExceptionMappingCollection implements Iterable<ExceptionMapping> {
         exclusionCheck(em);
         list.add(em);
         if(isLog){
-            log.info("ExceptionHandler `Scopes=[{}]` , Exception={}",
+            log.debug("ExceptionHandler `Scopes=[{}]` , Exception={}",
                     em.getStrScopes(),Arrays.toString(em.getExceptions()));
         }
         return true;

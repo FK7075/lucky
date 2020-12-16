@@ -13,8 +13,8 @@ import com.lucky.web.exception.CloseRunException;
 import com.lucky.web.exception.InitRunException;
 import com.lucky.web.exception.RepeatUrlMappingException;
 import com.lucky.web.webfile.WebFileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 public class UrlMappingCollection implements Iterable<UrlMapping> {
 
-    private static final Logger log= LogManager.getLogger("c.l.web.mapping.UrlMappingCollection");
+    private static final Logger log= LoggerFactory.getLogger("c.l.web.mapping.UrlMappingCollection");
     /** URL映射集合*/
     private List<UrlMapping> list;
     /** 服务启动时和关闭时执行的方法*/
@@ -123,7 +123,7 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
         }
         list.add(urlMapping);
         if(isLog){
-            log.info("Mapping `Url=[{}] , RequestMethod={} , Rest={} , Method={}`",
+            log.debug("Mapping `Url=[{}] , RequestMethod={} , Rest={} , Method={}`",
                     urlMapping.getUrl(), Arrays.toString(urlMapping.getMethods()),urlMapping.getRest(),
                     urlMapping.getMapping());
         }

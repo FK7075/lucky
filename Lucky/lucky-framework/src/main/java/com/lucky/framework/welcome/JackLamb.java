@@ -3,9 +3,9 @@ package com.lucky.framework.welcome;
 import com.lucky.framework.exception.LuckyIOException;
 import com.lucky.framework.uitls.base.Console;
 import com.lucky.framework.uitls.file.Resources;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.io.InputStream;
 
 public abstract class JackLamb {
 
-    public static final Logger log = LogManager.getLogger(JackLamb.class);
+    private static final Logger log= LoggerFactory.getLogger(JackLamb.class);
     public final static String USER_LOGO_FILE= "/conf/logo.luck";
     public final static String DEFAULT_LOGO_FILE= "/lucky-framework/lucky.luck";
     public static boolean first = true;

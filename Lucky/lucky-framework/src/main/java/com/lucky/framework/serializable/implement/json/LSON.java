@@ -3,7 +3,8 @@ package com.lucky.framework.serializable.implement.json;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -17,8 +18,8 @@ import java.lang.reflect.Type;
  *
  */
 public class LSON {
-	
-	private static Logger log=Logger.getLogger(LSON.class);
+
+	private static final Logger log= LoggerFactory.getLogger(LSON.class);
 	private GsonBuilder gsonBuilder;
 	private Gson gson;
 	public Gson getGson() {

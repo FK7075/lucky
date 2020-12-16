@@ -4,19 +4,20 @@ import com.lucky.boot.conf.ServerConfig;
 import com.lucky.boot.web.FilterMapping;
 import com.lucky.boot.web.ListenerMapping;
 import com.lucky.boot.web.ServletMapping;
-import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.uitls.base.Assert;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Set;
 
 
 public class LuckyBootServletContainerInitializer implements ServletContainerInitializer {
 
-	private static final Logger log= LogManager.getLogger("c.s.LuckyBootServletContainerInitializer");
+	private static final Logger log= LoggerFactory.getLogger("c.s.LuckyBootServletContainerInitializer");
 	public final ServerConfig serverCfg=ServerConfig.getServerConfig();
 
 	public LuckyBootServletContainerInitializer() {

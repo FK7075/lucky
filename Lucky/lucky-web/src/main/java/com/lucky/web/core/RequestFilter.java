@@ -4,8 +4,8 @@ import com.lucky.framework.uitls.file.Resources;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.webfile.StaticResourceManage;
 import com.lucky.web.webfile.WebFileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -17,7 +17,7 @@ import java.io.IOException;
  */
 public abstract class RequestFilter {
 
-    private static final Logger log = LogManager.getLogger(RequestFilter.class);
+    private static final Logger log= LoggerFactory.getLogger(RequestFilter.class);
     private static final  String ICO ="/favicon.ico";
 
     /**

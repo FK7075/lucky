@@ -1,8 +1,9 @@
 package com.lucky.framework.uitls.reflect;
 
 import com.lucky.framework.exception.LuckyReflectionException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.lucky.framework.uitls.base.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -13,9 +14,20 @@ import java.util.Set;
 
 public abstract class ClassUtils {
 
-    private static final Logger log= LogManager.getLogger(ClassUtils.class);
+    private static final Logger log= LoggerFactory.getLogger(ClassUtils.class);
     public static final Class<?>[] SIMPLE_CLASSES={String.class,Byte.class,Short.class,Integer.class,
     Long.class,Float.class,Double.class,Boolean.class};
+
+    public static Class<?> forName(String fullPath,ClassLoader loader){
+        Assert.notNull(fullPath, "Name must not be null");
+        try {
+            return Class.forName(fullPath,true,loader);
+        } catch (ClassNotFoundException e) {
+            LuckyReflectionException lex = new LuckyReflectionException(e);
+            log.error("ClassNotFoundException",lex);
+            throw lex;
+        }
+    }
 
     /**
      * 得到一个类以及所有父类(不包括Object)的所有属性(Field)
@@ -105,19 +117,19 @@ public abstract class ClassUtils {
             return constructor.newInstance(cparams);
         } catch (NoSuchMethodException e) {
             LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error(lex);
+            log.error("NoSuchMethodException",lex);
             throw lex;
         } catch (IllegalAccessException e) {
             LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error(lex);
+            log.error("IllegalAccessException",lex);
             throw lex;
         } catch (InstantiationException e) {
             LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error(lex);
+            log.error("InstantiationException",lex);
             throw lex;
         } catch (InvocationTargetException e) {
             LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error(lex);
+            log.error("InvocationTargetException",lex);
             throw lex;
         }
 
@@ -175,7 +187,7 @@ public abstract class ClassUtils {
             return aClass;
         } catch (ClassNotFoundException e) {
             LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error(lex);
+            log.error("ClassNotFoundException",lex);
             throw lex;
         }
     }

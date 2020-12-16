@@ -1,8 +1,8 @@
 package com.lucky.framework.uitls.reflect;
 
 import com.lucky.framework.exception.LuckyReflectionException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 public abstract class AnnotationUtils {
 
-    private static final Logger log= LogManager.getLogger(AnnotationUtils.class);
+    private static final Logger log= LoggerFactory.getLogger(AnnotationUtils.class);
 
     /**
      * 判断类是否被注解标注

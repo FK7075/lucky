@@ -22,7 +22,6 @@ import java.util.List;
  * @version 1.0
  * @date 2020/11/23 16:25
  */
-@Component
 public class LuckyWebBeanFactory extends IOCBeanFactory {
 
     public LuckyWebBeanFactory(){

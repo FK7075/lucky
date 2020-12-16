@@ -1,7 +1,7 @@
 package com.lucky.aop.exception;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author fk7075
@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class AopParamsConfigurationException extends RuntimeException {
 
-    private static final Logger log= LogManager.getLogger(AopParamsConfigurationException.class);
+    private static final Logger log= LoggerFactory.getLogger(AopParamsConfigurationException.class);
 
     public AopParamsConfigurationException(String msg){
         super(msg);

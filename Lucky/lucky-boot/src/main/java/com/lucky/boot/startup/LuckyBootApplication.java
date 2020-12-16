@@ -2,9 +2,9 @@ package com.lucky.boot.startup;
 
 import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.welcome.JackLamb;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -25,7 +25,7 @@ public class LuckyBootApplication {
     public static void run(Class<?> applicationClass,String[] args){
         JackLamb.welcome();
         long start = System.currentTimeMillis();
-        log= LogManager.getLogger(applicationClass);
+        log= LoggerFactory.getLogger(applicationClass);
         String pid = mxb.getName().split("@")[0];
         ThreadContext.put("pid",pid);
         String classpath= Assert.isNotNull(applicationClass.getClassLoader().getResource(""))

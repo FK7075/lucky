@@ -13,8 +13,8 @@ import com.lucky.web.exception.AddMappingExpandException;
 import com.lucky.web.mapping.DefaultMappingAnalysis;
 import com.lucky.web.mapping.ExceptionMappingCollection;
 import com.lucky.web.mapping.UrlMappingCollection;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public abstract class JarExpandController extends LuckyController{
 
-    private static final Logger log = LogManager.getLogger("c.l.web.controller.JarExpandController");
+    private static final Logger log= LoggerFactory.getLogger("c.l.web.controller.JarExpandController");
     private static UrlMappingCollection urlMappingCollection;
     private static ExceptionMappingCollection exceptionMappingCollection;
 

@@ -1,7 +1,7 @@
 package com.lucky.framework.scan;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -12,7 +12,7 @@ import java.util.jar.JarFile;
 public class JarScan extends Scan {
 	
 	protected String jarpath;
-	private static final Logger log= LogManager.getLogger(JarScan.class);
+	private static final Logger log= LoggerFactory.getLogger(JarScan.class);
 	protected String prefix;
 
 	public JarScan(Class<?> clzz) throws URISyntaxException {

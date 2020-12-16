@@ -1,8 +1,8 @@
 package com.lucky.framework.confanalysis;
 
 import com.lucky.framework.container.Injection;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.Reader;
@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class YamlConfAnalysis implements ConfAnalysis{
 
-    private static final Logger log= LogManager.getLogger(Injection.class);
+    private static final Logger log= LoggerFactory.getLogger(Injection.class);
     private Yaml yaml;
     private LinkedHashMap<String,Object> map;
 

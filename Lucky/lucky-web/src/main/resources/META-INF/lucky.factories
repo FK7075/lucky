@@ -1,0 +1,8 @@
+# @Configuration
+com.lucky.framework.annotation.Configuration=\
+com.lucky.web.beanfactory.LuckyWebAutoConfig
+
+# SpareComponents (备用组件)
+com.lucky.framework.scan.SpareComponents=\
+com.lucky.web.initializer.LuckyDispatcherServletInitializer
+

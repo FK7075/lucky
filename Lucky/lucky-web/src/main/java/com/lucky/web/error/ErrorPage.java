@@ -4,7 +4,7 @@ import com.lucky.framework.uitls.base.BaseUtils;
 import com.lucky.framework.uitls.file.Resources;
 import com.lucky.framework.exception.LuckyIOException;
 import com.lucky.web.conf.WebConfig;
-import org.apache.logging.log4j.core.util.IOUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

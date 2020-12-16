@@ -1,8 +1,8 @@
 package com.lucky.web.initializer;
 
 import com.lucky.framework.uitls.reflect.ClassUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @HandlesTypes(WebApplicationInitializer.class)
 public class LuckyServletContainerInitializer implements ServletContainerInitializer {
 
-    private static Logger log= LogManager.getLogger("c.l.w.i.LuckyServletContainerInitializer");
+    private static final Logger log= LoggerFactory.getLogger("c.l.w.i.LuckyServletContainerInitializer");
 
     @Override
     public void onStartup(Set<Class<?>> webAppInitializerClasses, ServletContext servletContext) throws ServletException {
