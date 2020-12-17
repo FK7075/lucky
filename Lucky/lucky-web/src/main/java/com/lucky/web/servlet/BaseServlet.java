@@ -9,7 +9,8 @@ import com.lucky.web.annotation.ControllerAdvice;
 import com.lucky.web.annotation.RestController;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.core.Model;
-import com.lucky.web.core.parameter.ParameterAnalysisChain;
+import com.lucky.web.core.parameter.analysis.ParameterAnalysisChain;
+import com.lucky.web.core.parameter.enhance.ParameterEnhanceChain;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.enums.Rest;
 import com.lucky.web.exception.FileSizeCrossingException;
@@ -51,16 +52,10 @@ public abstract class BaseServlet extends HttpServlet {
      */
     protected ParameterAnalysisChain getParameterAnalysisChain(){
         ParameterAnalysisChain parameterAnalysisChain = webConfig.getParameterAnalysisChain();
+        ParameterEnhanceChain parameterEnhanceChain=webConfig.getParameterEnhanceChain();
+        parameterAnalysisChain.setParameterEnhanceChain(parameterEnhanceChain);
         parameterAnalysisChain.sort();
         return parameterAnalysisChain;
-    }
-
-    /**
-     * Controller参数的二次加工「校验、加密等处理」
-     * @param urlMapping 当前请求的方法映射
-     */
-    protected void process(UrlMapping urlMapping){
-        webConfig.getParameterProcess().processAll(urlMapping);
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.lucky.web.core.parameter;
+package com.lucky.web.core.parameter.analysis;
 
 import com.lucky.utils.conversion.JavaConversion;
 import com.lucky.utils.reflect.ClassUtils;

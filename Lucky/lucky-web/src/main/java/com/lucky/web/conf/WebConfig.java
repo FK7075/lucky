@@ -7,8 +7,10 @@ import com.lucky.framework.serializable.implement.GsonSerializationScheme;
 import com.lucky.framework.serializable.implement.XtreamSerializationScheme;
 import com.lucky.utils.base.Assert;
 import com.lucky.web.core.*;
-import com.lucky.web.core.parameter.ParameterAnalysis;
-import com.lucky.web.core.parameter.ParameterAnalysisChain;
+import com.lucky.web.core.parameter.analysis.ParameterAnalysis;
+import com.lucky.web.core.parameter.analysis.ParameterAnalysisChain;
+import com.lucky.web.core.parameter.enhance.ParameterEnhance;
+import com.lucky.web.core.parameter.enhance.ParameterEnhanceChain;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -69,8 +71,8 @@ public class WebConfig extends LuckyConfig {
     private MappingPreprocess mappingPreprocess;
     /** 参数解析链*/
     private ParameterAnalysisChain parameterAnalysisChain;
-    /** 对参数的二次处理[加密、校验等操作]*/
-    private ParameterProcess parameterProcess;
+    /** 参数增强链*/
+    private ParameterEnhanceChain parameterEnhanceChain;
     /** 定义转发与重定向*/
     private LuckyResponse response;
 
@@ -238,6 +240,14 @@ public class WebConfig extends LuckyConfig {
         this.parameterAnalysisChain.addParameterAnalysis(parameterAnalysis);
     }
 
+    public ParameterEnhanceChain getParameterEnhanceChain() {
+        return parameterEnhanceChain;
+    }
+
+    public void addParameterEnhance(ParameterEnhance parameterEnhance) {
+        this.parameterEnhanceChain.addParameterEnhance(parameterEnhance);
+    }
+
     public void setErrorPage(Map<String, String> errorPage) {
         this.errorPage = errorPage;
     }
@@ -268,15 +278,9 @@ public class WebConfig extends LuckyConfig {
 
     private WebConfig() {
         parameterAnalysisChain=new ParameterAnalysisChain();
+        parameterEnhanceChain=new ParameterEnhanceChain();
     }
 
-    public ParameterProcess getParameterProcess() {
-        return parameterProcess;
-    }
-
-    public void setParameterProcess(ParameterProcess parameterProcess) {
-        this.parameterProcess = parameterProcess;
-    }
 
     private static void defaultInit(WebConfig conf){
         conf.setEncoding("UTF-8");
@@ -289,7 +293,6 @@ public class WebConfig extends LuckyConfig {
         conf.setJsonSerializationScheme(new GsonSerializationScheme());
         conf.setMappingPreprocess(new DefaultMappingPreprocess());
         conf.setResponse(new DefaultLuckyResponse());
-        conf.setParameterProcess(new ParameterProcess());
         conf.setPrefix("");
         conf.setSuffix("");
         conf.setConnectTimeout(5000);

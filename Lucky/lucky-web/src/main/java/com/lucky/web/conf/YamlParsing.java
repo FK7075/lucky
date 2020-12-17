@@ -9,8 +9,8 @@ import com.lucky.utils.conversion.JavaConversion;
 import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.web.core.LuckyResponse;
 import com.lucky.web.core.MappingPreprocess;
-import com.lucky.web.core.ParameterProcess;
-import com.lucky.web.core.parameter.ParameterAnalysis;
+import com.lucky.web.core.parameter.analysis.ParameterAnalysis;
+import com.lucky.web.core.parameter.enhance.ParameterEnhance;
 
 import java.util.HashSet;
 import java.util.List;
@@ -122,8 +122,9 @@ public abstract class YamlParsing {
                         if(webMap.containsKey("response")){
                             web.setResponse((LuckyResponse) ClassUtils.newObject(webMap.get("response").toString()));
                         }
-                        if(webMap.containsKey("parameter-process")){
-                            web.setParameterProcess((ParameterProcess) ClassUtils.newObject(webMap.get("parameter-process").toString()));
+                        if(webMap.containsKey("parameter-enhance-chain-add")){
+                            List<String> paramana=(List<String>)webMap.get("parameter-enhance-chain-add");
+                            paramana.stream().forEach(str->web.addParameterEnhance((ParameterEnhance) ClassUtils.newObject(str)));
                         }
                         if(webMap.containsKey("serialization")){
                             Object serializationNode = webMap.get("serialization");

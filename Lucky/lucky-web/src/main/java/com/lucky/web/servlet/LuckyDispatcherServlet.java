@@ -46,11 +46,8 @@ public class LuckyDispatcherServlet extends BaseServlet {
             //后置处理，处理Controller的属性和跨域问题以及包装文件类型的参数
             afterDispose(model, urlMapping);
 
-            //获取执行参数,并为Mapping设置执行参数
+            //获取执行参数,并为Mapping设置执行参数,并对参数执行增强操作(校验、加密、防注入...)
             urlMapping.setRunParams(getParameterAnalysisChain().analysis(model, urlMapping));
-
-            //对参数进行二次加工，格式校验以及加密等操作
-            process(urlMapping);
 
             //执行Controller方法并获取返回结果
             Object invoke = urlMapping.invoke(model);

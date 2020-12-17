@@ -1,7 +1,9 @@
-package com.lucky.web.core.parameter;
+package com.lucky.web.core.parameter.analysis;
 
 import com.lucky.utils.proxy.ASMUtil;
+import com.lucky.utils.reflect.ParameterUtils;
 import com.lucky.web.core.Model;
+import com.lucky.web.core.parameter.enhance.ParameterEnhanceChain;
 import com.lucky.web.mapping.UrlMapping;
 
 import java.lang.reflect.Parameter;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class ParameterAnalysisChain {
 
     private List<ParameterAnalysis> parameterAnalysesChain=new ArrayList<>();
+    private ParameterEnhanceChain parameterEnhanceChain;
 
     public List<ParameterAnalysis> getParameterAnalysesChain() {
         return parameterAnalysesChain;
@@ -29,6 +32,11 @@ public class ParameterAnalysisChain {
 
     public void addParameterAnalysis(ParameterAnalysis parameterAnalysis){
         parameterAnalysesChain.add(parameterAnalysis);
+    }
+
+    public void setParameterEnhanceChain(ParameterEnhanceChain parameterEnhanceChain){
+        this.parameterEnhanceChain=parameterEnhanceChain;
+        this.parameterEnhanceChain.sort();
     }
 
     public ParameterAnalysisChain(){
@@ -66,6 +74,8 @@ public class ParameterAnalysisChain {
                     break;
                 }
             }
+            paramObject[i]=parameterEnhanceChain.enhance(parameters[i],genericParameterTypes[i],paramObject[i],
+                                                ParameterUtils.getParamName(parameters[i],paramNames[i]));
         }
         return paramObject;
     }

@@ -3,9 +3,13 @@ package com.lucky.framework.container;
 import com.lucky.framework.annotation.Configuration;
 import com.lucky.framework.annotation.Plugin;
 import com.lucky.framework.container.factory.*;
+import com.lucky.framework.exception.LuckyConversionTypeErrorException;
 import com.lucky.framework.scan.JarExpandChecklist;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.spi.LuckyFactoryLoader;
+import com.lucky.utils.conversion.LuckyConversion;
+import com.lucky.utils.conversion.annotation.Conversion;
+import com.lucky.utils.conversion.proxy.ConversionProxy;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
 import org.slf4j.Logger;
@@ -78,6 +82,19 @@ public class RegisterMachine {
                 continue;
             }
 
+            //类型转换工具的代理实现
+            if(AnnotationUtils.isExist(componentClass, Conversion.class)){
+                if(!LuckyConversion.class.isAssignableFrom(componentClass)){
+                    throw new LuckyConversionTypeErrorException(componentClass);
+                }
+                Module module=new Module(namer.getBeanName(componentClass)
+                        ,namer.getBeanType(componentClass)
+                        , ConversionProxy.getLuckyConversion((Class<? extends LuckyConversion>)componentClass));
+                singletonPool.put(module.getId(),module);
+                log.info("Conversion `{}`",module);
+                continue;
+            }
+
             //实例化所有的Bean，并注入到IOC容器
             Module module=new Module(namer.getBeanName(componentClass)
                                     ,namer.getBeanType(componentClass)
@@ -131,6 +148,19 @@ public class RegisterMachine {
             if(AnnotationUtils.strengthenIsExist(componentClass, Plugin.class)){
                 plugins.add(componentClass);
                 log.debug("Plugin `{}`",componentClass);
+                continue;
+            }
+
+            //类型转换工具的代理实现
+            if(AnnotationUtils.isExist(componentClass, Conversion.class)){
+                if(!LuckyConversion.class.isAssignableFrom(componentClass)){
+                    throw new LuckyConversionTypeErrorException(componentClass);
+                }
+                Module module=new Module(namer.getBeanName(componentClass)
+                        ,namer.getBeanType(componentClass)
+                        , ConversionProxy.getLuckyConversion((Class<? extends LuckyConversion>)componentClass));
+                singletonPool.put(module.getId(),module);
+                log.info("Conversion `{}`",module);
                 continue;
             }
 

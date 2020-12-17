@@ -1,4 +1,4 @@
-package com.lucky.web.core.parameter;
+package com.lucky.web.core.parameter.analysis;
 
 import com.lucky.web.core.Model;
 import com.lucky.web.webfile.MultipartFile;

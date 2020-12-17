@@ -1,4 +1,4 @@
-package com.lucky.web.core.parameter;
+package com.lucky.web.core.parameter.analysis;
 
 /**
  * 文件类型参数解析
