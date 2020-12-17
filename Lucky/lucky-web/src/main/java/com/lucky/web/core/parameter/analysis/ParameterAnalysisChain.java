@@ -74,8 +74,10 @@ public class ParameterAnalysisChain {
                     break;
                 }
             }
-            paramObject[i]=parameterEnhanceChain.enhance(parameters[i],genericParameterTypes[i],paramObject[i],
-                                                ParameterUtils.getParamName(parameters[i],paramNames[i]));
+            paramObject[i]=parameterEnhanceChain
+                    .enhance(parameters[i],genericParameterTypes[i]
+                            ,paramObject[i], ParameterUtils.getParamName(parameters[i]
+                            ,paramNames[i]));
         }
         return paramObject;
     }
