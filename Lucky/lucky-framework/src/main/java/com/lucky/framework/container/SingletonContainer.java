@@ -1,7 +1,7 @@
 package com.lucky.framework.container;
 
 import com.lucky.framework.exception.LuckyBeanCreateException;
-import com.lucky.framework.uitls.reflect.AnnotationUtils;
+import com.lucky.utils.reflect.AnnotationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

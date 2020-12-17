@@ -2,17 +2,15 @@
 
  import com.lucky.framework.annotation.Component;
  import com.lucky.framework.spi.LuckyFactoryLoader;
- import com.lucky.framework.uitls.reflect.AnnotationUtils;
- import com.lucky.framework.uitls.reflect.ClassUtils;
+ import com.lucky.utils.reflect.AnnotationUtils;
+ import com.lucky.utils.reflect.ClassUtils;
  import org.slf4j.Logger;
  import org.slf4j.LoggerFactory;
 
  import java.util.HashSet;
  import java.util.List;
- import java.util.ServiceLoader;
  import java.util.Set;
  import java.util.stream.Collectors;
- import java.util.stream.Stream;
 
  /**
  * 包扫描的基类
@@ -28,7 +26,7 @@ public abstract class Scan {
 
 	 public Set<Class<?>> getComponentClass() {
 		 return componentClass.stream()
-				 .filter(c->AnnotationUtils.strengthenIsExist(c,Component.class))
+				 .filter(c-> AnnotationUtils.strengthenIsExist(c,Component.class))
 				 .collect(Collectors.toSet());
 	 }
 

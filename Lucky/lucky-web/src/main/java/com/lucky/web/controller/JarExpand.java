@@ -1,9 +1,8 @@
 package com.lucky.web.controller;
 
 import com.google.gson.reflect.TypeToken;
-import com.lucky.framework.uitls.file.Resources;
+import com.lucky.utils.file.Resources;
 
-import java.io.*;
 import java.util.List;
 
 /**
@@ -57,10 +56,6 @@ public class JarExpand {
     public static List<JarExpand> getJarExpandByJson(String classpath){
         TypeToken typeToken=new TypeToken<List<JarExpand>>(){};
         return (List<JarExpand>) Resources.fromJson(typeToken, classpath);
-    }
-
-    public static List<JarExpand> getJarExpandByXml(String classpath){
-        return Resources.fromXml(classpath);
     }
 
     public static List<JarExpand> getJarExpandByYaml(String classpath){

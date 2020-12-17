@@ -2,9 +2,9 @@ package com.lucky.web.core.parameter;
 
 import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.AutoScanApplicationContext;
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.conversion.JavaConversion;
-import com.lucky.framework.uitls.reflect.ClassUtils;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.conversion.JavaConversion;
+import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.web.annotation.RequestBody;
 import com.lucky.web.core.Model;
 
@@ -34,7 +34,7 @@ public class BaseParameterAnalysis implements ParameterAnalysis{
         //Java基本类型以及基本类型的包装类型以及他们的数组类型
         if(ClassUtils.isPrimitive(parameterType)
                 ||ClassUtils.isSimple(parameterType)
-                ||ClassUtils.isSimpleArray(parameterType)){
+                || ClassUtils.isSimpleArray(parameterType)){
             return true;
         }
         return false;

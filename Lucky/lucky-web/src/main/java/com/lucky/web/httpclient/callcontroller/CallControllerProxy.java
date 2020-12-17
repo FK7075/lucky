@@ -1,6 +1,6 @@
 package com.lucky.web.httpclient.callcontroller;
 
-import com.lucky.framework.proxy.CglibProxy;
+import com.lucky.utils.proxy.CglibProxy;
 
 public class CallControllerProxy {
 

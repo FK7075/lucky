@@ -1,6 +1,6 @@
 package com.lucky.framework.welcome;
 
-import com.lucky.framework.uitls.file.Resources;
+import com.lucky.utils.file.Resources;
 
 import java.io.IOException;
 

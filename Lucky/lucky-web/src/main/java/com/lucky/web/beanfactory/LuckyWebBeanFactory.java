@@ -1,12 +1,12 @@
 package com.lucky.web.beanfactory;
 
-import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.annotation.Component;
+import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.reflect.AnnotationUtils;
-import com.lucky.framework.uitls.reflect.ClassUtils;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.reflect.AnnotationUtils;
+import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.web.annotation.CallController;
 import com.lucky.web.annotation.Controller;
 import com.lucky.web.annotation.ControllerAdvice;

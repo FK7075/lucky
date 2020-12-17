@@ -1,6 +1,6 @@
 package com.lucky.web.core;
 
-import com.lucky.framework.uitls.file.Resources;
+import com.lucky.utils.file.Resources;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.webfile.StaticResourceManage;
 import com.lucky.web.webfile.WebFileUtils;

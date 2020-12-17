@@ -2,8 +2,8 @@ package com.lucky.framework.scan;
 
 import com.lucky.framework.annotation.Component;
 import com.lucky.framework.exception.LuckyIOException;
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.reflect.AnnotationUtils;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.reflect.AnnotationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

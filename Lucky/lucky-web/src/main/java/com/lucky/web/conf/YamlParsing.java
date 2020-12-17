@@ -1,12 +1,12 @@
 package com.lucky.web.conf;
 
 import com.lucky.framework.confanalysis.ConfigUtils;
-import com.lucky.framework.confanalysis.YamlConfAnalysis;
 import com.lucky.framework.serializable.JSONSerializationScheme;
 import com.lucky.framework.serializable.XMLSerializationScheme;
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.conversion.JavaConversion;
-import com.lucky.framework.uitls.reflect.ClassUtils;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.config.YamlConfAnalysis;
+import com.lucky.utils.conversion.JavaConversion;
+import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.web.core.LuckyResponse;
 import com.lucky.web.core.MappingPreprocess;
 import com.lucky.web.core.ParameterProcess;
@@ -54,13 +54,13 @@ public abstract class YamlParsing {
                             web.setOpenStaticResourceManage((boolean)webMap.get("static-resource-manage"));
                         }
                         if(webMap.containsKey("multipart-max-file-size")){
-                            web.setMultipartMaxFileSize((int)JavaConversion.strToBasic(
+                            web.setMultipartMaxFileSize((int) JavaConversion.strToBasic(
                                     webMap.get("multipart-max-file-size").toString(),
                                     int.class,
                                     true));
                         }
                         if(webMap.containsKey("multipart-max-request-size")){
-                            web.setMultipartMaxRequestSize((int)JavaConversion.strToBasic(
+                            web.setMultipartMaxRequestSize((int) JavaConversion.strToBasic(
                                     webMap.get("multipart-max-request-size").toString(),
                                     int.class,
                                     true));
@@ -108,7 +108,7 @@ public abstract class YamlParsing {
                             web.setFavicon(webMap.get("favicon-ico").toString());
                         }
                         if(webMap.containsKey("mapping-preprocess")){
-                            web.setMappingPreprocess((MappingPreprocess)ClassUtils.newObject(webMap.get("mapping-preprocess").toString()));
+                            web.setMappingPreprocess((MappingPreprocess) ClassUtils.newObject(webMap.get("mapping-preprocess").toString()));
                             web.setFavicon(webMap.get("favicon-ico").toString());
                         }
                         if(webMap.containsKey("parameter-analysis-chain-add")){

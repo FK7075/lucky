@@ -2,8 +2,8 @@ package com.lucky.web.core;
 
 import com.lucky.framework.serializable.JSONSerializationScheme;
 import com.lucky.framework.serializable.XMLSerializationScheme;
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.conversion.JavaConversion;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.conversion.JavaConversion;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.error.ErrorPage;

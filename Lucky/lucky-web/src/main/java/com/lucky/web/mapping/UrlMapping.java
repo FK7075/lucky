@@ -1,9 +1,9 @@
 package com.lucky.web.mapping;
 
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.base.BaseUtils;
-import com.lucky.framework.uitls.reflect.AnnotationUtils;
-import com.lucky.framework.uitls.reflect.MethodUtils;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.base.BaseUtils;
+import com.lucky.utils.reflect.AnnotationUtils;
+import com.lucky.utils.reflect.MethodUtils;
 import com.lucky.web.annotation.Download;
 import com.lucky.web.core.Model;
 import com.lucky.web.enums.RequestMethod;
@@ -17,10 +17,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 

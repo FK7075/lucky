@@ -1,6 +1,6 @@
 package com.lucky.web.initializer;
 
-import com.lucky.framework.uitls.reflect.ClassUtils;
+import com.lucky.utils.reflect.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

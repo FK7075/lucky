@@ -1,8 +1,8 @@
 package com.lucky.web.controller;
 
 import com.google.gson.reflect.TypeToken;
-import com.lucky.framework.serializable.implement.json.LSON;
 import com.lucky.framework.serializable.implement.xml.LXML;
+import com.lucky.utils.serializable.json.LSON;
 
 import java.io.InputStream;
 import java.io.OutputStream;

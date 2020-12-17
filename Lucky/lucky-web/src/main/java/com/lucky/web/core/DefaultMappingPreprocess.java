@@ -1,9 +1,9 @@
 package com.lucky.web.core;
 
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.reflect.AnnotationUtils;
-import com.lucky.framework.uitls.reflect.ClassUtils;
-import com.lucky.framework.uitls.reflect.FieldUtils;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.reflect.AnnotationUtils;
+import com.lucky.utils.reflect.ClassUtils;
+import com.lucky.utils.reflect.FieldUtils;
 import com.lucky.web.annotation.CrossOrigin;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.enums.RequestMethod;

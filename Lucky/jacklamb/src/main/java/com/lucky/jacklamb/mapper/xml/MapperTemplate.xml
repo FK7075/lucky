@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MapperConfig>
+    <MapperInterface class="com.lucky.jacklamb.sqlcore.mapper.LuckyMapper">
+        <Method name="init">
+            SELECT * FROM table WHERE id=@:id
+        </Method>
+        <Method name="upd">
+            UPDATE book SET price=price+100
+            WHERE name=@:name
+        </Method>
+    </MapperInterface>
+    <!-- < &lt; > &gt; -->
+    <MapperInterface class="com.lucky.jacklamb.sqlcore.mapper.xml.MapperXMLParsing">
+        <Method name="gtg">
+            DELETE FROM table WHETE id &gt;=@:id AND name='付款'
+        </Method>
+    </MapperInterface>
+
+</MapperConfig>
+

@@ -1,7 +1,8 @@
 package com.lucky.framework.confanalysis;
 
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.file.Resources;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.config.YamlConfAnalysis;
+import com.lucky.utils.file.Resources;
 
 import java.io.*;
 
@@ -30,7 +31,7 @@ public abstract class ConfigUtils {
                     throw new RuntimeException(e);
                 }
             }else if(Assert.isNotNull(Resources.getInputStream(DEFAULT_CONFIG_A))){
-                confReader=Resources.getReader(DEFAULT_CONFIG_A);
+                confReader= Resources.getReader(DEFAULT_CONFIG_A);
             }else if(Assert.isNotNull(Resources.getInputStream(DEFAULT_CONFIG))){
                 confReader=Resources.getReader(DEFAULT_CONFIG);
             }

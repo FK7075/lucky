@@ -1,11 +1,7 @@
 package com.lucky.web.mapping;
 
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.base.BaseUtils;
-import com.lucky.framework.uitls.reflect.AnnotationUtils;
-import com.lucky.framework.uitls.reflect.MethodUtils;
-import com.lucky.web.annotation.ControllerAdvice;
-import com.lucky.web.annotation.ResponseBody;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.reflect.MethodUtils;
 import com.lucky.web.core.Model;
 import com.lucky.web.enums.Rest;
 import com.lucky.web.exception.RepeatDefinitionExceptionHandlerException;
@@ -67,7 +63,7 @@ public class ExceptionMapping extends Mapping{
         List<String> scopeIntersect = scopeIntersect(em.getScopes());
         List<Class<? extends Throwable>> exceptionIntersect = exceptionIntersect(em.getExceptions());
         //异常与作用域其中一个不存在交集，则可判定两个异常处理器“不排斥”
-        if(Assert.isEmptyCollection(scopeIntersect)||Assert.isEmptyCollection(exceptionIntersect)){
+        if(Assert.isEmptyCollection(scopeIntersect)|| Assert.isEmptyCollection(exceptionIntersect)){
             return false;
         }
         throw new RepeatDefinitionExceptionHandlerException(scopeIntersect,exceptionIntersect,this.mapping,em.getMapping());

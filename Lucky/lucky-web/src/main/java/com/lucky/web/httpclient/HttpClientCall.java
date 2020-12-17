@@ -1,6 +1,6 @@
 package com.lucky.web.httpclient;
 
-import com.lucky.framework.uitls.base.Assert;
+import com.lucky.utils.base.Assert;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.exception.HttpClientRequestException;

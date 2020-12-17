@@ -1,9 +1,9 @@
 package com.lucky.web.mapping;
 
 import com.lucky.framework.container.Module;
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.reflect.AnnotationUtils;
-import com.lucky.framework.uitls.reflect.ClassUtils;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.reflect.AnnotationUtils;
+import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.web.annotation.*;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.enums.Rest;

@@ -1,6 +1,6 @@
 package com.lucky.web.core.parameter;
 
-import com.lucky.framework.uitls.reflect.ClassUtils;
+import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.web.core.Model;
 
 import javax.servlet.ServletConfig;

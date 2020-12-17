@@ -22,6 +22,8 @@
         <module>lucky-thymeleaf</module>
         <module>lucky-boot-maven-plugin</module>
         <module>lucky-parent</module>
+        <module>jacklamb</module>
+        <module>lucky-utils</module>
     </modules>
     <url>https://github.com/FK7075/lucky</url>
 

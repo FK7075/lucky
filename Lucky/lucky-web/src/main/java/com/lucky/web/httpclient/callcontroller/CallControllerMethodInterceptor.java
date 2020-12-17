@@ -1,7 +1,7 @@
 package com.lucky.web.httpclient.callcontroller;
 
-import com.lucky.framework.proxy.ASMUtil;
-import com.lucky.framework.uitls.reflect.*;
+import com.lucky.utils.proxy.ASMUtil;
+import com.lucky.utils.reflect.*;
 import com.lucky.web.annotation.*;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.enums.RequestMethod;
@@ -132,7 +132,7 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
                 Field[] fields = ClassUtils.getAllFields(paramClass);
                 Object fieldValue;
                 for(Field field:fields){
-                    fieldValue=FieldUtils.getValue(params[i],field);
+                    fieldValue= FieldUtils.getValue(params[i],field);
                     if(fieldValue!=null) {
                         callapiMap.put(field.getName(),fieldValue.toString());
                     }

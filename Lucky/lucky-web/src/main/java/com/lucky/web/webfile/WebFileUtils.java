@@ -1,14 +1,16 @@
 package com.lucky.web.webfile;
 
-import com.lucky.framework.uitls.file.FileUtils;
+import com.lucky.utils.file.FileUtils;
 import com.lucky.web.core.Model;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
-import java.nio.file.Files;
-import java.util.List;
+
 
 /**
  * @author fk7075

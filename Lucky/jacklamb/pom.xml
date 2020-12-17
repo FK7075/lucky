@@ -6,6 +6,7 @@
         <artifactId>lucky</artifactId>
         <groupId>com.lucky.jacklamb</groupId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jacklamb</artifactId>
@@ -21,11 +22,10 @@
             <version>3.4.2</version>
         </dependency>
 
-        <!-- Cglib动态代理 -->
         <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>2.2</version>
+            <groupId>com.lucky.jacklamb</groupId>
+            <artifactId>lucky-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

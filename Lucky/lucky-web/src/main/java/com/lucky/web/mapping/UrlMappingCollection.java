@@ -1,9 +1,9 @@
 package com.lucky.web.mapping;
 
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.file.Resources;
-import com.lucky.framework.uitls.reflect.AnnotationUtils;
-import com.lucky.framework.uitls.reflect.MethodUtils;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.file.Resources;
+import com.lucky.utils.reflect.AnnotationUtils;
+import com.lucky.utils.reflect.MethodUtils;
 import com.lucky.web.annotation.CloseRun;
 import com.lucky.web.annotation.InitRun;
 import com.lucky.web.controller.JarExpand;

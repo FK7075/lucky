@@ -1,7 +1,7 @@
 package com.lucky.boot.startup;
 
-import com.lucky.framework.uitls.base.Assert;
 import com.lucky.framework.welcome.JackLamb;
+import com.lucky.utils.base.Assert;
 import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

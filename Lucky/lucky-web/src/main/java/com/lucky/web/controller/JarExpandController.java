@@ -5,7 +5,7 @@ import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.SingletonContainer;
 import com.lucky.framework.scan.LuckyURLClassLoader;
-import com.lucky.framework.uitls.base.Assert;
+import com.lucky.utils.base.Assert;
 import com.lucky.web.annotation.Controller;
 import com.lucky.web.annotation.ControllerAdvice;
 import com.lucky.web.annotation.RestController;

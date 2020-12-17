@@ -1,7 +1,7 @@
 package com.lucky.aop.proxy;
 
 import com.lucky.aop.core.*;
-import com.lucky.framework.uitls.reflect.MethodUtils;
+import com.lucky.utils.reflect.MethodUtils;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 

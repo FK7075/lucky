@@ -1,7 +1,7 @@
 package com.lucky.aop.core;
 
 import com.lucky.aop.proxy.LuckyAopMethodInterceptor;
-import com.lucky.framework.proxy.CglibProxy;
+import com.lucky.utils.proxy.CglibProxy;
 
 import java.util.List;
 

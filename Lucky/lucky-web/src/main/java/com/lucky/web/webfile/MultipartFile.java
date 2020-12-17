@@ -1,7 +1,7 @@
 package com.lucky.web.webfile;
 
-import com.lucky.framework.uitls.base.BaseUtils;
-import com.lucky.framework.uitls.file.FileUtils;
+import com.lucky.utils.base.BaseUtils;
+import com.lucky.utils.file.FileUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;

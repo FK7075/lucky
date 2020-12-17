@@ -1,8 +1,8 @@
 package com.lucky.framework.welcome;
 
 import com.lucky.framework.exception.LuckyIOException;
-import com.lucky.framework.uitls.base.Console;
-import com.lucky.framework.uitls.file.Resources;
+import com.lucky.utils.base.Console;
+import com.lucky.utils.file.Resources;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

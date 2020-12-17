@@ -1,6 +1,6 @@
 package com.lucky.web.core.parameter;
 
-import com.lucky.framework.uitls.reflect.AnnotationUtils;
+import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.web.annotation.CallApi;
 import com.lucky.web.annotation.CallBody;
 import com.lucky.web.annotation.Controller;

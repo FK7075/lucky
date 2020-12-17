@@ -1,7 +1,7 @@
 package com.lucky.web.core.parameter;
 
-import com.lucky.framework.annotation.Param;
-import com.lucky.framework.uitls.reflect.ParameterUtils;
+import com.lucky.utils.reflect.Param;
+import com.lucky.utils.reflect.ParameterUtils;
 import com.lucky.web.core.Model;
 
 import java.lang.reflect.Method;

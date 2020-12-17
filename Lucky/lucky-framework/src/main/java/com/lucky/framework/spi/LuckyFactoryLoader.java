@@ -1,9 +1,9 @@
 package com.lucky.framework.spi;
 
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.base.StringUtils;
-import com.lucky.framework.uitls.reflect.AnnotationUtils;
-import com.lucky.framework.uitls.reflect.ClassUtils;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.base.StringUtils;
+import com.lucky.utils.reflect.AnnotationUtils;
+import com.lucky.utils.reflect.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,20 +32,12 @@ public final class LuckyFactoryLoader {
     }
 
     public static Set<Class<?>> loadFactoryClasses(Class<?> factoryType,ClassLoader classLoader){
-        Assert.notNull(factoryType, "'factoryType' must not be null");
-        ClassLoader classLoaderToUse = classLoader;
-        if (classLoaderToUse == null) {
-            classLoaderToUse = LuckyFactoryLoader.class.getClassLoader();
-        }
-        List<String> factoryImplementationNames = loadFactoryNames(factoryType, classLoaderToUse);
-        if (log.isTraceEnabled()) {
-            log.trace("Loaded [" + factoryType.getName() + "] names: " + factoryImplementationNames);
-        }
+        ClassLoaderAndFactoryNames cf = getClassLoaderAndFactoryNames(factoryType, classLoader);
+        List<String> factoryImplementationNames=cf.getFactoryImplementationNames();
         Set<Class<?>> result = new HashSet<>(factoryImplementationNames.size());
         for (String factoryImplementationName : factoryImplementationNames) {
-            result.add(forClassFactory(factoryImplementationName, factoryType, classLoaderToUse));
+            result.add(forClassFactory(factoryImplementationName, factoryType, cf.getClassLoader()));
         }
-//        AnnotationAwareOrderComparator.sort(result);
         return result;
     }
 
@@ -57,21 +49,30 @@ public final class LuckyFactoryLoader {
      * @return
      */
     public static <T> List<T> loadFactories(Class<T> factoryType,ClassLoader classLoader) {
+        ClassLoaderAndFactoryNames cf = getClassLoaderAndFactoryNames(factoryType, classLoader);
+        List<String> factoryImplementationNames=cf.getFactoryImplementationNames();
+        List<T> result = new ArrayList<>(factoryImplementationNames.size());
+        for (String factoryImplementationName : factoryImplementationNames) {
+            result.add(instantiateFactory(factoryImplementationName, factoryType, cf.getClassLoader()));
+        }
+//        AnnotationAwareOrderComparator.sort(result);
+        return result;
+    }
+
+    private static ClassLoaderAndFactoryNames getClassLoaderAndFactoryNames(Class<?> factoryType,ClassLoader classLoader){
+        ClassLoaderAndFactoryNames cf=new ClassLoaderAndFactoryNames();
         Assert.notNull(factoryType, "'factoryType' must not be null");
         ClassLoader classLoaderToUse = classLoader;
         if (classLoaderToUse == null) {
             classLoaderToUse = LuckyFactoryLoader.class.getClassLoader();
         }
+        cf.setClassLoader(classLoaderToUse);
         List<String> factoryImplementationNames = loadFactoryNames(factoryType, classLoaderToUse);
+        cf.setFactoryImplementationNames(factoryImplementationNames);
         if (log.isTraceEnabled()) {
             log.trace("Loaded [" + factoryType.getName() + "] names: " + factoryImplementationNames);
         }
-        List<T> result = new ArrayList<>(factoryImplementationNames.size());
-        for (String factoryImplementationName : factoryImplementationNames) {
-            result.add(instantiateFactory(factoryImplementationName, factoryType, classLoaderToUse));
-        }
-//        AnnotationAwareOrderComparator.sort(result);
-        return result;
+        return cf;
     }
 
     /**
@@ -187,6 +188,27 @@ public final class LuckyFactoryLoader {
             throw new IllegalArgumentException(
                     "Unable to instantiate factory class [" + factoryImplementationName + "] for factory type [" + factoryType.getName() + "]",
                     ex);
+        }
+    }
+
+    static class ClassLoaderAndFactoryNames{
+        private ClassLoader classLoader;
+        private List<String> factoryImplementationNames;
+
+        public ClassLoader getClassLoader() {
+            return classLoader;
+        }
+
+        public void setClassLoader(ClassLoader classLoader) {
+            this.classLoader = classLoader;
+        }
+
+        public List<String> getFactoryImplementationNames() {
+            return factoryImplementationNames;
+        }
+
+        public void setFactoryImplementationNames(List<String> factoryImplementationNames) {
+            this.factoryImplementationNames = factoryImplementationNames;
         }
     }
 

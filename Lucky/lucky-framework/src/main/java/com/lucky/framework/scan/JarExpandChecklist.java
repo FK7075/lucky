@@ -2,13 +2,14 @@ package com.lucky.framework.scan;
 
 import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.factory.IOCBeanFactory;
-import com.lucky.framework.uitls.reflect.ClassUtils;
-import static com.lucky.framework.container.enums.Strategy.*;
+import com.lucky.utils.reflect.ClassUtils;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static com.lucky.framework.container.enums.Strategy.*;
 
 /**
  * 扩展清单

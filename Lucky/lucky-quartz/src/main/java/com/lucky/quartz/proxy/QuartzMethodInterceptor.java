@@ -1,6 +1,5 @@
 package com.lucky.quartz.proxy;
 
-import com.lucky.framework.uitls.reflect.MethodUtils;
 import com.lucky.quartz.TargetJobRun;
 import com.lucky.quartz.annotation.Job;
 import com.lucky.quartz.exception.CronExpressionException;
@@ -8,6 +7,7 @@ import com.lucky.quartz.job.JobMap;
 import com.lucky.quartz.job.LuckyJob;
 import com.lucky.quartz.job.LuckySchedulerListener;
 import com.lucky.quartz.job.SerialJob;
+import com.lucky.utils.reflect.MethodUtils;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.quartz.*;

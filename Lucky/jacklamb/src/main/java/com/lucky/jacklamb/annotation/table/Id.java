@@ -1,5 +1,7 @@
 package com.lucky.jacklamb.annotation.table;
 
+import com.lucky.jacklamb.enums.PrimaryType;
+
 import java.lang.annotation.*;
 
 /**
@@ -35,7 +37,7 @@ public @interface Id {
 	 * AUTO_UUID：自增的UUID主键
 	 * @return
 	 */
-//	PrimaryType type() default PrimaryType.DEFAULT;
+	PrimaryType type() default PrimaryType.DEFAULT;
 	
 	/**
 	 * 设置建表时的字段长度,默认100

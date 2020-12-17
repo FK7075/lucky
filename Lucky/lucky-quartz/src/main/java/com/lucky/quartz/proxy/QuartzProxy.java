@@ -1,6 +1,6 @@
 package com.lucky.quartz.proxy;
 
-import com.lucky.framework.proxy.CglibProxy;
+import com.lucky.utils.proxy.CglibProxy;
 
 public class QuartzProxy {
 

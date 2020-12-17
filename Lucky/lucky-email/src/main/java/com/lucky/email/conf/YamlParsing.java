@@ -1,9 +1,9 @@
 package com.lucky.email.conf;
 
 import com.lucky.framework.confanalysis.ConfigUtils;
-import com.lucky.framework.confanalysis.YamlConfAnalysis;
-import com.lucky.framework.uitls.base.Assert;
-import com.lucky.framework.uitls.conversion.JavaConversion;
+import com.lucky.utils.base.Assert;
+import com.lucky.utils.config.YamlConfAnalysis;
+import com.lucky.utils.conversion.JavaConversion;
 
 import java.util.Map;
 

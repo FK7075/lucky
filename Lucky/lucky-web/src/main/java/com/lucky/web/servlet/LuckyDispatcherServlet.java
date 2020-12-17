@@ -1,6 +1,6 @@
 package com.lucky.web.servlet;
 
-import com.lucky.framework.uitls.base.Assert;
+import com.lucky.utils.base.Assert;
 import com.lucky.web.core.Model;
 import com.lucky.web.core.RequestFilter;
 import com.lucky.web.enums.RequestMethod;

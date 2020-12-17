@@ -1,9 +1,8 @@
 package com.lucky.web.core.parameter;
 
-import com.lucky.framework.uitls.conversion.JavaConversion;
-import com.lucky.framework.uitls.file.FileUtils;
-import com.lucky.framework.uitls.reflect.ClassUtils;
-import com.lucky.framework.uitls.reflect.FieldUtils;
+import com.lucky.utils.conversion.JavaConversion;
+import com.lucky.utils.reflect.ClassUtils;
+import com.lucky.utils.reflect.FieldUtils;
 import com.lucky.web.annotation.RequestBody;
 import com.lucky.web.core.Model;
 import com.lucky.web.webfile.MultipartFile;
@@ -38,7 +37,7 @@ public class PojoParameterAnalysis implements ParameterAnalysis{
     @Override
     public Object analysis(Model model, Method method, Parameter parameter, Type genericParameterType, String asmParamName) {
         Class<?> parameterClass = parameter.getType();
-        Object result=ClassUtils.newObject(parameterClass);
+        Object result= ClassUtils.newObject(parameterClass);
         createObject(model,result);
         Field[] allFields = ClassUtils.getAllFields(parameterClass);
         for (Field fi : allFields) {
@@ -73,7 +72,7 @@ public class PojoParameterAnalysis implements ParameterAnalysis{
                 }
                 FieldUtils.setValue(result,fi,JavaConversion.strToBasic(model.getParameter(fieldName),fieldClass));
             }else if(model.restMapContainsKey(fieldName)){
-                FieldUtils.setValue(result,fi,JavaConversion.strToBasic(model.getRestParam(fieldName),fieldClass));
+                FieldUtils.setValue(result,fi, JavaConversion.strToBasic(model.getRestParam(fieldName),fieldClass));
             }
 
         }
@@ -98,7 +97,7 @@ public class PojoParameterAnalysis implements ParameterAnalysis{
                     FieldUtils.setValue(pojo,field,model.getParams(field.getName(), fieClass));
                 } else {
                     if (model.parameterMapContainsKey(field.getName())) {
-                        FieldUtils.setValue(pojo,field,JavaConversion.strToBasic(model.getParameter(field.getName()), fieClass));
+                        FieldUtils.setValue(pojo,field, JavaConversion.strToBasic(model.getParameter(field.getName()), fieClass));
                     }
                     if (model.getRestMap().containsKey(field.getName())) {
                         FieldUtils.setValue(pojo,field, model.getRestParam(field.getName(), fieClass));

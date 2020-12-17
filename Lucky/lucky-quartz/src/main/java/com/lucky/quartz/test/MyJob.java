@@ -1,8 +1,8 @@
 package com.lucky.quartz.test;
 
 
-import com.lucky.framework.uitls.base.BaseUtils;
 import com.lucky.quartz.annotation.Job;
+import com.lucky.utils.base.BaseUtils;
 
 public class MyJob {
 

@@ -1,6 +1,6 @@
 package com.lucky.web.core.parameter;
 
-import com.lucky.framework.proxy.ASMUtil;
+import com.lucky.utils.proxy.ASMUtil;
 import com.lucky.web.core.Model;
 import com.lucky.web.mapping.UrlMapping;
 

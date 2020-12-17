@@ -5,12 +5,15 @@ import com.lucky.framework.serializable.JSONSerializationScheme;
 import com.lucky.framework.serializable.XMLSerializationScheme;
 import com.lucky.framework.serializable.implement.GsonSerializationScheme;
 import com.lucky.framework.serializable.implement.XtreamSerializationScheme;
-import com.lucky.framework.uitls.base.Assert;
+import com.lucky.utils.base.Assert;
 import com.lucky.web.core.*;
 import com.lucky.web.core.parameter.ParameterAnalysis;
 import com.lucky.web.core.parameter.ParameterAnalysisChain;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Web层的相关配置

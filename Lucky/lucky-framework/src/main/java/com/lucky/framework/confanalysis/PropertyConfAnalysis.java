@@ -1,5 +1,7 @@
 package com.lucky.framework.confanalysis;
 
+import com.lucky.utils.config.ConfAnalysis;
+
 import java.io.Reader;
 import java.util.Map;
 
@@ -8,7 +10,7 @@ import java.util.Map;
  * @version 1.0.0
  * @date 2020/11/16 上午6:15
  */
-public class PropertyConfAnalysis implements ConfAnalysis{
+public class PropertyConfAnalysis implements ConfAnalysis {
 
     public PropertyConfAnalysis(Reader reader) {
 

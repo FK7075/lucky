@@ -5,7 +5,7 @@ import com.lucky.boot.web.FilterMapping;
 import com.lucky.boot.web.ListenerMapping;
 import com.lucky.boot.web.ServletMapping;
 import com.lucky.framework.AutoScanApplicationContext;
-import com.lucky.framework.uitls.base.Assert;
+import com.lucky.utils.base.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
