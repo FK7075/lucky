@@ -2,12 +2,8 @@ package com.lucky.jacklamb.datasource;
 
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.config.ConfigUtils;
-import com.lucky.utils.config.YamlConfAnalysis;
-import com.lucky.utils.file.Resources;
 import com.lucky.utils.reflect.ClassUtils;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.util.*;
 
 /**

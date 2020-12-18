@@ -16,21 +16,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>com.lucky.jacklamb</groupId>
       <artifactId>lucky-utils</artifactId>
       <version>1.0-SNAPSHOT</version>
-    </dependency>
-
-    <!-- slf4j日志门面 -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.25</version>
     </dependency>
 
     <!-- XML解析(序列化) -->

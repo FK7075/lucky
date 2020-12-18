@@ -1,7 +1,6 @@
 package com.lucky.jacklamb.jdbc.core.abstcore;
 
 
-import com.lucky.jacklamb.datasource.LuckyDataSource;
 import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
 import com.lucky.jacklamb.exception.DatabaseTypeUnableIdentifyException;
 import com.lucky.jacklamb.jdbc.core.dynamiccoreImpl.*;
@@ -11,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SqlCoreFactory {
@@ -20,13 +18,9 @@ public class SqlCoreFactory {
 
 	private static Map<String,SqlCore> sqlCoreMap;
 
-	private static List<LuckyDataSource> dataSources;
-
 	static {
-		if(sqlCoreMap==null)
+		if(sqlCoreMap==null){
 			sqlCoreMap=new HashMap<>();
-		if(dataSources==null){
-			dataSources= LuckyDataSourceManage.getAllDataSource();
 		}
 	}
 	

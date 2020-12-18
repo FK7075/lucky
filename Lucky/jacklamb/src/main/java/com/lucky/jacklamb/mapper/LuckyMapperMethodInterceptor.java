@@ -510,6 +510,10 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
 
     @Override
     public Object intercept(Object object, Method method, Object[] params, MethodProxy methodProxy) throws Throwable {
+        //Object方法不执行代理
+        if(MethodUtils.isObjectMethod(method)){
+            return methodProxy.invokeSuper(object,params);
+        }
         Class<?> aClass = object.getClass().getInterfaces()[0];
         log.debug("Run ==> " +aClass.getName() + "." + method.getName() + "\n params=" + Arrays.toString(params));
         if(aClass.isAnnotationPresent(FullMapQuery.class)){

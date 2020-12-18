@@ -1,36 +1,54 @@
 lucky:
   jdbc:
     defaultDB: ##定位数据源
-      pool-type: HikariCP #创建数据源
-      url: jdbc:mysql://127.0.0.1:3306/jacklamb?useUnicode=true&characterEncoding=utf-8&useSSL=true&useTimezone=true&serverTimezone=GMT%2B8
+      #用于创建数据源
+      pool-type: HikariCP
+      ##数据库地址
+      url: jdbc:mysql://127.0.0.1:3306/test-2?useUnicode=true&characterEncoding=utf-8&useSSL=true&useTimezone=true&serverTimezone=GMT%2B8
+      ##数据库连接驱动
       driver-class-name: com.mysql.jdbc.Driver
+      ##登录名
       username: root
+      ##登录密码
       password: 123456
-      log: false
+      ##是否打印日志
+      log: true
+      ##是否打印格式化的日子
       format-sql-log: false
-      shwo-complete-sql: false
+      ##是否打印完整的SQL日子
+      show-complete-sql: true
+      ##是否开启缓存
       cache: false
-      cache-expired-time: 缓存的过期时间
+      ##缓存过期时间
+      cache-expired-time: 0
+      ##缓存的最大容量
       cache-capacity: 50
+      ##自动建表的实体映射
       auto-create-tables:
-        - com.lucky.jacklamb.exception.CreateMapperException
+        - com.lucky.jacklamb.test.Book
         - com.lucky.jacklamb.exception.DatabaseTypeUnableIdentifyException
         - com.jacklamb.lucky.entity.Authod
+      ##逆向工程生产实体类的包位置
       reverse-package: com.jacklamb.lucky.pojo
+      ##当前项目的绝对路径
       project-path: C:\Users\DELL\git\lucky-ex\src\
 
-      ##HikariCP专属配置
+      ##
+      ##  HikariCP专属配置-配置信息的具体解释请参照HikariCP.txt或者
+      ##  详细配置说明请参考HikariCP的官方文档：
+      ##  https://github.com/brettwooldridge/HikariCP
+      ##
       data-source-class-name: String
       auto-commit: false
       connection-timeout: 30000
-      idle-timeout: 23
-      max-life-time: 34
+      idle-timeout: 600001
+      max-life-time: 1800001
       connection-test-query: String
       minimum-idle: 34
-      maximum-pool-size: 45
+      maximum-pool-size: 10
       pool-name: String
-#      metric-registry: Object
-#      health-check-registry: Properties
+      metric-registry: Object
+      health-check-registry: Properties
       initialization-fail-timeout: 23
       isolate-internal-queries: false
       allow-pool-suspension: false
@@ -39,9 +57,13 @@ lucky:
       catalog: String
       connection-init-sql: String
       transaction-isolation: String
-      validation-timeout: 11
-      leakdetection-threshold: 32
-#      data-source: DataSource
+      validation-timeout: 5000
+      leakdetection-threshold: 0
+      data-source: DataSource
       schema: String
-#      thread-factory: ThreadFactory
-#      scheduled-executor-service: ScheduledExecutorService
+      thread-factory: ThreadFactory
+      scheduled-executor-service: ScheduledExecutorService
+
+jacklamb:
+  ##Mapper.xml的位置
+  mapper-xml: classpath:/mapper/

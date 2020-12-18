@@ -176,7 +176,7 @@ public class SingletonContainer implements Map<String, Module> {
     public boolean containsClass(Class<?> beanClass){
         Collection<Module> values = values();
         for (Module value : values) {
-            if(value.getOriginalType()==beanClass){
+            if(beanClass.isAssignableFrom(value.getOriginalType())){
                 return true;
             }
         }

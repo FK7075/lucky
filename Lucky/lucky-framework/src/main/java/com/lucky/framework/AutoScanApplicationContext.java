@@ -8,6 +8,7 @@ import com.lucky.framework.scan.JarExpandChecklist;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.scan.ScanFactory;
 import com.lucky.framework.welcome.JackLamb;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -24,9 +25,15 @@ import java.util.stream.Collectors;
 public class AutoScanApplicationContext implements ApplicationContext{
 
     private static AutoScanApplicationContext autoScanApplicationContext;
+    private static final RuntimeMXBean mxb = ManagementFactory.getRuntimeMXBean();
     public Class<?> applicationBootClass;
     public SingletonContainer singletonPool;
     private Set<Class<?>> allComponentClasses;
+
+    static {
+        String pid = mxb.getName().split("@")[0];
+        ThreadContext.put("pid",pid);
+    }
 
     public static AutoScanApplicationContext create(){
         if(autoScanApplicationContext==null){
@@ -54,6 +61,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
 
     private void init(){
         JackLamb.welcome();
+
         Scan scan= ScanFactory.createScan(applicationBootClass);
         allComponentClasses=scan.getAllClasses();
         RegisterMachine registerMachine=RegisterMachine.getRegisterMachine();

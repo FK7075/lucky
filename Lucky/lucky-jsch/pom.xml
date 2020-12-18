@@ -15,13 +15,6 @@
   <name>lucky-jsch</name>
   <url>https://github.com/FK7075/lucky</url>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-  </dependencies>
-
   <build>
     <plugins>
       <plugin>

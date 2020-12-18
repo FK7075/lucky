@@ -2,12 +2,10 @@ package com.lucky.jacklamb.jdbc.core;
 
 import com.lucky.jacklamb.datasource.LuckyDataSource;
 import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
-import com.lucky.jacklamb.exception.NoDataSourceException;
 import com.lucky.jacklamb.jdbc.transaction.Transaction;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 /**

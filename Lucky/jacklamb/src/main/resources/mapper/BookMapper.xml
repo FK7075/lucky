@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<MapperConfig>
-    <MapperInterface class="com.lucky.jacklamb.test.BookMapper">
-        <Method name="getByName">
-            SELECT id FROM book WHERE name=@:name
-        </Method>
-    </MapperInterface>
-
-</MapperConfig>
