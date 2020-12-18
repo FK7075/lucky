@@ -1,9 +1,9 @@
 package com.lucky.web.conf;
 
-import com.lucky.framework.confanalysis.ConfigUtils;
 import com.lucky.framework.serializable.JSONSerializationScheme;
 import com.lucky.framework.serializable.XMLSerializationScheme;
 import com.lucky.utils.base.Assert;
+import com.lucky.utils.config.ConfigUtils;
 import com.lucky.utils.config.YamlConfAnalysis;
 import com.lucky.utils.conversion.JavaConversion;
 import com.lucky.utils.reflect.ClassUtils;

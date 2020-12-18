@@ -1,7 +1,7 @@
 package com.luck.framework;
 
-import com.lucky.framework.confanalysis.ConfigUtils;
 import com.lucky.framework.junit.LuckyRunner;
+import com.lucky.utils.config.ConfigUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

@@ -1,6 +1,9 @@
 package com.lucky.jacklamb.datasource;
 
 import com.lucky.jacklamb.exception.NoDataSourceException;
+import com.lucky.utils.config.MapConfigAnalysis;
+import com.lucky.utils.config.Value;
+import com.lucky.utils.reflect.ClassUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -9,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * LUCKY数据源抽象
@@ -18,30 +22,42 @@ import java.util.Set;
  * @version 1.0
  * @date 2020/12/17 0017 9:35
  */
-public abstract class LuckyDataSource {
+public abstract class LuckyDataSource extends MapConfigAnalysis {
 
     //数据源的唯一标识
+    @Value
     private String dbname;
     //数据库地址
+    @Value("url")
     private String jdbcUrl;
     //登录名
+    @Value("username")
     private String username;
     //登录密码
+    @Value("password")
     private String password;
     //驱动的全限定名
+    @Value("driver-class-name")
     private String driverClass;
-    //数据源
-    private DataSource dataSource;
-
+    @Value("log")
     private Boolean log;
+    @Value("show-complete-sql")
     private Boolean showCompleteSQL;
+    @Value("cache")
     private Boolean cache;
+    @Value("cache-type")
     private String cacheType;
+    @Value("cache-expired-time")
     private String cacheExpiredTime;
+    @Value("cache-capacity")
     private Integer cacheCapacity;
+    @Value("format-sql-log")
     private Boolean formatSqlLog;
-    private Set<Class<?>> createTable;
+    @Value("auto-create-tables")
+    private Set<String> createTable;
+    @Value("reverse-package")
     private String reversePack;
+    @Value("project-path")
     private String srcPath;
 
     public String getDbname() {
@@ -84,14 +100,6 @@ public abstract class LuckyDataSource {
         this.driverClass = driverClass;
     }
 
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
     public Boolean getLog() {
         return log;
     }
@@ -106,6 +114,7 @@ public abstract class LuckyDataSource {
 
     public void setShowCompleteSQL(Boolean showCompleteSQL) {
         this.showCompleteSQL = showCompleteSQL;
+        if(showCompleteSQL) log=true;
     }
 
     public Boolean getCache() {
@@ -146,13 +155,14 @@ public abstract class LuckyDataSource {
 
     public void setFormatSqlLog(Boolean formatSqlLog) {
         this.formatSqlLog = formatSqlLog;
+        if(formatSqlLog)log=true;
     }
 
     public Set<Class<?>> getCreateTable() {
-        return createTable;
+        return createTable.stream().map(s-> ClassUtils.getClass(s)).collect(Collectors.toSet());
     }
 
-    public void setCreateTable(Set<Class<?>> createTable) {
+    public void setCreateTable(Set<String> createTable) {
         this.createTable = createTable;
     }
 
@@ -172,6 +182,8 @@ public abstract class LuckyDataSource {
         this.srcPath = srcPath;
     }
 
+    public abstract String poolType();
+
     public LuckyDataSource(){
         createTable= new HashSet<>();
         dbname="defaultDB";
@@ -186,11 +198,15 @@ public abstract class LuckyDataSource {
 
     public Connection getConnection(){
         try {
-            return dataSource.getConnection();
+            return createDataSource().getConnection();
         } catch (SQLException e) {
             throw new NoDataSourceException(e);
         }
     }
+
+    public abstract DataSource createDataSource();
+
+    public abstract void destroy();
 
     /**
      * 关闭数据库资源

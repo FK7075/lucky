@@ -26,7 +26,7 @@ public class AopProxyFactory {
     public static List<PointRun> createPointRuns(Class<?> AspectClass) {
         List<PointRun> pointRuns = new ArrayList<>();
         Object Aspect = ClassUtils.newObject(AspectClass);
-        Method[] AspectMethods = AspectClass.getDeclaredMethods();
+        Method[] AspectMethods =ClassUtils.getAllMethod(AspectClass);
         for (Method method : AspectMethods) {
             if(AnnotationUtils.strengthenIsExist(method,Expand.class)){
                 pointRuns.add(new PointRun(Aspect, method));

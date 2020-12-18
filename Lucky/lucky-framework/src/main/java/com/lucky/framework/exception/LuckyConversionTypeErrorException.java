@@ -8,6 +8,6 @@ package com.lucky.framework.exception;
 public class LuckyConversionTypeErrorException extends RuntimeException{
 
     public LuckyConversionTypeErrorException(Class<?> errType){
-        super("错误的类型["+errType+"],无法执行代理！如果需要使用「@Conversion」类型转换代理，您需要实现[com.lucky.utils.conversion.LuckyConversion]");
+        super("错误的类型["+errType+"],无法执行代理！如果需要使用「@Conversion」类型转换代理，您需要实现[com.lucky.test.conversion.LuckyConversion]");
     }
 }

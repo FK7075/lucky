@@ -1,7 +1,6 @@
-package com.lucky.framework.confanalysis;
+package com.lucky.utils.config;
 
 import com.lucky.utils.base.Assert;
-import com.lucky.utils.config.YamlConfAnalysis;
 import com.lucky.utils.file.Resources;
 
 import java.io.*;

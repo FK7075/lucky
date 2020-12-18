@@ -1,0 +1,135 @@
+
+详细配置说明请参考HikariCP的官方文档：
+https://github.com/brettwooldridge/HikariCP
+
+***1*** 必需品
+🔠 dataSourceClassName
+这是DataSourceJDBC驱动程序提供的类的名称。请查阅您特定的JDBC驱动程序的文档以获取该类名，或参阅下表。注意不支持XA数据源。
+XA需要像bitronix这样的真正的事务管理器 。请注意，如果jdbcUrl用于基于“老式” DriverManager的JDBC驱动程序配置，则不需要此属性 。
+默认值：无
+
+🔠 jdbcUrl
+此属性指示HikariCP使用“基于DriverManager的”配置。我们认为基于数据源的配置（上文）优于多种原因（请参见下文），但是对于许多部署而言，
+差异不大。 当将此属性与“旧”驱动程序一起使用时，您可能还需要设置该driverClassName属性，但首先尝试不使用该属性 。 请注意，如果使用此属性，
+则仍可以使用DataSource属性来配置驱动程序，实际上，建议您对URL本身中指定的驱动程序参数进行推荐。 默认值：无
+
+🔠 username
+此属性设置从基础驱动程序获取连接时使用的默认身份验证用户名。请注意，对于DataSources，通过调用DataSource.getConnection(*username*, password)基础DataSource
+以非常确定的方式工作。但是，对于基于驱动程序的配置，每个驱动程序都是不同的。在基于驱动程序的情况下，
+HikariCP将使用此属性在传递给驱动程序的调用中username设置一个user属性。如果这不是您所需要的，请完全跳过此方法，然后调用。
+默认值：无PropertiesDriverManager.getConnection(jdbcUrl, props)addDataSourceProperty("username", ...)
+
+🔠 password
+此属性设置从基础驱动程序获取连接时使用的默认身份验证密码。请注意，对于DataSources，通过调用DataSource.getConnection(username, *password*)基础DataSource
+以非常确定的方式工作。但是，对于基于驱动程序的配置，每个驱动程序都是不同的。在基于驱动程序的情况下，HikariCP将使用此属性在传递给驱动程序的调用中password设置一个password属性。
+如果这不是您所需要的，请完全跳过此方法，然后调用。 默认值：无
+PropertiesDriverManager.getConnection(jdbcUrl, props)addDataSourceProperty("pass", ...)
+
+
+***2***.经常使用
+✅ autoCommit
+此属性控制从池返回的连接的默认自动提交行为。它是一个布尔值。 默认值：true
+
+⌚ connectionTimeout
+此属性控制客户端（即您）等待来自池的连接的最大毫秒数。如果超过此时间而没有可用的连接，则会抛出SQLException。
+可接受的最低连接超时为250 ms。 默认值：30000（30秒）
+
+⌚ idleTimeout
+此属性控制允许连接在池中保持空闲状态的最长时间。 仅当minimumIdle定义为小于时，此设置才适用maximumPoolSize。
+池达到连接后， 空闲连接将不会退出minimumIdle。连接是否以空闲状态退役，最大变化为+30秒，平均变化为+15秒。
+在此超时之前，连接永远不会因为闲置而退役。值为0表示永远不会从池中删除空闲连接。最小允许值为10000ms（10秒）。
+默认值：600000（10分钟）
+
+⌚ maxLifetime
+此属性控制池中连接的最大生存期。使用中的连接永远不会停止使用，只有在关闭连接后才将其删除。在逐个连接的基础上，
+应用较小的负衰减以避免池中的质量消灭。 我们强烈建议设置此值，它应该比任何数据库或基础结构施加的连接时间限制短几秒钟。
+值0表示没有最大寿命（无限寿命），当然要遵守该idleTimeout设置。最小允许值为30000ms（30秒）。
+默认值：1800000（30分钟）
+
+🔠 connectionTestQuery
+如果您的驱动程序支持JDBC4，我们强烈建议不要设置此属性。这是针对不支持JDBC4的“旧版”驱动程序的Connection.isValid() API。
+这是将在从池中为您提供连接之前执行的查询，以验证与数据库的连接仍然有效。同样，尝试运行不带该属性的池，
+如果驱动程序不兼容JDBC4，HikariCP将记录错误。 默认值：无
+
+🔢 minimumIdle
+此属性控制HikariCP尝试在池中维护的最小空闲连接数。如果空闲连接下降到该值以下，并且池中的总连接数少于maximumPoolSize，
+则HikariCP将尽最大努力快速而有效地添加其他连接。但是，为了获得最佳性能和对峰值需求的响应能力，
+我们建议不要设置此值，而应让HikariCP充当固定大小的连接池。 默认值：与maximumPoolSize相同
+
+🔢 maximumPoolSize
+此属性控制允许池达到的最大大小，包括空闲和使用中的连接。基本上，此值将确定到数据库后端的最大实际连接数。
+合理的值最好由您的执行环境确定。当池达到此大小并且没有空闲连接可用时，对getConnection（）的调用将connectionTimeout在超时之前最多阻塞毫秒。
+请阅读有关池大小的信息。 默认值：10
+
+📈 metricRegistry
+此属性仅可通过编程配置或IoC容器使用。此属性允许您指定池将用于记录各种指标的Codahale / Dropwizard 的实例MetricRegistry。
+有关 详细信息，请参见Metrics Wiki页面。 默认值：无
+
+📈 healthCheckRegistry
+此属性仅可通过编程配置或IoC容器使用。此属性允许您指定池将用于报告当前健康信息的Codahale / Dropwizard 的实例HealthCheckRegistry。
+有关 详细信息，请参见运行状况检查 Wiki页面。 默认值：无
+
+🔠 poolName
+该属性表示连接池的用户定义名称，主要出现在日志记录和JMX管理控制台中，以识别池和池配置。 默认值：自动生成
+
+
+***3***很少使用
+⌚ initializationFailTimeout
+此属性控制如果无法为初始连接成功播种池，则池是否将“快速失败”。任何正数都是尝试获取初始连接的毫秒数；在此期间，
+应用程序线程将被阻止。如果在此超时发生之前无法获取连接，则将引发异常。此超时被应用后的connectionTimeout 期。如果该值为零（0）
+则HikariCP将尝试获取并验证连接。如果获得连接，但验证失败，则将引发异常并且池不启动。但是，如果无法获得连接，则池将启动，
+但是以后获得连接的努力可能会失败。小于零的值将绕过任何初始连接尝试，并且池将在尝试在后台获取连接时立即启动。
+因此，以后获得连接的努力可能会失败。 默认值：1
+
+❎ isolateInternalQueries
+此属性确定HikariCP是否在其自己的事务中隔离内部池查询，例如连接活动测试。由于这些通常是只读查询，因此几乎没有必要将它们封装在自己的事务中。
+此属性仅在autoCommit禁用时适用。 默认值：false
+
+❎ allowPoolSuspension
+此属性控制是否可以通过JMX暂停和恢复池。这对于某些故障转移自动化方案很有用。当池被暂停，调用 getConnection()将不会超时，
+将一直保持到池恢复。 默认值：false
+
+❎ readOnly
+此属性控制默认情况下从池获得的连接是否处于只读模式。请注意，某些数据库不支持只读模式的概念，而另一些数据库在将Connection设置为只读时提供查询优化。
+是否需要此属性在很大程度上取决于您的应用程序和数据库。 默认值：false
+
+❎ registerMbeans
+此属性控制是否注册JMX管理Bean（“ MBean”）。 默认值：false
+
+🔠 catalog
+该属性设置默认目录为支持目录的概念数据库。如果未指定此属性，则使用JDBC驱动程序定义的默认目录。 默认值：驱动程序默认值
+
+🔠 connectionInitSql
+此属性设置一个SQL语句，该语句将在每次创建新连接后执行，然后再将其添加到池中。如果此SQL无效或引发异常，它将被视为连接失败，
+并且将遵循标准的重试逻辑。 默认值：无
+
+🔠 driverClassName
+HikariCP将尝试仅通过来通过DriverManager解析驱动程序jdbcUrl，但对于某些较旧的驱动程序，driverClassName也必须指定。
+除非获得明显的错误消息，表明未找到驱动程序，否则请忽略此属性。 默认值：无
+
+🔠 transactionIsolation
+此属性控制从池返回的连接的默认事务隔离级别。如果未指定此属性，则使用JDBC驱动程序定义的默认事务隔离级别。
+仅当您具有所有查询通用的特定隔离要求时，才使用此属性。此属性的值是从不断的名称Connection 类，
+如TRANSACTION_READ_COMMITTED，TRANSACTION_REPEATABLE_READ等 默认值：驱动程序默认
+
+⌚ validationTimeout
+此属性控制将测试连接的活动性的最长时间。此值必须小于connectionTimeout。可接受的最低验证超时为250毫秒。 默认值：5000
+
+⌚ leakDetectionThreshold
+此属性控制在记录表示可能的连接泄漏的消息之前，连接可以离开池的时间。值为0表示禁用泄漏检测。启用泄漏检测的最低可接受值为2000（2秒）。
+默认值：0
+
+➡ dataSource
+此属性仅可通过编程配置或IoC容器使用。通过此属性，您可以直接设置DataSource要由池包装的的实例，而不必让HikariCP通过反射来构造它。
+这在某些依赖项注入框架中可能很有用。指定此属性后，dataSourceClassName将忽略该属性和所有特定于DataSource的属性。 默认值：无
+
+🔠 schema
+该属性设置的默认模式为支持模式的概念数据库。如果未指定此属性，则使用JDBC驱动程序定义的默认模式。 默认值：驱动程序默认值
+
+➡ threadFactory
+此属性仅可通过编程配置或IoC容器使用。此属性允许您设置的实例，该实例java.util.concurrent.ThreadFactory将用于创建池使用的所有线程。
+在某些只能通过ThreadFactory应用程序容器提供的线程创建线程的受限执行环境中，需要使用它。 默认值：无
+
+➡ scheduledExecutor
+此属性仅可通过编程配置或IoC容器使用。此属性允许您设置的实例，该实例java.util.concurrent.ScheduledExecutorService将用于各种内部计划的任务。
+如果向HikariCP提供ScheduledThreadPoolExecutor 实例，则建议使用该实例setRemoveOnCancelPolicy(true)。 默认值：无

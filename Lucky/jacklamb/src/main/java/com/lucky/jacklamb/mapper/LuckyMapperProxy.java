@@ -2,6 +2,7 @@ package com.lucky.jacklamb.mapper;
 
 import com.lucky.jacklamb.exception.NotFoundInterfacesGenericException;
 import com.lucky.jacklamb.jdbc.core.abstcore.SqlCore;
+import com.lucky.jacklamb.mapper.scan.MapperXmlScan;
 import com.lucky.utils.proxy.CglibProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +17,7 @@ import java.util.Map;
 public class LuckyMapperProxy {
 
     private static final Logger log = LoggerFactory.getLogger(LuckyMapperProxy.class);
-    private static final Map<String,Map<String,String>> allMapperSql=new HashMap<>();
-//    private static final Map<String,Map<String,String>> allMapperSql= ScanFactory.createScan()
-//            .getAllMapperSql(AppConfig.getAppConfig().getScanConfig().getMapperXmlPath());
+    private static final Map<String,Map<String,String>> allMapperSql= MapperXmlScan.getAllMapperSql();
     private SqlCore sqlCore;
     private Map<String, String> sqlMap;
     private Class<?> LuckyMapperGeneric;

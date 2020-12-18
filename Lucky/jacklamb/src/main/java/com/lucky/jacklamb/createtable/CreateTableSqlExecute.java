@@ -19,7 +19,7 @@ public class CreateTableSqlExecute {
 
     public CreateTableSqlExecute(String dbname) {
         this.dbname = dbname;
-//        classlist = LuckyDataSourceManage.getDataSource(dbname).getCreateTable();
+        classlist = LuckyDataSourceManage.getDataSource(dbname).getCreateTable();
         autoPackage = new DefaultSqlActuator(dbname);
     }
 

@@ -1,5 +1,8 @@
 package com.lucky.web.annotation;
 
+import com.lucky.web.httpclient.callcontroller.Api;
+import org.omg.CORBA.Object;
+
 import java.lang.annotation.*;
 
 /**
@@ -11,6 +14,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Check {
+
 
 	/**
 	 * 正则表达式
