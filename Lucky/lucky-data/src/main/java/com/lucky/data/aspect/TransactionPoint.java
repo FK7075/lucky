@@ -74,8 +74,8 @@ public class TransactionPoint extends InjectionAopPoint {
         Method method=targetMethodSignature.getCurrMethod();
         Class<?> targetClass=targetMethodSignature.getTargetClass();
         //当前方法上存在@Transaction，执行事务代理
-        if(method.isAnnotationPresent(Transaction.class)){
-            int isolationLevel = method.getAnnotation(Transaction.class).isolationLevel();
+        if(AnnotationUtils.strengthenIsExist(method,Transaction.class)){
+            int isolationLevel = AnnotationUtils.strengthenGet(method,Transaction.class).get(0).isolationLevel();
             return transactionResult(chain,targetMethodSignature,isolationLevel);
         }
 
@@ -86,8 +86,8 @@ public class TransactionPoint extends InjectionAopPoint {
         }
 
         //当前方法上不存在@Transaction，但是当前方法的类上存在@Transaction，同样执行事务代理
-        if(targetClass.isAnnotationPresent(Transaction.class)){
-            int isolationLevel = targetClass.getAnnotation(Transaction.class).isolationLevel();
+        if(AnnotationUtils.strengthenIsExist(targetClass,Transaction.class)){
+            int isolationLevel =  AnnotationUtils.strengthenGet(targetClass,Transaction.class).get(0).isolationLevel();
             return transactionResult(chain,targetMethodSignature,isolationLevel);
         }
         //当前方法和类上都不存在@Transaction，执行原始逻辑(不进行事务代理)
@@ -240,18 +240,18 @@ public class TransactionPoint extends InjectionAopPoint {
 
     @Override
     public boolean pointCutMethod(Class<?> currClass, Method currMethod) {
-        return AnnotationUtils.isExist(currClass,Transaction.class)||
-				AnnotationUtils.isExist(currMethod,Transaction.class);
+        return AnnotationUtils.strengthenIsExist(currClass,Transaction.class)||
+				AnnotationUtils.strengthenIsExist(currMethod,Transaction.class);
     }
 
     @Override
     public boolean pointCutClass(Class<?> currClass) {
-        if (AnnotationUtils.isExist(currClass, Transaction.class)) {
+        if (AnnotationUtils.strengthenIsExist(currClass, Transaction.class)) {
             return true;
         }
         Method[] declaredMethods = currClass.getDeclaredMethods();
         for (Method method : declaredMethods) {
-            if (AnnotationUtils.isExist(method, Transaction.class)) {
+            if (AnnotationUtils.strengthenIsExist(method, Transaction.class)) {
                 return true;
             }
         }

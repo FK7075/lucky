@@ -28,7 +28,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
     private static final RuntimeMXBean mxb = ManagementFactory.getRuntimeMXBean();
     public Class<?> applicationBootClass;
     public SingletonContainer singletonPool;
-    private Set<Class<?>> allComponentClasses;
+    private RegisterMachine registerMachine;
 
     static {
         String pid = mxb.getName().split("@")[0];
@@ -61,10 +61,8 @@ public class AutoScanApplicationContext implements ApplicationContext{
 
     private void init(){
         JackLamb.welcome();
-
         Scan scan= ScanFactory.createScan(applicationBootClass);
-        allComponentClasses=scan.getAllClasses();
-        RegisterMachine registerMachine=RegisterMachine.getRegisterMachine();
+        registerMachine=RegisterMachine.getRegisterMachine();
         registerMachine.setScan(scan);
         registerMachine.init();
         singletonPool=registerMachine.getSingletonPool();
@@ -158,21 +156,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
 
     @Override
     public Set<Class<?>> getClasses(Class<?>... aClasses) {
-        Set<Class<?>> classes=new HashSet<>();
-        for (Class<?> componentClass : allComponentClasses) {
-            for (Class<?> aClass : aClasses) {
-                if(aClass.isAnnotation()){
-                    if(componentClass.isAnnotationPresent((Class<? extends Annotation>)aClass)){
-                        classes.add(componentClass);
-                    }
-                }else {
-                    if(aClass.isAssignableFrom(componentClass)){
-                        classes.add(componentClass);
-                    }
-                }
-            }
-        }
-        return classes;
+        return registerMachine.getClasses(aClasses);
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.lucky.data.beanfactory;
 import com.lucky.data.annotation.Mapper;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
+import com.lucky.jacklamb.annotation.table.Table;
+import com.lucky.jacklamb.annotation.table.Tables;
 import com.lucky.jacklamb.datasource.LuckyDataSource;
 import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
 import com.lucky.jacklamb.jdbc.core.abstcore.SqlCoreFactory;
@@ -13,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author fk7075
@@ -35,7 +39,9 @@ public class LuckyDataJacklambBeanFactory extends IOCBeanFactory {
 
         //创建SqlCore对象
         List<LuckyDataSource> allDataSource = LuckyDataSourceManage.getAllDataSource();
+        Set<String> createTables = getClasses(Table.class, Tables.class).stream().map(c->c.getName()).collect(Collectors.toSet());
         for (LuckyDataSource luckyDataSource : allDataSource) {
+            luckyDataSource.setCreateTable(createTables);
             String dbname = luckyDataSource.getDbname();
             Module sqlCore = new Module("SqlCore-" + dbname, "SqlCore", SqlCoreFactory.createSqlCore(dbname));
             mappers.add(sqlCore);

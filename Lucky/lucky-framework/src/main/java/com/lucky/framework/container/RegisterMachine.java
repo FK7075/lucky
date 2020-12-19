@@ -15,6 +15,7 @@ import com.lucky.utils.reflect.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Annotation;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,6 +35,7 @@ public class RegisterMachine {
     private static RegisterMachine registerMachine;
     private SingletonContainer singletonPool;
     private Set<Class<?>> plugins;
+    private Set<Class<?>> allClasses;
     private static Namer namer=new BeanNamer();
     private Scan scan;
     private RegisterMachine(){
@@ -43,6 +45,7 @@ public class RegisterMachine {
 
     public void setScan(Scan scan) {
         this.scan = scan;
+        this.allClasses=scan.getAllClasses();
     }
 
     public void init() {
@@ -64,6 +67,25 @@ public class RegisterMachine {
     public Set<Class<?>> getPlugins() {
         return plugins;
     }
+
+    public Set<Class<?>> getClasses(Class<?>... aClasses) {
+        Set<Class<?>> classes=new HashSet<>();
+        for (Class<?> componentClass : allClasses) {
+            for (Class<?> aClass : aClasses) {
+                if(aClass.isAnnotation()){
+                    if(componentClass.isAnnotationPresent((Class<? extends Annotation>)aClass)){
+                        classes.add(componentClass);
+                    }
+                }else {
+                    if(aClass.isAssignableFrom(componentClass)){
+                        classes.add(componentClass);
+                    }
+                }
+            }
+        }
+        return classes;
+    }
+
 
     /**
      * 控制反转，将所有扫描得到的组件注册到IOC容器中

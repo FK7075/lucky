@@ -103,6 +103,10 @@ public abstract class IOCBeanFactory implements BeanFactory,Namer {
                 .collect(Collectors.toList());
     }
 
+    public Set<Class<?>> getClasses(Class<?>...classes){
+        return RegisterMachine.getRegisterMachine().getClasses(classes);
+    }
+
     public List<Class<?>> getPlugins(){
         return new ArrayList<>(plugins);
     }
