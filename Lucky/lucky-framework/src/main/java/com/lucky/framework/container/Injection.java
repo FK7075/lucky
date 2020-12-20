@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,11 +51,12 @@ public abstract class Injection implements Namer {
             return;
         }
         Object bean=mod.getComponent();
-        Class<?> beanClass=bean.getClass();
+        Class<?> beanClass=mod.getOriginalType();
+
         String beanName=beanClass.getName();
-        List<Field> fields = ClassUtils.getFieldByAnnotation(beanClass, Autowired.class);
+        List<Field> fields= ClassUtils.getFieldByStrengthenAnnotation(beanClass, Autowired.class);
         for (Field field : fields) {
-            Autowired autowired= AnnotationUtils.get(field,Autowired.class);
+            Autowired autowired= AnnotationUtils.strengthenGet(field,Autowired.class).get(0);
             String value = autowired.value();
             if(!Assert.isBlankString(value)){
                 Module module = singletonPool.getBean(value);
@@ -67,12 +69,34 @@ public abstract class Injection implements Namer {
                 FieldUtils.setValue(bean,field,component);
                 log.debug("Attribute injection [BY-ID] `"+beanName+"`「"+field.getName()+"」 <= "+component);
            }else{
-                List<Module> modules = singletonPool.getBeanByClass(field.getType());
+                Class<?> fieldType = field.getType();
+                List<Module> modules = singletonPool.getBeanByClass(fieldType);
                 if(Assert.isEmptyCollection(modules)){
-                    AutowiredException lex=new AutowiredException("无法为【组件ID："+mod.getId()+"】\""+beanClass+"\" 注入【属性名称："+field.getName()+"】类型为 \""+field.getType()+"\" 的属性，因为在IOC容器中没有找到该类型的组件！");
+                    AutowiredException lex=new AutowiredException("无法为【组件ID："+mod.getId()+"】\""+beanClass+"\" 注入【属性名称："+field.getName()+"】类型为 \""+fieldType+"\" 的属性，因为在IOC容器中没有找到该类型的组件！");
                     log.error("AutowiredException",lex);
                     throw lex;
                 }else if(modules.size()!=1){
+                    Class<?>[] genericTypes = ClassUtils.getGenericType(beanClass.getGenericSuperclass());
+                    if(!Assert.isEmptyArray(genericTypes)){
+                        Class<?> genericType=null;
+                        List<Object> filterBeans=new ArrayList<>();
+                        for (Class<?> type : genericTypes) {
+                            if(fieldType.isAssignableFrom(type)){
+                                genericType=type;
+                                continue;
+                            }
+                        }
+                        for (Module module : modules) {
+                            if(genericType.isAssignableFrom(module.getOriginalType())){
+                                filterBeans.add(module.getComponent());
+                            }
+                        }
+
+                        if(filterBeans.size()==1){
+                            FieldUtils.setValue(bean,field,filterBeans.get(0));
+                            continue;
+                        }
+                    }
                     AutowiredException lex=new AutowiredException("无法为【组件ID："+mod.getId()+"】\""+beanClass+"\" 注入【属性名称："+field.getName()+"】类型为 \""+field.getType()+"\" 的属性，因为在IOC容器中存在多个该类型的组件！建议您使用@Autowired注解的value属性来指定该属性组件的ID");
                     log.error("AutowiredException",lex);
                     throw lex;
