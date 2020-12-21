@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServlet;
 public class ServletMapping extends WebMapping{
 
 	private HttpServlet servlet;
+
 	private int loadOnStartup=-1;
 
 	public int getLoadOnStartup() {

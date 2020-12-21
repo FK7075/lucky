@@ -1,0 +1,15 @@
+{
+  "-p"  :"postgresql",
+  "-m"  :"mysql",
+  "-o"  :"oracle",
+  "-l"  :"lombok",
+  "-c"  :"c3p0",
+  "-r"  :"redis",
+  "-sh" :"ssh-client",
+  "-e"  :"email",
+  "-s"  :"shiro",
+  "-sw" :"shiro-web",
+  "-th" :"thymeleaf",
+  "-ts" :"thymeleaf-shiro",
+  "-h"  :"hutool"
+}

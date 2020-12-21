@@ -1,0 +1,7 @@
+# @Configuration
+com.lucky.framework.annotation.Configuration=\
+com.lucky.thymeleaf.integration.ThymeleafAutoConfig
+
+# SpareComponents
+com.lucky.framework.scan.SpareComponents=\
+com.lucky.thymeleaf.integration.ThymeleafWebApplicationInitializer

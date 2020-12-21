@@ -108,6 +108,7 @@ public class EmbeddedTomcat {
         context.setSessionCookieName("LUCKY-SESSION-ID");
         context.addLifecycleListener(new Tomcat.FixContextListener());
         context.addLifecycleListener(new Tomcat.DefaultWebXmlListener());
+//        context.addServletContainerInitializer(new LuckyBootServletContainerInitializer(),null);
 //        context.addLifecycleListener(new ContextConfig());
     }
 

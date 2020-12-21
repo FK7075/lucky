@@ -58,7 +58,7 @@ public class HikariCPDataSource extends LuckyDataSource {
     private String transactionIsolation;
     @Value("validation-timeout")
     private Integer validationTimeout;
-    @Value("leakdetection-threshold")
+    @Value("leak-detection-threshold")
     private Integer leakDetectionThreshold;
     @Value("data-source")
     private DataSource dataSource;

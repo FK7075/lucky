@@ -58,7 +58,7 @@ lucky:
       connection-init-sql: String
       transaction-isolation: String
       validation-timeout: 5000
-      leakdetection-threshold: 0
+      leak-detection-threshold: 0
       data-source: DataSource
       schema: String
       thread-factory: ThreadFactory

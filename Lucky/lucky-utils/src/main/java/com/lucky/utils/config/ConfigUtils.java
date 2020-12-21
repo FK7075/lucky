@@ -12,7 +12,7 @@ import java.io.*;
  */
 public abstract class ConfigUtils {
 
-    public static final String LUCKY_CONFIG_LOCATION="lucky.config.location";
+    public static final String LUCKY_CONFIG_LOCATION="lucky.conf.location";
     public static final String DEFAULT_CONFIG_A="/application.yaml";
     public static final String DEFAULT_CONFIG="/application.yml";
     private static YamlConfAnalysis yaml;

@@ -17,6 +17,10 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <mysql.driver.version>8.0.21</mysql.driver.version>
+        <postgresql.driver.version>42.1.4</postgresql.driver.version>
+        <oracle.driver.version>11.2.0.3</oracle.driver.version>
+        <hutool.version>5.4.2</hutool.version>
         <lucky.version>1.0-SNAPSHOT</lucky.version>
         <tomcat.version>9.0.36</tomcat.version>
         <lombok.version>1.18.12</lombok.version>
@@ -30,20 +34,39 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.lucky.jacklamb</groupId>
+            <artifactId>lucky-boot</artifactId>
+            <version>${lucky.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.lucky.jacklamb</groupId>
             <artifactId>lucky-framework</artifactId>
             <version>${lucky.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lucky.jacklamb</groupId>
+            <artifactId>lucky-aop</artifactId>
+            <version>${lucky.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lucky.jacklamb</groupId>
+            <artifactId>lucky-junit</artifactId>
+            <version>${lucky.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.lucky.jacklamb</groupId>
-                <artifactId>lucky-junit</artifactId>
-                <version>${lucky.version}</version>
-                <scope>test</scope>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
             </dependency>
 
             <dependency>
@@ -55,19 +78,27 @@
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
-                <version>8.0.21</version>
+                <version>${mysql.driver.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.driver.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc6</artifactId>
+                <version>${oracle.driver.version}</version>
                 <scope>runtime</scope>
             </dependency>
 
             <dependency>
                 <groupId>com.lucky.jacklamb</groupId>
                 <artifactId>lucky-utils</artifactId>
-                <version>${lucky.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.lucky.jacklamb</groupId>
-                <artifactId>lucky-aop</artifactId>
                 <version>${lucky.version}</version>
             </dependency>
 
@@ -80,12 +111,6 @@
             <dependency>
                 <groupId>com.lucky.jacklamb</groupId>
                 <artifactId>lucky-quartz</artifactId>
-                <version>${lucky.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.lucky.jacklamb</groupId>
-                <artifactId>lucky-boot</artifactId>
                 <version>${lucky.version}</version>
             </dependency>
 
