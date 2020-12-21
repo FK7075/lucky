@@ -2,6 +2,7 @@ package com.lucky.thymeleaf.integration;
 
 import com.lucky.framework.annotation.Bean;
 import com.lucky.framework.annotation.Configuration;
+import com.lucky.thymeleaf.conf.ThymeleafConfig;
 import com.lucky.web.conf.WebConfig;
 
 /**
@@ -14,7 +15,10 @@ public class ThymeleafAutoConfig {
 
     @Bean
     public void setWebConfig(){
-        WebConfig webConfig = WebConfig.defaultWebConfig();
-        webConfig.setResponse(new ThymeleafResponse());
+        ThymeleafConfig thymeleafConfig = ThymeleafConfig.getThymeleafConfig();
+        if(thymeleafConfig.isEnabled()){
+            WebConfig webConfig = WebConfig.defaultWebConfig();
+            webConfig.setResponse(new ThymeleafResponse());
+        }
     }
 }

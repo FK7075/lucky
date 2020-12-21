@@ -82,6 +82,7 @@ public class ThymeleafConfig extends LuckyConfig {
             conf.setModel("HTML");
             conf.setPrefix("classpath:/templates/");
             conf.setSuffix(".html");
+            conf.setFirst(true);
         }
         return conf;
     }
