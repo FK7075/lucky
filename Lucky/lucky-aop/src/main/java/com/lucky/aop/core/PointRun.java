@@ -29,6 +29,7 @@ public class PointRun {
 	private AopPoint point;
 	/** 增强的方法*/
 	public Method method;
+
 	private AopExecutionChecker aopExecutionChecker= AopConfig.defaultAopConfig().getAopExecutionChecker();
 
 	public Method getMethod() {
@@ -163,7 +164,6 @@ public class PointRun {
 	 */
 	private AopPoint conversion(Object expand, Method expandMethod, final Location location) {
 
-
 		if(location==Location.AROUND){
 			Parameter[] parameters = expandMethod.getParameters();
 			int cursor=0;
@@ -180,9 +180,8 @@ public class PointRun {
 			}
 
 		}
-
 		AopPoint cpoint=new AopPoint() {
-			
+
 			@Override
 			public Object proceed(AopChain chain) throws Throwable {
 				if(location==Location.BEFORE) {
@@ -232,7 +231,7 @@ public class PointRun {
 			private Object perform(Object expand, Method expandMethod,AopChain chain,Throwable e,Object r,long t) {
 				return MethodUtils.invoke(expand,expandMethod,setParams(expandMethod,chain,e,r,t));
 			}
-			
+
 			//设置增强方法的执行参数-@AopParam配置
 			private Object[] setParams(Method expandMethod,AopChain chain,Throwable ex,Object result,long runtime) {
 				int index;

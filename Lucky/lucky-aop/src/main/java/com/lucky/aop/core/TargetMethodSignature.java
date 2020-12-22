@@ -2,6 +2,7 @@ package com.lucky.aop.core;
 
 import com.lucky.utils.reflect.MethodUtils;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.Map;
  * @author fk-7075
  *
  */
-public class TargetMethodSignature {
+public class TargetMethodSignature implements Serializable {
 	
 	/** 当前真实类的代理对象*/
 	private Object aspectObject;

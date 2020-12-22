@@ -1,7 +1,9 @@
 package com.lucky.aop.core;
 
+import com.lucky.utils.reflect.MethodUtils;
 import net.sf.cglib.proxy.MethodProxy;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 public class AopChain {
@@ -13,14 +15,17 @@ public class AopChain {
 	private Object target;
 	
 	private Object[] params;
+
+	private Method currMethod;
 	
 	private MethodProxy methodProxy;
 	
-	public AopChain(List<AopPoint> points, Object target, Object[] params, MethodProxy methodProxy) {
+	public AopChain(List<AopPoint> points, Object target, Object[] params, MethodProxy methodProxy,Method currMethod) {
 		this.points = points;
 		this.target = target;
 		this.params = params;
 		this.methodProxy = methodProxy;
+		this.currMethod=currMethod;
 	}
 
 	int getIndex() {
@@ -58,6 +63,7 @@ public class AopChain {
 	public Object proceed() throws Throwable {
 		Object result;
 		if(++index==points.size()) {
+//			result=MethodUtils.invoke(target,currMethod,params);
 			result=methodProxy.invokeSuper(target, params);
 		}else {
 			AopPoint point=points.get(index);

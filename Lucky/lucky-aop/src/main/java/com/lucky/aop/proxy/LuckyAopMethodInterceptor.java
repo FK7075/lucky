@@ -7,20 +7,17 @@ import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class LuckyAopMethodInterceptor implements MethodInterceptor {
-	
-	
+
+
 	private List<PointRun> pointRuns;//关于某一个类的所有增强的执行节点
 	private TargetMethodSignature targetMethodSignature;
 	private static Set<InjectionAopPoint> injectionAopPoints=AopProxyFactory.injectionAopPointSet;
-	
+
 	/**
 	 * 回调函数构造器，得到一个真实对象的的所有执行方法(MethodRun)和环绕执行节点集合(PointRun)，
 	 * 根据实际情况为真实对象的每一个需要被增强的方法产生一个特定的回调策略
@@ -68,16 +65,15 @@ public class LuckyAopMethodInterceptor implements MethodInterceptor {
 			p.init(targetMethodSignature);
 			points.add(p);
 		});
-
 		//将所的环绕增强节点根据优先级排序后组成一个执行链
 		AopChain chain=new AopChain(points.stream()
 				.sorted(Comparator.comparing(AopPoint::getPriority))
-				.collect(Collectors.toList()),target,params,methodProxy);
+				.collect(Collectors.toList()),target,params,methodProxy,method);
 		Object resule;
-		
+
 		//执行增强策略
 		resule= chain.proceed();
-		chain.setIndex(-1);
+//		points.forEach(p->p.regress());
 		return resule;
 	}
 

@@ -1,6 +1,8 @@
 package com.lucky.aop.core;
 
 
+import java.io.*;
+
 /**
  * 环绕增强的执行节点,该抽象类的子类对象将会是一个环形增强的切面
  * @author fk-7075
@@ -20,10 +22,10 @@ public abstract class AopPoint {
 	}
 
 	/**
-	 * 当前方法的签名信息
+	 * 当前方法的签名信息b
 	 */
 	protected ThreadLocal<TargetMethodSignature> tlTargetMethodSignature=new ThreadLocal();
-	
+
 	public void init(TargetMethodSignature targetMethodSignature) {
 		tlTargetMethodSignature.set(targetMethodSignature);
 	}
@@ -35,5 +37,6 @@ public abstract class AopPoint {
 	 * @return
 	 */
 	public abstract Object proceed(AopChain chain) throws Throwable;
+
 
 }

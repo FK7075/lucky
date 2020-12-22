@@ -20,8 +20,11 @@ import java.util.*;
 public class AopProxyFactory {
 
     private static final Logger log= LoggerFactory.getLogger(AopProxyFactory.class);
+    public static  Set<InjectionAopPoint> injectionAopPointSet;
+    static {
+        injectionAopPointSet=new HashSet<>(10);
+    }
 
-    public static  Set<InjectionAopPoint> injectionAopPointSet=new HashSet<>(10);
 
     public static List<PointRun> createPointRuns(Class<?> AspectClass) {
         List<PointRun> pointRuns = new ArrayList<>();

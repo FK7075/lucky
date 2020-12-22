@@ -3,13 +3,13 @@
   "-m"  :"mysql",
   "-o"  :"oracle",
   "-l"  :"lombok",
-  "-c"  :"c3p0",
-  "-r"  :"redis",
-  "-sh" :"ssh-client",
-  "-e"  :"email",
-  "-s"  :"shiro",
-  "-sw" :"shiro-web",
-  "-th" :"thymeleaf",
-  "-ts" :"thymeleaf-shiro",
-  "-h"  :"hutool"
+  "-h"  :"hutool",
+  "-w"  :"web",
+  "-q"  :"quartz",
+  "-e"  : "email",
+  "-j"  : "jsch",
+  "-r"  : "redis",
+  "-t"  : "thymeleaf",
+  "-s"  : "shiro",
+  "-d"  : "data"
 }
