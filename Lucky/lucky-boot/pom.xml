@@ -12,6 +12,10 @@
   </parent>
   <artifactId>lucky-boot</artifactId>
 
+  <properties>
+    <tomcat.version>9.0.36</tomcat.version>
+  </properties>
+
   <name>lucky-boot</name>
   <url>https://github.com/FK7075/lucky</url>
 
@@ -34,20 +38,6 @@
       <groupId>org.apache.tomcat</groupId>
       <artifactId>annotations-api</artifactId>
       <version>6.0.53</version>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-core</artifactId>
-      <version>${tomcat.version}</version>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-el -->
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-el</artifactId>
-      <version>${tomcat.version}</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper -->

@@ -125,7 +125,7 @@ public abstract class JarExpandController extends LuckyController{
         DefaultMappingAnalysis analysis = new DefaultMappingAnalysis();
         List<Module> controllers = singletonPool.getBeanByAnnotation(Controller.class, RestController.class);
         //解析得到所有的请求映射
-        UrlMappingCollection urlMappingCollection =analysis.analysis(controllers);
+        UrlMappingCollection urlMappingCollection =analysis.urlAnalysis(controllers);
         List<Module> controllerAdvices = singletonPool.getBeanByAnnotation(ControllerAdvice.class);
         //解析得到所有的异常处理映射
         ExceptionMappingCollection exceptionMappingCollection=analysis.exceptionAnalysis(controllerAdvices);

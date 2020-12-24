@@ -1,0 +1,75 @@
+lucky:
+  #lucky-web配置
+  web:
+    #URL编码格式
+    encoding: UTF-8
+    ##静态文件的根目录
+    #classpath:/xxx/ ：classpath下的某个文件夹 默认：classpath:/templates
+    #user.dir:/xxx/  ：System.getProperty("user.dir")下的某个文件夹
+    #docBase:/xxx/   : Tomcat的docBase下的某个文件夹
+    ##绝对路径
+    web-root: classpath:/templates/
+    #是否开启POST请求类型转换(_method)
+    post-change-method: false
+    #是否开启静态资源管理器
+    static-resource-manage: false
+    #[文件上传]设置单个文件大小限制，单位：KB
+    multipart-max-file-size: 1204
+    #[文件上传]设置总文件大小为限制，单位：KB
+    multipart-max-request-size: 10*1024
+    #定义远程API访问路径
+    call-api:
+      allName: http://localhost:8080/getAllName
+    #json序列化方案
+    serialization:
+      xml : com.lucky.framework.serializable.implement.XtreamSerializationScheme
+      json: com.lucky.framework.serializable.implement.GsonSerializationScheme
+    #重新定义转发与重定向
+    response: com.lucky.web.core.DefaultLuckyResponse
+    ###映射的预处理器
+    #1.处理URL、请求类型和Web上下文的设置
+    #2.处理Controller的属性和跨域问题
+    #3.请求处理结束后的操作
+    mapping-preprocess: com.lucky.web.core.DefaultMappingPreprocess
+    ##添加Controller参数解析器
+    ##自定义的参数解析器需要实现接口「com.lucky.web.core.parameter.analysis.ParameterAnalysis」
+    parameter-analysis-chain-add:
+      - com.lucky.web.core.parameter.analysis.ParameterAnalysis
+      - com.lucky.web.core.parameter.ImplParameterAnalysis
+    ##对参数进行二次加工，如校验、加密，子类可继承
+    ##「com.lucky.web.core.parameter.enhance.ParameterEnhance」来扩展自定义的处理逻辑
+    parameter-enhance-chain-add:
+      - com.lucky.web.core.parameter.enhance.ParameterEnhance
+      - com.lucky.web.core.parameter.ImplParameterEnhance
+    #错误页面配置
+    error-page:
+      404: /lucky-web/404.html
+      500: /lucky-web/404.html
+    #favicon.ico文件
+    favicon-ico: /lucky-web/favicon.ico
+    #全局资源前缀
+    prefix: /WEN-INF/
+    #全局资源后缀
+    suffix: .html
+    #httpclient连接超时时间（ms）
+    httpclient-connection-timeout: 5000
+    #httpclient连接请求超时时间(ms)
+    httpclient-request-timeout: 5000
+    #httpclientsocket超时时间(ms)
+    httpclient-socket-timeout: 5000
+    #静态资源映射，将某个静态资源映射到一个特定的URL上
+    static-handler:
+      /user/login  : /user/login.html
+      /admin/update: /admin/update.html
+    #全局资源IP限制
+    global-resources-restrict-ip:
+      - 192.168.3.3
+      - 192.168.3.4
+    #静态资源Ip限制
+    static-resources-restrict-ip:
+      - 192.168.3.3
+      - 192.168.3.4
+    #指定资源的Ip限制,一个资源只能被指定的ip访问
+    specifi-resources-restrict-ip:
+      /user/query/  : [192.168.3.3,192.168.3.4]
+      /file/test.jpg: [192.168.3.3,192.168.3.4]

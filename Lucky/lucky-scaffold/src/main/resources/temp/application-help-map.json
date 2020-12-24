@@ -1,0 +1,9 @@
+
+{
+  "web"        : "application-web-temp.yaml",
+  "data"       : "application-data-temp.yml",
+  "email"      : "application-emial-temp.yml",
+  "redis"      : "application-redis-temp.yml",
+  "shiro"      : "application-shiro-temp.yml",
+  "thymeleaf"  : "application-thymeleaf-temp.yml"
+}

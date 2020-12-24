@@ -4,10 +4,8 @@ import com.lucky.scaffold.file.FileCopy;
 import com.lucky.scaffold.project.ProjectInFo;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.Set;
 
 import static com.lucky.scaffold.project.Constant.*;
 
@@ -23,6 +21,7 @@ public class CreateProject {
     private static final InputStream IML_TEMP= CreateProject.class.getResourceAsStream("/temp/idea-template.iml");
     private static final InputStream MAIN_TEMP= CreateProject.class.getResourceAsStream("/temp/main-template.java");
     private static final InputStream TEST_TEMP= CreateProject.class.getResourceAsStream("/temp/test-template.java");
+    private static final InputStream BOOT_YMAL_HELP= CreateProject.class.getResourceAsStream("/help/application-boot-temp.yml");
 
     private static String projectPath;
     private static String groupId;
@@ -88,17 +87,39 @@ public class CreateProject {
                 .replaceAll(MAIN_NAME,project.getMainClassName());
         FileOutputStream mainFile=new FileOutputStream(projectPath+JAVA+groupId+"/"+project.getMainClassName()+".java");
         IOUtils.write(main,mainFile,"UTF-8");
-        System.out.println("写入文件   [启动类]   : "+project.getMainClassName()+".java");
+        System.out.println("写入文件   [启动类]    : "+project.getMainClassName()+".java");
 
         String test=IOUtils.toString(TEST_TEMP,"UTF-8");
         test=test.replaceAll(PACKAGE,project.getGroupId())
                 .replaceAll(MAIN_NAME,project.getMainClassName());
         FileOutputStream testFile=new FileOutputStream(projectPath+TEST_JAVA+groupId+"/"+project.getMainClassName()+"Test.java");
         IOUtils.write(test,testFile,"UTF-8");
-        System.out.println("写入文件   [测试类]   : "+project.getMainClassName()+"Test.java");
+        System.out.println("写入文件   [测试类]    : "+project.getMainClassName()+"Test.java");
         new File(projectPath+RESOURCES+"application.yml").createNewFile();
-        System.out.println("写入文件   [配置文件] : application.yml");
+        System.out.println("写入文件   [配置文件]  : application.yml");
+        File bootHelp = new File(projectPath + HELP + "application-boot-temp.yml");
+        bootHelp.createNewFile();
+        FileOutputStream boot_ymal_help=new FileOutputStream(bootHelp);
+        String boot=IOUtils.toString(BOOT_YMAL_HELP,"UTF-8");
+        IOUtils.write(boot,boot_ymal_help,"UTF-8");
+        System.out.println("写入文件   [帮助文档]  : application-boot-temp.yml");
+        writerYmalHelp(project.yamlHelpSet);
     }
+
+
+
+    private static void writerYmalHelp(Set<String> ymalPaths) throws IOException {
+        for (String ymalPath : ymalPaths) {
+            InputStream in=CreateProject.class.getResourceAsStream("/help/"+ymalPath);
+            File yaml=new File(projectPath+HELP+ymalPath);
+            yaml.createNewFile();
+            FileOutputStream out=new FileOutputStream(yaml);
+            String inStr=IOUtils.toString(in,"UTF-8");
+            IOUtils.write(inStr,out,"UTF-8");
+            System.out.println("写入文件   [帮助文档]  : "+ymalPath);
+        }
+    }
+
 
     /**
      * 创建Maven项目的项目结构
@@ -112,5 +133,7 @@ public class CreateProject {
         System.out.println("创建文件夹 [PACKAGE]  : "+JAVA);
         new File(projectPath+TEST_JAVA+groupId).mkdirs();
         System.out.println("创建文件夹 [PACKAGE]  : "+TEST_JAVA);
+        new File(projectPath+HELP).mkdirs();
+        System.out.println("创建文件夹 [FOLDER]  : "+HELP);
     }
 }

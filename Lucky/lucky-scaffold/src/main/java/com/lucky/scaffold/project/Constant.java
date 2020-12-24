@@ -35,6 +35,7 @@ public class Constant {
     public static final String PACKAGE="@:Package";
     public static final String JAVA="/src/main/java/";
     public static final String TOOL="/src/main/tool/scaffold/";
+    public static final String HELP="/src/help/";
     public static final String RESOURCES="/src/main/resources/";
     public static final String TEST_JAVA="/src/test/java/";
     public static final String TEST_RESOURCES="/src/test/resources/";
@@ -49,6 +50,13 @@ public class Constant {
 
     public static Map<String,String> getMavenDependencyAlias() throws UnsupportedEncodingException {
         BufferedReader br=new BufferedReader(new InputStreamReader(FileCopy.class.getResourceAsStream("/temp/dependency-alias-template.json"),"UTF-8"));
+        Map<String, String> map = gson.fromJson(br, new TypeToken<Map<String, String>>() {
+        }.getType());
+        return map;
+    }
+
+    public static Map<String,String> getYmalHelp() throws UnsupportedEncodingException {
+        BufferedReader br=new BufferedReader(new InputStreamReader(FileCopy.class.getResourceAsStream("/temp/application-help-map.json"),"UTF-8"));
         Map<String, String> map = gson.fromJson(br, new TypeToken<Map<String, String>>() {
         }.getType());
         return map;

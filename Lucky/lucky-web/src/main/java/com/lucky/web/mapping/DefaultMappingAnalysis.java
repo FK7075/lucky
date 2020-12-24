@@ -25,7 +25,7 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
 
 
 
-    public UrlMappingCollection analysis(List<Module> controllers){
+    public UrlMappingCollection urlAnalysis(List<Module> controllers){
         UrlMappingCollection mappings=new UrlMappingCollection();
         for (Module controller : controllers) {
             UrlMappingCollection collection = analysis(controller);

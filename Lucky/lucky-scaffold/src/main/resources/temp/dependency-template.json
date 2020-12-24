@@ -2,7 +2,7 @@
   "postgresql"      : "        <dependency>\n            <groupId>org.postgresql</groupId>\n            <artifactId>postgresql</artifactId>\n        </dependency>\n\n",
   "mysql"           : "        <dependency>\n            <groupId>mysql</groupId>\n            <artifactId>mysql-connector-java</artifactId>\n        </dependency>\n\n",
   "oracle"          : "        <dependency>\n            <groupId>com.oracle</groupId>\n            <artifactId>ojdbc6</artifactId>\n            </dependency>\n\n",
-  "lombok"          : "        <dependency>\n            <groupId>org.projectlombok</groupId>\n            <artifactId>lombok</artifactId>\n            <scope>provided</scope>\n        </dependency>\n\n",
+  "lombok"          : "        <dependency>\n            <groupId>org.projectlombok</groupId>\n            <artifactId>lombok</artifactId>\n            </dependency>\n\n",
   "hutool"          : "        <dependency>\n            <groupId>cn.hutool</groupId>\n            <artifactId>hutool-all</artifactId>\n            </dependency>\n\n",
   "web"             : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-web</artifactId>\n            </dependency>\n\n",
   "quartz"          : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-quartz</artifactId>\n            </dependency>\n\n",

@@ -126,7 +126,7 @@ public abstract class BaseServlet extends HttpServlet {
         webConfig=WebConfig.getWebConfig();
         applicationContext=AutoScanApplicationContext.create();
         List<Module> controllers = applicationContext.getModuleByAnnotation(Controller.class, RestController.class);
-        urlMappingCollection =analysis.analysis(controllers);
+        urlMappingCollection =analysis.urlAnalysis(controllers);
         List<Module> controllerAdvices = applicationContext.getModuleByAnnotation(ControllerAdvice.class);
         exceptionMappingCollection=analysis.exceptionAnalysis(controllerAdvices);
         applicationContext.put(new Module("lucky_UrlMappingCollection","url-mapping",urlMappingCollection));

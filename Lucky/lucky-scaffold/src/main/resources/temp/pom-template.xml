@@ -22,7 +22,6 @@
             <groupId>com.lucky.jacklamb</groupId>
             <artifactId>lucky-boot</artifactId>
         </dependency>
-
 @:Dependency
     </dependencies>
 

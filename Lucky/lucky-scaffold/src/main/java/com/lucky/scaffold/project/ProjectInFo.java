@@ -25,6 +25,10 @@ public class ProjectInFo {
 
     private static Map<String,String> localMavenMavenDependencyAlias;
 
+    private static Map<String,String> yamlHelp;
+
+    public static Set<String> yamlHelpSet=new HashSet<>();
+
     private static Set<String> addMavenDependencyName=new HashSet<>();
 
     public static StringBuilder addMavenDependencyString=new StringBuilder("");
@@ -35,7 +39,7 @@ public class ProjectInFo {
 
     private String scaffold;
 
-    private String projectPath=dir;
+    private String projectPath=dir+File.separator+"project";
 
     private String artifactId;
 
@@ -52,9 +56,11 @@ public class ProjectInFo {
         try {
             localMavenMavenDependency=Constant.getMavenDependency();
             localMavenMavenDependencyAlias=Constant.getMavenDependencyAlias();
+            yamlHelp=Constant.getYmalHelp();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         operating=new Stack<>();
         operating.push("o");
         operating.push("a");
@@ -211,6 +217,9 @@ public class ProjectInFo {
                                 if(!addMavenDependencyName.contains(d)){
                                     addMavenDependencyString.append(localMavenMavenDependency.get(d));
                                     addMavenDependencyName.add(d);
+                                    if(yamlHelp.containsKey(d)){
+                                        yamlHelpSet.add(yamlHelp.get(d));
+                                    }
                                 }
                             }
                         }else{
@@ -308,8 +317,10 @@ public class ProjectInFo {
         System.out.printf("artifactId          -> %s\n",currPif.getArtifactId());
         System.out.printf("version             -> %s\n",currPif.getVersion());
         System.out.printf("MavenDependency     -> %s\n",currPif.addMavenDependencyName);
+        System.out.printf("Yaml Help           -> %s\n",currPif.yamlHelpSet);
         System.out.println("----------------------------------------------------------------------------------------------------\n");
     }
+
 
 
 

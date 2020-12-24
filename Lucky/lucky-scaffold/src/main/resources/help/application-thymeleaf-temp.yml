@@ -1,0 +1,14 @@
+lucky:
+  thymeleaf:
+    #开启thymeleaf视图解析
+    enabled: true
+    #编码
+    encoding: utf-8
+    #前缀
+    prefix: classpath:/templates/
+    #是否使用缓存
+    cache: false
+    #严格的HTML语法模式
+    mode: HTML
+    #后缀名
+    suffix: .html
