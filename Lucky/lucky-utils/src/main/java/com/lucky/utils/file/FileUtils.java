@@ -100,6 +100,7 @@ public abstract class FileUtils extends LuckyFile{
             try {
                 out.close();
             } catch (IOException ex) {
+                System.err.println(ex);
             }
         }
     }

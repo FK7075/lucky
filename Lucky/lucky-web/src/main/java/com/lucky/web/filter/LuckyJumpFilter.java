@@ -21,11 +21,11 @@ public abstract class LuckyJumpFilter implements Filter {
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
 	protected HttpSession session;
-	private Model model;
+	protected Model model;
 
 	@Override
 	public void destroy() {
-		
+
 	}
 
 	

@@ -409,7 +409,7 @@ public class Model {
         try {
             getOutputStream().write(info.toString().getBytes("UTF-8"));
         } catch (IOException e) {
-            e500(e);
+           log.error("IOException :Model.writer() Exception",e);
         }
     }
 

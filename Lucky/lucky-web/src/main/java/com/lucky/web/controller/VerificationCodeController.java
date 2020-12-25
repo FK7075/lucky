@@ -127,6 +127,6 @@ public abstract class VerificationCodeController extends LuckyController{
         ImagAndString imagAndString = vcCode.createVerificationCodeImage();
         session.removeAttribute(SESSION_NAME);
         session.setAttribute(SESSION_NAME, imagAndString.getStr());
-        ImageIO.write(imagAndString.getImg(), "JPEG", response.getOutputStream());
+        ImageIO.write(imagAndString.getImg(), "JPEG",model.getOutputStream());
     }
 }
