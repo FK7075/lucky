@@ -1,6 +1,7 @@
 package com.lucky.web.mapping;
 
 import com.lucky.utils.base.Assert;
+import com.lucky.utils.dm5.MD5Utils;
 import com.lucky.utils.file.Resources;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.MethodUtils;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -121,6 +123,8 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
         if(contains(urlMapping)){
             throw new RepeatUrlMappingException(urlMapping);
         }
+        String id= MD5Utils.md5UpperCase((urlMapping.getUrl()+ Arrays.toString(urlMapping.getMethods())),"LUCKY",1);
+        urlMapping.setId(id);
         list.add(urlMapping);
         if(isLog){
             log.debug("Mapping `Url=[{}] , RequestMethod={} , Rest={} , Method={}`",
@@ -286,6 +290,10 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
         for (UrlMapping mapping : urlMappings) {
             if(mapping.methodIsEquals(method)){
                 urlMapping=mapping;
+                if(urlMapping.isDisable()){
+                    model.error("403","您请求的资源 "+model.getUri()+" 已被禁用！","资源已被禁用！");
+                    return null;
+                }
                 break;
             }
         }
@@ -370,5 +378,26 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
             }
         }
         return true;
+    }
+
+    /**
+     * 通过ID找到一个UrlMapping
+     * @param id 唯一ID
+     * @return 能找到返回UrlMapping，否则返回NULL
+     */
+    public UrlMapping getUrlMappingById(String id){
+        for (UrlMapping urlMapping : list) {
+            if(id.equals(urlMapping.getId())){
+                return urlMapping;
+            }
+        }
+        for (UrlMappingCollection urlMappingCollection : expandMap.values()) {
+            for (UrlMapping urlMapping : urlMappingCollection) {
+                if(id.equals(urlMapping.getId())){
+                    return urlMapping;
+                }
+            }
+        }
+        return null;
     }
 }

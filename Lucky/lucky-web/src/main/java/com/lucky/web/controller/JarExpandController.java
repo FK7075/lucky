@@ -8,14 +8,17 @@ import com.lucky.framework.scan.LuckyURLClassLoader;
 import com.lucky.utils.base.Assert;
 import com.lucky.web.annotation.Controller;
 import com.lucky.web.annotation.ControllerAdvice;
+import com.lucky.web.annotation.PostMapping;
 import com.lucky.web.annotation.RestController;
 import com.lucky.web.exception.AddMappingExpandException;
 import com.lucky.web.mapping.DefaultMappingAnalysis;
 import com.lucky.web.mapping.ExceptionMappingCollection;
 import com.lucky.web.mapping.UrlMappingCollection;
+import com.lucky.web.webfile.MultipartFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -34,6 +37,11 @@ public abstract class JarExpandController extends LuckyController{
     private static final Logger log= LoggerFactory.getLogger("c.l.web.controller.JarExpandController");
     private static UrlMappingCollection urlMappingCollection;
     private static ExceptionMappingCollection exceptionMappingCollection;
+    private static  String TEMP_FOLDER=System.getProperty("java.io.tmpdir");
+    static {
+        TEMP_FOLDER=TEMP_FOLDER.endsWith(File.separator)?TEMP_FOLDER:TEMP_FOLDER+File.separator;
+        TEMP_FOLDER=TEMP_FOLDER+"lucky"+File.separator+"jarExpand"+File.separator;
+    }
 
     protected UrlMappingCollection getUrlMappingCollection(){
         if(urlMappingCollection==null){
@@ -52,10 +60,29 @@ public abstract class JarExpandController extends LuckyController{
     }
 
     /**
+     * 使用文件上传的方式添加一个Jar扩展
+     * @param jar 外部扩展的Jar包
+     * @param expandName 扩展名
+     * @param groupId 组织名
+     * @throws IOException
+     */
+    protected void uploadJar(MultipartFile jar, String expandName, String groupId) throws IOException {
+        if(Assert.isNull(expandName)){
+            throw new AddMappingExpandException("扩展名为NULL！");
+        }
+        if(!".jar".equals(jar.getFileType())){
+            throw new RuntimeException("上传的文件格式不正确！预计接收的文件类型为：`.jar`, 实际上传的文件类型为："+jar.getFileType());
+        }
+        jar.copyToFolder(TEMP_FOLDER);
+        String jarPath="jar:file:"+TEMP_FOLDER+jar.getFileName()+"!/";
+        andExpandJar(new JarExpand(expandName,groupId,jarPath));
+    }
+
+    /**
      *
      * 添加一个外部的JAR包扩展
      * @param expandName 扩展名
-     * @param jarFileUrl jar包的路径「jar:file:/绝对路径!/」「jar:http://网络路径」
+     * @param jarFileUrl jar包的路径「jar:file:绝对路径!/」「jar:http://网络路径!/」
      * @throws IOException
      */
     protected void andExpandJar(String expandName,String jarFileUrl,String groupId)throws IOException {
@@ -112,6 +139,7 @@ public abstract class JarExpandController extends LuckyController{
 
 
     private final boolean add(JarExpand jarExpand) throws IOException {
+        printJarInfo(jarExpand);
         URL[] urls={new URL(jarExpand.getJarPath())};
         URLClassLoader loader = new URLClassLoader(
                 urls, Thread.currentThread().getContextClassLoader());
@@ -134,6 +162,13 @@ public abstract class JarExpandController extends LuckyController{
         getExceptionMappingCollection().addExpand(jarExpand,exceptionMappingCollection);
         urlMappingCollection.initRun();
         return true;
+    }
+
+    private void printJarInfo(JarExpand jarExpand){
+        log.info("正在添加Jar扩展,扩展信息如下：\n  expandName : {}\n  groupId    : {}\n  jarPath    : {}"
+                ,jarExpand.getExpandName()
+                ,jarExpand.getGroupId()
+                ,jarExpand.getJarPath());
     }
 
 }

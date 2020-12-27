@@ -94,6 +94,7 @@ public class ExceptionMappingCollection implements Iterable<ExceptionMapping> {
             return false;
         }
         exclusionCheck(em);
+        em.setId(UUID.randomUUID().toString().replaceAll("-","").toUpperCase());
         list.add(em);
         if(isLog){
             log.debug("ExceptionHandler `Scopes=[{}]` , Exception={}",
@@ -180,6 +181,10 @@ public class ExceptionMappingCollection implements Iterable<ExceptionMapping> {
     public ExceptionMapping findExceptionMapping(UrlMapping urlMapping, Throwable ex){
         ExceptionMapping exceptionMapping = getExceptionMapping(urlMapping, ex);
         if(Assert.isNotNull(exceptionMapping)){
+            if(exceptionMapping.isDisable()){
+                log.info("找到异常处理器，但异常处理器已经被禁用！异常处理器ID : `"+exceptionMapping.getId()+"`");
+                return null;
+            }
             return exceptionMapping;
         }
         Set<ExceptionMappingCollection> expandCollectSet = expandMap.keySet()
@@ -189,18 +194,30 @@ public class ExceptionMappingCollection implements Iterable<ExceptionMapping> {
         for (ExceptionMappingCollection exceptionMappingCollection : expandCollectSet) {
             ExceptionMapping mapping = exceptionMappingCollection.getExceptionMapping(urlMapping, ex);
             if(Assert.isNotNull(mapping)){
+                if(mapping.isDisable()){
+                    log.info("找到异常处理器，但异常处理器已经被禁用！异常处理器ID : `"+mapping.getId()+"`");
+                    return null;
+                }
                 return mapping;
             }
         }
 
         ExceptionMapping globalExceptionMapping = getGlobalExceptionMapping(ex);
         if(Assert.isNotNull(globalExceptionMapping)){
+            if(globalExceptionMapping.isDisable()){
+                log.info("找到异常处理器，但异常处理器已经被禁用！异常处理器ID : `"+globalExceptionMapping.getId()+"`");
+                return null;
+            }
             return globalExceptionMapping;
         }
 
         for (ExceptionMappingCollection exceptionMappingCollection : expandCollectSet) {
             ExceptionMapping mapping = exceptionMappingCollection.getGlobalExceptionMapping(ex);
             if (Assert.isNotNull(mapping)) {
+                if(mapping.isDisable()){
+                    log.info("找到异常处理器，但异常处理器已经被禁用！异常处理器ID : `"+mapping.getId()+"`");
+                    return null;
+                }
                 return mapping;
             }
         }

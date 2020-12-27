@@ -54,6 +54,6 @@ public @interface RequestMapping {
 	 * 定义该映射支持的请求类型，默认支持POST GET PUT DELETE
 	 * @return
 	 */
-	RequestMethod[] method() default { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE };
+	RequestMethod[] method() default { RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE };
 
 }

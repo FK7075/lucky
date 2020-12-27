@@ -12,6 +12,8 @@ import java.lang.reflect.Parameter;
  */
 public abstract class Mapping {
 
+    /** 映射的唯一ID*/
+    protected String id;
     /** Controller对象*/
     protected Object object;
     /** Controller方法*/
@@ -22,6 +24,8 @@ public abstract class Mapping {
     protected Parameter[] parameters;
     /** 运行Controller方法需要的参数*/
     protected Object[] runParams;
+    /** 该映射是否已经被禁用*/
+    protected boolean isDisable;
 
     public Mapping() {
     }
@@ -64,5 +68,21 @@ public abstract class Mapping {
 
     public void setRunParams(Object[] runParams) {
         this.runParams = runParams;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public boolean isDisable() {
+        return isDisable;
+    }
+
+    public void setDisable(boolean disable) {
+        isDisable = disable;
     }
 }

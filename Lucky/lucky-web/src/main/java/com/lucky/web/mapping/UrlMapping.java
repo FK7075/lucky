@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class UrlMapping extends Mapping{
 
-    /**组件的唯一ID*/
+    /** 组件的唯一ID*/
     private String iocId;
     /** 组件的类型*/
     private String iocType;
