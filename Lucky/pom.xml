@@ -26,6 +26,7 @@
         <module>lucky-utils</module>
         <module>lucky-junit</module>
         <module>lucky-scaffold</module>
+        <module>lucky-web-management</module>
     </modules>
     <url>https://github.com/FK7075/lucky</url>
 

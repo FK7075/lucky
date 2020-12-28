@@ -92,6 +92,12 @@
             </dependency>
 
             <dependency>
+                <groupId>com.lucky.jacklamb</groupId>
+                <artifactId>lucky-web-management</artifactId>
+                <version>${lucky.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.github.theborakompanioni</groupId>
                 <artifactId>thymeleaf-extras-shiro</artifactId>
                 <version>${thymeleaf.shiro.version}</version>
