@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Parameter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -27,6 +28,7 @@ public abstract class JarExpandDetailsController extends JarExpandController{
     private static final Logger log= LoggerFactory.getLogger("c.l.web.controller.JarExpandDetailsController");
     private static final String AUTHOR="lucky";
     private static final String VERSION="2.0.0";
+    private static final String MODULE="系统功能扩展模块";
     private static  String TEMP_FOLDER=System.getProperty("java.io.tmpdir");
     static {
         TEMP_FOLDER=TEMP_FOLDER.endsWith(File.separator)?TEMP_FOLDER:TEMP_FOLDER+File.separator;
@@ -40,14 +42,17 @@ public abstract class JarExpandDetailsController extends JarExpandController{
      * @param groupId 组织名
      * @throws IOException
      */
+    @ResponseBody
     @PostMapping("/uploadJar")
     @Description(
+            module = MODULE,
             desc="上传Jar扩展",
             author = AUTHOR,
             version = VERSION,
             comment = "添加一个外部Jar扩展，这个外部扩展由用户上传，上传的扩展的格式必须为`.jar`,否则将不会生效！")
-    public void uploadJarExpand(MultipartFile jar,String expandName,String groupId) throws IOException {
+    public String uploadJarExpand(MultipartFile jar,String expandName,String groupId) throws IOException {
         uploadJar(jar,expandName,groupId);
+        return "successful";
     }
 
     /**
@@ -55,34 +60,43 @@ public abstract class JarExpandDetailsController extends JarExpandController{
      * @param jarExpand Jar扩展的信息
      * @throws IOException
      */
+    @ResponseBody
     @RequestMapping("/addJar")
     @Description(
+            module = MODULE,
             desc="添加本地Jar扩展",
             author = AUTHOR,
             version = VERSION,
             comment = "添加一个Jar扩展，这个扩展应该存在于本地，扩展的格式必须为`.jar`,否则将不会生效！如果这个扩展的扩展名存在于`无效名单`中，则只会恢复这个扩展，不会执行Jar包解析操作！")
-    public void addJar(JarExpand jarExpand) throws IOException {
+    public String addJar(JarExpand jarExpand) throws IOException {
         andExpandJar(jarExpand);
+        return "successful";
     }
 
+    @ResponseBody
     @GetMapping("/addJarBlackList")
     @Description(
+            module = MODULE,
             desc="将一个扩展列入黑名单",
             author = AUTHOR,
             version = VERSION,
             comment = "将一个扩展列入黑名单，进入黑名单的扩展将无法再被外部访问！黑名单中的扩展是可以被恢复的！")
-    public void addBlackList(String expandName){
+    public String addBlackList(String expandName){
         deleteExpandJar(expandName);
+        return "successful";
     }
 
+    @ResponseBody
     @GetMapping("/deleteJarExpand")
     @Description(
+            module = MODULE,
             desc="删除一个扩展",
             author = AUTHOR,
             version = VERSION,
             comment = "删除一个扩展，被删除的扩展的信息会被彻底抹除，不可被恢复！")
-    public void deleteJarExpand(String expandName){
+    public String deleteJarExpand(String expandName){
         removerExpandJar(expandName);
+        return "successful";
     }
 
     /**
@@ -92,6 +106,7 @@ public abstract class JarExpandDetailsController extends JarExpandController{
     @ResponseBody
     @GetMapping("/invalidJarExpand")
     @Description(
+            module = MODULE,
             desc="获取扩展黑名单",
             author = AUTHOR,
             version = VERSION,
@@ -113,6 +128,7 @@ public abstract class JarExpandDetailsController extends JarExpandController{
     @ResponseBody
     @GetMapping("/allJarExpand")
     @Description(
+            module = MODULE,
             desc="获取所有扩展",
             author = AUTHOR,
             version = VERSION,
@@ -121,6 +137,7 @@ public abstract class JarExpandDetailsController extends JarExpandController{
         return getUrlMappingCollection().getExpandInfoMap().values();
     }
 
+
     /**
      * 获取所有Mapping的详细信息
      * @return
@@ -128,6 +145,7 @@ public abstract class JarExpandDetailsController extends JarExpandController{
     @ResponseBody
     @GetMapping("/jarExpandInfo")
     @Description(
+            module = MODULE,
             desc="获取所有映射的详细描述",
             author = AUTHOR,
             version = VERSION,
@@ -140,59 +158,65 @@ public abstract class JarExpandDetailsController extends JarExpandController{
      * 禁用一个UrlMapping
      * @param id UrlMapping的唯一ID
      */
+    @ResponseBody
     @GetMapping("/disableUrl")
     @Description(
+            module = MODULE,
             desc="禁用一个URL映射",
             author = AUTHOR,
             version = VERSION,
             comment = "禁用的URL映射，需要传入这个URL映射的唯一ID，ID不正确此操作将不会生效")
-    public void disableUrlMapping(String id){
+    public String disableUrlMapping(String id){
         if(Assert.isBlankString(id)){
             log.info("传入的ID为NULL，无法执行UrlMapping禁用操作！");
-            return;
+            return "必要参数 `id` 为NULL";
         }
         UrlMapping urlMapping = getUrlMappingCollection().getUrlMappingById(id);
         if(Assert.isNull(urlMapping)){
             log.info("没有找到ID为`{}`的UrlMapping,无法执行UrlMapping禁用操作！",id);
-            return;
+            return "无效的 `id` ->"+id;
         }
         urlMapping.setDisable(true);
         log.debug("ID为`{}`的UrlMapping组件已经被禁用！该组件处理的URL为`{}`",id,urlMapping.getUrl());
+        return "successful";
     }
 
+    @ResponseBody
     @GetMapping("/restoreUrl")
     @Description(
+            module = MODULE,
             desc="恢复一个URL映射",
             author = AUTHOR,
             version = VERSION,
             comment = "恢复一个被禁用的URL映射，需要传入这个URL映射的唯一ID，ID不正确此操作将不会生效")
-    public void restoreUrlMapping(String id){
+    public String restoreUrlMapping(String id){
         if(Assert.isBlankString(id)){
             log.info("传入的ID为NULL，无法执行UrlMapping恢复操作！");
-            return;
+            return "必要参数 `id` 为NULL";
         }
         UrlMapping urlMapping = getUrlMappingCollection().getUrlMappingById(id);
         if(Assert.isNull(urlMapping)){
             log.info("没有找到ID为`{}`的UrlMapping,无法执行UrlMapping恢复操作！",id);
-            return;
+            return "无效的 `id` ->"+id;
         }
         urlMapping.setDisable(false);
         log.debug("ID为`{}`的UrlMapping组件已经恢复！该组件处理的URL为`{}`",id,urlMapping.getUrl());
+        return "successful";
     }
 
 
 
     class MappingDto{
         private String expandName;
-        private List<UrlMappingDto> urls;
-        private List<ExceptionMappingDto> exceptions;
+        private Map<Object, List<UrlMappingDto>> urls;
+        private Map<Object, List<ExceptionMappingDto>> exceptions;
 
         private MappingDto(){};
 
          public MappingDto(String expandName, List<UrlMappingDto> urls, List<ExceptionMappingDto> exceptions) {
              this.expandName = expandName;
-             this.urls = urls;
-             this.exceptions = exceptions;
+             this.urls = urls.stream().collect(Collectors.groupingBy(u->u.description.getModule()));
+             this.exceptions = exceptions.stream().collect(Collectors.groupingBy(e->e.description.getModule()));
          }
 
          public List<MappingDto> getExpandMappingInfo(){

@@ -7,8 +7,8 @@ package com.lucky.web.exception;
  */
 public class JsonConversionException extends RuntimeException{
 
-    public JsonConversionException(String serverIp, Class<?> targetClass, String jsonString, Throwable e){
-        super("JSON转换异常！[Server--("+serverIp+")-- Return : "+jsonString+", Class : "+targetClass.getName()+"]",e);
+    public JsonConversionException(String serverIp, Class<?> targetClass, String jsonString){
+        super("JSON转换异常！\n  Api                 : "+serverIp+"\n  Return Abbreviation : "+jsonString+"\n  Aims Type           : "+targetClass.getName()+"]");
     }
 
     public JsonConversionException(String jsonStr, Class<?> targetClass, Throwable e){

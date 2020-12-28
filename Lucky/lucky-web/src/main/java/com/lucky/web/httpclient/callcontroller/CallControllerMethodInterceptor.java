@@ -53,13 +53,16 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
         if(methodApi.startsWith("${")||methodApi.startsWith("http://")||methodApi.startsWith("https://")){
             apiUrl=Api.getApi(methodApi);
         }else{
-            if(!callControllerApi.endsWith("/")) {
-                callControllerApi+="/";
-            }
-            if(methodApi.startsWith("/")) {
-                methodApi=methodApi.substring(1);
-            }
+            callControllerApi=callControllerApi.endsWith("/")?callControllerApi:callControllerApi+"/";
+            methodApi=methodApi.startsWith("/")?methodApi.substring(1):methodApi;
             apiUrl=callControllerApi+methodApi;
+        }
+
+        //处理Rest风格的参数
+        if(apiUrl.contains("{")&&apiUrl.contains("}")){
+            UrlAndParamMap urlAndParamMap = new UrlAndParamMap(apiUrl, callapiMap);
+            apiUrl=urlAndParamMap.getUrl();
+            callapiMap=urlAndParamMap.getParamMap();
         }
 
         //文件下载的请求，服务将返回byte[]类型的结果
@@ -79,7 +82,8 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
                 try{
                     return webConfig.getJsonSerializationScheme().deserialization(returnClass,callResult);
                 }catch (Exception e){
-                    throw new JsonConversionException(apiUrl,(Class)returnClass,callResult,e);
+                    callResult=callResult.length()>=225?callResult.substring(0,225):callResult;
+                    throw new JsonConversionException(apiUrl,method.getReturnType(),callResult);
                 }
             }
         }
@@ -150,5 +154,45 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
         md.ipSection= (String[]) AnnotationUtils.getValue(mappingAnnotation,"ipSection");
         md.method=AnnotationUtils.strengthenGet(method, RequestMapping.class).get(0).method();
         return md;
+    }
+
+    //处理Rest参数的内部类
+    class UrlAndParamMap{
+        private String url;
+        private Map<String,Object> paramMap;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public Map<String, Object> getParamMap() {
+            return paramMap;
+        }
+
+        public UrlAndParamMap(String url,Map<String,Object> paramMap){
+            String[] urlElements = url.split("/");
+            StringBuilder newUrl=new StringBuilder();
+            for (int i=0,j=urlElements.length;i<j; i++) {
+                String element=urlElements[i];
+                if((element.startsWith("#{")||element.startsWith("{"))&&element.endsWith("}")){
+                    String urlParamName;
+                    if(element.startsWith("#{")){
+                        urlParamName=element.substring(2,element.length()-1);
+                    }else{
+                        urlParamName=element.substring(1,element.length()-1);
+                    }
+                    if(paramMap.containsKey(urlParamName)){
+                        urlElements[i]=paramMap.get(urlParamName).toString();
+                        paramMap.remove(urlParamName);
+                    }else{
+                        urlElements[i]="";
+                    }
+                }
+                newUrl.append(urlElements[i]).append("/");
+            }
+            this.paramMap=paramMap;
+            this.url=newUrl.toString();
+        }
+
     }
 }

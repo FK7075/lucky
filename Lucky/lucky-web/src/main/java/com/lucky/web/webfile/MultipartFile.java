@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-public class MultipartFile {
+public class MultipartFile implements InputStreamSource{
 
 	/** 用户上传的文件对应的输入流*/
 	private InputStream originalFileInputStream;

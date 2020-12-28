@@ -12,7 +12,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Description {
-    /** 功能描述*/
+    /** 功能所属的模块名*/
+    String module() default "";
+    /** 功能名称*/
     String desc() default "";
     /** 作者*/
     String author() default "";

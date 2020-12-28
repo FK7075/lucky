@@ -67,11 +67,14 @@ public abstract class JarExpandController extends LuckyController{
      * @throws IOException
      */
     protected void uploadJar(MultipartFile jar, String expandName, String groupId) throws IOException {
+        if(Assert.isNull(jar)){
+            throw new AddMappingExpandException("jar文件为NULL！");
+        }
         if(Assert.isNull(expandName)){
             throw new AddMappingExpandException("扩展名为NULL！");
         }
         if(!".jar".equals(jar.getFileType())){
-            throw new RuntimeException("上传的文件格式不正确！预计接收的文件类型为：`.jar`, 实际上传的文件类型为："+jar.getFileType());
+            throw new AddMappingExpandException("上传的文件格式不正确！预计接收的文件类型为：`.jar`, 实际上传的文件类型为："+jar.getFileType());
         }
         jar.copyToFolder(TEMP_FOLDER);
         String jarPath="jar:file:"+TEMP_FOLDER+jar.getFileName()+"!/";
