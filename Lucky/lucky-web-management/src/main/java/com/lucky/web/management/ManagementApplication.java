@@ -6,9 +6,9 @@ import com.lucky.boot.startup.LuckyBootApplication;
  * Hello world!
  *
  */
-public class App {
+public class ManagementApplication {
 
     public static void main( String[] args ) {
-        LuckyBootApplication.run(App.class,args);
+        LuckyBootApplication.run(ManagementApplication.class,args);
     }
 }

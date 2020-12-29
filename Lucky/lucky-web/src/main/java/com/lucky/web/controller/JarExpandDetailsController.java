@@ -206,10 +206,22 @@ public abstract class JarExpandDetailsController extends JarExpandController{
 
 
 
-    class MappingDto{
+    public class MappingDto{
         private String expandName;
         private Map<Object, List<UrlMappingDto>> urls;
         private Map<Object, List<ExceptionMappingDto>> exceptions;
+
+        public String getExpandName() {
+            return expandName;
+        }
+
+        public Map<Object, List<UrlMappingDto>> getUrls() {
+            return urls;
+        }
+
+        public Map<Object, List<ExceptionMappingDto>> getExceptions() {
+            return exceptions;
+        }
 
         private MappingDto(){};
 
@@ -239,13 +251,37 @@ public abstract class JarExpandDetailsController extends JarExpandController{
 
     }
 
-    static class BaseMapping{
+    public static class BaseMapping{
         protected String id;
         protected boolean isDisable;
         protected String controller;
         protected String method;
         protected Rest rest;
         protected MappingDescription description;
+
+        public String getId() {
+            return id;
+        }
+
+        public boolean isDisable() {
+            return isDisable;
+        }
+
+        public String getController() {
+            return controller;
+        }
+
+        public String getMethod() {
+            return method;
+        }
+
+        public Rest getRest() {
+            return rest;
+        }
+
+        public MappingDescription getDescription() {
+            return description;
+        }
 
         public BaseMapping(Mapping mapping){
             id=mapping.getId();
@@ -258,12 +294,32 @@ public abstract class JarExpandDetailsController extends JarExpandController{
 
     }
 
-    static class UrlMappingDto extends BaseMapping{
+    public static class UrlMappingDto extends BaseMapping{
         private String url;
         private RequestMethod[] requestMethods;
         private String[] paramTypes;
         private String[] paramNames;
         private String returnType;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public RequestMethod[] getRequestMethods() {
+            return requestMethods;
+        }
+
+        public String[] getParamTypes() {
+            return paramTypes;
+        }
+
+        public String[] getParamNames() {
+            return paramNames;
+        }
+
+        public String getReturnType() {
+            return returnType;
+        }
 
         private UrlMappingDto(UrlMapping urlMapping){
             super(urlMapping);
@@ -292,6 +348,14 @@ public abstract class JarExpandDetailsController extends JarExpandController{
     static class ExceptionMappingDto extends BaseMapping{
         private String[] exceptions;
         private String[] scopes;
+
+        public String[] getExceptions() {
+            return exceptions;
+        }
+
+        public String[] getScopes() {
+            return scopes;
+        }
 
         private ExceptionMappingDto(ExceptionMapping exceptionMapping){
             super(exceptionMapping);

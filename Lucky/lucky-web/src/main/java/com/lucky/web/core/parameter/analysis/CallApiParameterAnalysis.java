@@ -99,12 +99,8 @@ public class CallApiParameterAnalysis implements ParameterAnalysis {
         if ("".equals(controllerCallApi)) {
             throw new NotFoundCallUrlException("找不到可使用的远程服务地址，错误的远程服务方法：" + method);
         }
-        if (!controllerCallApi.endsWith("/")) {
-            controllerCallApi += "/";
-        }
-        if (methodCallApi.startsWith("/")) {
-            methodCallApi = methodCallApi.substring(1);
-        }
+        controllerCallApi=controllerCallApi.endsWith("/")?controllerCallApi:controllerCallApi+"/";
+        methodCallApi=methodCallApi.startsWith("/")?methodCallApi.substring(1):methodCallApi;
         return controllerCallApi + methodCallApi;
     }
 
@@ -120,15 +116,30 @@ public class CallApiParameterAnalysis implements ParameterAnalysis {
         String[] apiParamName=method.getAnnotation(CallApi.class).paramNames();
         for (String paramName : apiParamName) {
             paramName=paramName.trim();
-            if(!model.parameterMapContainsKey(paramName)){
-                if(paramName.contains(":def(")&&paramName.endsWith(")")){
-                    String[] kv=paramName.split(":def\\(");
-                    map.put(kv[0],kv[1].substring(0,kv[1].length()-1));
-                }else{
-                    throw new NotFindRequestException("远程API调用时缺少请求参数：" + paramName + ",错误位置：" + method);
-                }
+
+            //参数可以在parameterMap中找到时 优先级-1
+            if(model.parameterMapContainsKey(paramName)){
+                map.put(paramName,model.getParameter(paramName));
+                continue;
             }
-            map.put(paramName,model.getParameter(paramName));
+
+            //参数可以在restMap中找到时 优先级-2
+            if(model.restMapContainsKey(paramName)){
+                map.put(paramName,model.getRestParam(paramName));
+                continue;
+            }
+
+            //在请求中找不到参数时，使用默认的参数 优先级-3
+            //写法：@CallApi(value="http://ip:port/api",paramNames={"name","age:def(12)"})
+            if(paramName.contains(":def(")&&paramName.endsWith(")")){
+                String[] kv=paramName.split(":def\\(");
+                map.put(kv[0],kv[1].substring(0,kv[1].length()-1));
+                continue;
+            }
+
+            //请求中找不到参数，并且也没有配置默认参数，抛出异常
+            throw new NotFindRequestException("远程API调用时缺少请求参数：" + paramName + ",错误位置：" + method);
+
         }
         return map;
     }

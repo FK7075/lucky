@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Jar</title>
+    <link rel="stylesheet" href="/webmanagement/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="/webmanagement/css/bootstrap.css" />
+    <link rel="stylesheet" href="/webmanagement/css/carousel.css" />
+    <link rel="stylesheet" href="/webmanagement/css/dashboard.css">
+    <link rel="stylesheet" href="/webmanagement/css/ie10-viewport-bug-workaround.css" />
+    <script type="text/javascript" src="/webmanagement/js/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="/webmanagement/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/webmanagement/js/holder.min.js"></script>
+    <script type="text/javascript" src="/webmanagement/js/ie-emulation-modes-warning.js"></script>
+    <script type="text/javascript" src="/webmanagement/js/ie10-viewport-bug-workaround.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div th:each="mappingDto:${jars}">
+            <h2 th:text="${mappingDto.expandName}"></h2>
+            <div th:each="urlMap:${mappingDto.urls}">
+                <table class="table table-hover">
+                    <h3 th:text="${urlMap.key}"></h3>
+                    <thead>
+                        <tr>
+                            <th>URL</th>
+                            <th>RequestMethod</th>
+                            <th>isDisable</th>
+                        </tr>
+                    </thead>
+                    <tbody th:each="url:${urlMap.value}">
+                        <td th:text="${url.url}"></td>
+                        <td th:text="${url.requestMethods[0]}"></td>
+                        <td th:text="${url.isDisable}"></td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -45,7 +45,6 @@ public class HttpClientCall {
 
     /**
      * 方法体说明：向远程接口发起请求，返回字符串类型结果
-     *
      * @param url           接口地址
      * @param requestMethod 请求类型
      * @param params        传递参数
@@ -55,19 +54,11 @@ public class HttpClientCall {
      * @throws URISyntaxException
      */
     public static String call(String url, RequestMethod requestMethod, Map<String, Object> params, String... auth) throws IOException, URISyntaxException {
-        //创建HttpClient连接对象
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpRequestBase method = getHttpRequestObject(url, params, requestMethod);
-        method.setConfig(getRequestConfig());
-        HttpResponse response = client.execute(method, getHttpClientContext(auth));
-        String methodResult = responseToString(response);
-        client.close();
-        return methodResult;
+        return responseToString(getHttpResponse(url, requestMethod, params, auth));
     }
 
     /**
      * 方法体说明：向远程接口发起请求，返回byte[]类型结果
-     *
      * @param url           接口地址
      * @param requestMethod 请求类型
      * @param params        传递参数
@@ -77,20 +68,31 @@ public class HttpClientCall {
      * @throws URISyntaxException
      */
     public static byte[] callByte(String url, RequestMethod requestMethod, Map<String, Object> params, String... auth) throws IOException, URISyntaxException {
+        return responseToByte(getHttpResponse(url, requestMethod, params, auth));
+    }
+
+    /**
+     * 方法体说明：向远程接口发起请求，返回一个HttpResponse对象
+     * @param url           接口地址
+     * @param requestMethod 请求类型
+     * @param params        传递参数
+     * @param auth          访问凭证(username,password)
+     * @return
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    private static HttpResponse getHttpResponse(String url, RequestMethod requestMethod, Map<String, Object> params, String... auth) throws IOException, URISyntaxException {
         //创建HttpClient连接对象
         CloseableHttpClient client = HttpClients.createDefault();
         HttpRequestBase method = getHttpRequestObject(url, params, requestMethod);
         method.setConfig(getRequestConfig());
-        method.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        HttpResponse response = client.execute(method, getHttpClientContext(auth));
-        byte[] methodResult = responseToByte(response);
+        HttpResponse httpResponse = client.execute(method, getHttpClientContext(auth));
         client.close();
-        return methodResult;
+        return httpResponse;
     }
 
     /**
      * 方法体说明：向远程接口发起GET请求，返回字符串类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param auth   访问凭证(username,password)
@@ -102,7 +104,6 @@ public class HttpClientCall {
 
     /**
      * 方法体说明：向远程接口发起GET请求，返回Byte byte[]类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param auth   访问凭证(username,password)
@@ -114,7 +115,6 @@ public class HttpClientCall {
 
     /**
      * 方法体说明：向远程接口发起GET请求，返回字符串类型结果
-     *
      * @param url  接口地址
      * @param auth 访问凭证(username,password)
      * @return String 返回结果
@@ -125,7 +125,6 @@ public class HttpClientCall {
 
     /**
      * 方法体说明：向远程接口发起POST请求，返回字符串类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param auth   访问凭证(username,password)
@@ -138,7 +137,6 @@ public class HttpClientCall {
 
     /**
      * 方法体说明：向远程接口发起POST请求，返回byte[]类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param auth   访问凭证(username,password)
@@ -150,7 +148,6 @@ public class HttpClientCall {
 
     /**
      * 方法体说明：向远程接口发起PUT请求，返回字符串类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param auth   访问凭证(username,password)
@@ -162,7 +159,6 @@ public class HttpClientCall {
 
     /**
      * 方法体说明：向远程接口发起PUT请求，返回byte[]类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param auth   访问凭证(username,password)
@@ -174,7 +170,6 @@ public class HttpClientCall {
 
     /**
      * 方法体说明：向远程接口发起DELETE请求，返回字符串类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param auth   访问凭证(username,password)
@@ -186,7 +181,6 @@ public class HttpClientCall {
 
     /**
      * 方法体说明：向远程接口发起DELETE请求，返回byte[]类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param auth   访问凭证(username,password)
@@ -198,7 +192,6 @@ public class HttpClientCall {
 
     /**
      * 方法体说明：向远程接口发起DELETE请求，返回字符串类型结果
-     *
      * @param url  接口地址
      * @param auth 访问凭证(username,password)
      * @return String 返回结果
@@ -211,7 +204,6 @@ public class HttpClientCall {
     /**
      * 注：只有返回数据为JSON格式时才有效
      * 向远程接口发起GET请求，返回Object类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param type   转换的目的类型
@@ -228,7 +220,6 @@ public class HttpClientCall {
     /**
      * 注：只有返回数据为JSON格式时才有效
      * 向远程接口发起GET请求，返回Object类型结果
-     *
      * @param url  接口地址
      * @param type 转换的目的类型
      * @param auth 访问凭证(username,password)
@@ -244,7 +235,6 @@ public class HttpClientCall {
     /**
      * 注：只有返回数据为JSON格式时才有效
      * 向远程接口发起POST请求，返回Object类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param type   转换的目的类型
@@ -261,7 +251,6 @@ public class HttpClientCall {
     /**
      * 注：只有返回数据为JSON格式时才有效
      * 向远程接口发起PUT请求，返回Object类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param type   转换的目的类型
@@ -278,7 +267,6 @@ public class HttpClientCall {
     /**
      * 注：只有返回数据为JSON格式时才有效
      * 向远程接口发起DELETE请求，返回Object类型结果
-     *
      * @param url    接口地址
      * @param params 传递参数
      * @param type   转换的目的类型
@@ -295,7 +283,6 @@ public class HttpClientCall {
     /**
      * 注：只有返回数据为JSON格式时才有效
      * 向远程接口发起DELETE请求，返回Object类型结果
-     *
      * @param url  接口地址
      * @param type 转换的目的类型
      * @param auth 访问凭证(username,password)
@@ -330,7 +317,6 @@ public class HttpClientCall {
 
     /**
      * 处理响应结果，将响应结果转化为String类型
-     *
      * @param response HttpResponse对象
      * @return String结果
      * @throws IOException
@@ -348,7 +334,6 @@ public class HttpClientCall {
 
     /**
      * 处理响应结果，将响应结果转化为byte[]类型
-     *
      * @param response HttpResponse对象
      * @return byte[]
      * @throws IOException
@@ -366,7 +351,6 @@ public class HttpClientCall {
 
     /**
      * 得到Request的配置对对象
-     *
      * @return
      */
     private static RequestConfig getRequestConfig() {
@@ -378,7 +362,6 @@ public class HttpClientCall {
 
     /**
      * 得到HttpGet/HttpPost/HttpDelete/HttpPut对象
-     *
      * @param url           url地址
      * @param params        参数列表
      * @param requestMethod 请求类型
@@ -422,21 +405,20 @@ public class HttpClientCall {
                 post=new HttpPost(url);
                 post.addHeader("Content-Type",  Type.FROMKV.getContentType());
                 return post;
-            } else {
-                JSONObject jsonObject = getJSONObject(params);
-                if(Assert.isNull(jsonObject)){
-                    post = new HttpPost(url);
-                    post.setEntity(getUrlEncodedFormEntity(params));
-                    post.addHeader("Content-Type",  Type.FROMKV.getContentType());
-                    return post;
-                }
-                post=new HttpPost(getUrl(url,params));
-                post.addHeader("Content-Type",  Type.JSON.getContentType());
-                StringEntity stringEntity = new StringEntity(jsonObject.getJsonObject());
-                stringEntity.setContentType("application/json");
-                post.setEntity(stringEntity);
+            }
+            JSONObject jsonObject = getJSONObject(params);
+            if(Assert.isNull(jsonObject)){
+                post = new HttpPost(url);
+                post.setEntity(getUrlEncodedFormEntity(params));
+                post.addHeader("Content-Type",  Type.FROMKV.getContentType());
                 return post;
             }
+            post=new HttpPost(getUrl(url,params));
+            post.addHeader("Content-Type",  Type.JSON.getContentType());
+            StringEntity stringEntity = new StringEntity(jsonObject.getJsonObject(),"UTF-8");
+            post.setEntity(stringEntity);
+            return post;
+
         } else if (requestMethod == RequestMethod.PUT) {
             log.debug("HttpClient Request => [-PUT-] " + url);
             HttpPut put;
@@ -444,21 +426,20 @@ public class HttpClientCall {
                 put=new HttpPut(url);
                 put.addHeader("Content-Type",  Type.FROMKV.getContentType());
                 return put;
-            } else {
-                JSONObject jsonObject = getJSONObject(params);
-                if(Assert.isNull(jsonObject)){
-                    put = new HttpPut(url);
-                    put.setEntity(getUrlEncodedFormEntity(params));
-                    put.addHeader("Content-Type",  Type.FROMKV.getContentType());
-                    return put;
-                }
-                put=new HttpPut(getUrl(url,params));
-                put.addHeader("Content-Type",  Type.JSON.getContentType());
-                StringEntity stringEntity = new StringEntity(jsonObject.getJsonObject());
-                stringEntity.setContentType("application/json");
-                put.setEntity(stringEntity);
+            }
+            JSONObject jsonObject = getJSONObject(params);
+            if(Assert.isNull(jsonObject)){
+                put = new HttpPut(url);
+                put.setEntity(getUrlEncodedFormEntity(params));
+                put.addHeader("Content-Type",  Type.FROMKV.getContentType());
                 return put;
             }
+            put=new HttpPut(getUrl(url,params));
+            put.addHeader("Content-Type",  Type.JSON.getContentType());
+            StringEntity stringEntity = new StringEntity(jsonObject.getJsonObject(),"UTF-8");
+            put.setEntity(stringEntity);
+            return put;
+
         } else {
             log.error("Lucky目前不支持该请求 [-" + requestMethod + "-]");
             throw new NotFindRequestException("Lucky目前不支持该请求 [-" + requestMethod + "-]");
@@ -468,7 +449,6 @@ public class HttpClientCall {
 
     /**
      * 得到POST、PUT请求的参数
-     *
      * @param params
      * @return
      * @throws UnsupportedEncodingException
@@ -483,7 +463,6 @@ public class HttpClientCall {
 
     /**
      * 上传文件到远程服务
-     *
      * @param url                 url地址
      * @param multipartFileParams 包含文件参数的参数列表
      * @return String类型的返回结果
@@ -495,7 +474,6 @@ public class HttpClientCall {
 
     /**
      * 上传文件到远程服务
-     *
      * @param url                 url地址
      * @param multipartFileParams 包含文件参数的参数列表
      * @param headerParams        添加请求头(header)
@@ -515,23 +493,32 @@ public class HttpClientCall {
             builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);//加上此行代码解决返回中文乱码问题
             for (Map.Entry<String, Object> e : multipartFileParams.entrySet()) {
                 Class<?> paramValueClass = e.getValue().getClass();
+                //包装File类型的参数
                 if (File.class == paramValueClass) {
                     File file = (File) e.getValue();
                     builder.addBinaryBody(e.getKey(), new FileInputStream(file), ContentType.MULTIPART_FORM_DATA, file.getName());//文件参数-File
-                } else if (File[].class == paramValueClass) {
+                }
+                //包装File[]类型的参数
+                else if (File[].class == paramValueClass) {
                     File[] files = (File[]) e.getValue();
                     for (File file : files) {
                         builder.addBinaryBody(e.getKey(), new FileInputStream(file), ContentType.MULTIPART_FORM_DATA, file.getName());//文件参数-File[]
                     }
-                } else if (MultipartFile.class == paramValueClass) {
+                }
+                //包装MultipartFile类型的参数
+                else if (MultipartFile.class == paramValueClass) {
                     MultipartFile mf = (MultipartFile) e.getValue();
                     builder.addBinaryBody(e.getKey(), mf.getInputStream(), ContentType.MULTIPART_FORM_DATA, mf.getFileName());//文件参数-MultipartFile
-                } else if (MultipartFile[].class == paramValueClass) {
+                }
+                //包装MultipartFile[]类型的参数
+                else if (MultipartFile[].class == paramValueClass) {
                     MultipartFile[] mfs = (MultipartFile[]) e.getValue();
                     for (MultipartFile mf : mfs) {
                         builder.addBinaryBody(e.getKey(), mf.getInputStream(), ContentType.MULTIPART_FORM_DATA, mf.getFileName());//文件参数-MultipartFile[]
                     }
-                } else {
+                }
+                //其他类型将会被当做String类型的参数
+                else {
                     builder.addTextBody(e.getKey(), e.getValue().toString(), ContentType.APPLICATION_JSON);// 设置请求中String类型的参数
                 }
 
@@ -558,6 +545,11 @@ public class HttpClientCall {
         return result;
     }
 
+    /***
+     * 找到参数列表中被@RequestBody注解标注的JSON
+     * @param param 本次请求的参数列表
+     * @return
+     */
     private static JSONObject getJSONObject(Map<String,Object> param){
         Collection<Object> values = param.values();
         for (Object value : values) {
@@ -568,6 +560,12 @@ public class HttpClientCall {
         return null;
     }
 
+    /**
+     * 过滤掉参数列表中的JSONObject,并将其他的参数直接拼接到URL上
+     * @param url 预处理的URL
+     * @param param 可能包含JSONObject的参数列表
+     * @return 将参数列表中的参数直接拼接到URL，返回拼接后的URL
+     */
     private static String getUrl(String url,Map<String,Object> param){
         if(Assert.isEmptyMap(param)){
             return url;
