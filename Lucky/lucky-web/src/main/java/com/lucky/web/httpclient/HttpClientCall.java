@@ -54,7 +54,14 @@ public class HttpClientCall {
      * @throws URISyntaxException
      */
     public static String call(String url, RequestMethod requestMethod, Map<String, Object> params, String... auth) throws IOException, URISyntaxException {
-        return responseToString(getHttpResponse(url, requestMethod, params, auth));
+        //创建HttpClient连接对象
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpRequestBase method = getHttpRequestObject(url, params, requestMethod);
+        method.setConfig(getRequestConfig());
+        HttpResponse response = client.execute(method, getHttpClientContext(auth));
+        String methodResult = responseToString(response);
+        client.close();
+        return methodResult;
     }
 
     /**
@@ -68,27 +75,14 @@ public class HttpClientCall {
      * @throws URISyntaxException
      */
     public static byte[] callByte(String url, RequestMethod requestMethod, Map<String, Object> params, String... auth) throws IOException, URISyntaxException {
-        return responseToByte(getHttpResponse(url, requestMethod, params, auth));
-    }
-
-    /**
-     * 方法体说明：向远程接口发起请求，返回一个HttpResponse对象
-     * @param url           接口地址
-     * @param requestMethod 请求类型
-     * @param params        传递参数
-     * @param auth          访问凭证(username,password)
-     * @return
-     * @throws IOException
-     * @throws URISyntaxException
-     */
-    private static HttpResponse getHttpResponse(String url, RequestMethod requestMethod, Map<String, Object> params, String... auth) throws IOException, URISyntaxException {
         //创建HttpClient连接对象
         CloseableHttpClient client = HttpClients.createDefault();
         HttpRequestBase method = getHttpRequestObject(url, params, requestMethod);
         method.setConfig(getRequestConfig());
-        HttpResponse httpResponse = client.execute(method, getHttpClientContext(auth));
+        HttpResponse response = client.execute(method, getHttpClientContext(auth));
+        byte[] methodResult = responseToByte(response);
         client.close();
-        return httpResponse;
+        return methodResult;
     }
 
     /**

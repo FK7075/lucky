@@ -4,11 +4,11 @@ import com.lucky.framework.ApplicationContext;
 import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.SingletonContainer;
+import com.lucky.framework.scan.JarExpand;
 import com.lucky.framework.scan.LuckyURLClassLoader;
 import com.lucky.utils.base.Assert;
 import com.lucky.web.annotation.Controller;
 import com.lucky.web.annotation.ControllerAdvice;
-import com.lucky.web.annotation.PostMapping;
 import com.lucky.web.annotation.RestController;
 import com.lucky.web.exception.AddMappingExpandException;
 import com.lucky.web.mapping.DefaultMappingAnalysis;
@@ -142,7 +142,7 @@ public abstract class JarExpandController extends LuckyController{
 
 
     private final boolean add(JarExpand jarExpand) throws IOException {
-        printJarInfo(jarExpand);
+        jarExpand.printJarInfo();
         URL[] urls={new URL(jarExpand.getJarPath())};
         URLClassLoader loader = new URLClassLoader(
                 urls, Thread.currentThread().getContextClassLoader());
@@ -166,12 +166,4 @@ public abstract class JarExpandController extends LuckyController{
         urlMappingCollection.initRun();
         return true;
     }
-
-    private void printJarInfo(JarExpand jarExpand){
-        log.info("正在添加Jar扩展,扩展信息如下：\n  expandName : {}\n  groupId    : {}\n  jarPath    : {}"
-                ,jarExpand.getExpandName()
-                ,jarExpand.getGroupId()
-                ,jarExpand.getJarPath());
-    }
-
 }

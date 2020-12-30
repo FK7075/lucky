@@ -1,12 +1,17 @@
  package com.lucky.framework.scan;
 
  import com.lucky.framework.annotation.Component;
+ import com.lucky.framework.annotation.LuckyBootApplication;
+ import com.lucky.framework.exception.AddJarExpandException;
  import com.lucky.framework.spi.LuckyFactoryLoader;
+ import com.lucky.utils.base.Assert;
  import com.lucky.utils.reflect.AnnotationUtils;
  import com.lucky.utils.reflect.ClassUtils;
  import org.slf4j.Logger;
  import org.slf4j.LoggerFactory;
 
+ import java.net.MalformedURLException;
+ import java.net.URL;
  import java.util.HashSet;
  import java.util.List;
  import java.util.Set;
@@ -19,7 +24,7 @@
  */
 public abstract class Scan {
 
-	 private static final Logger log= LoggerFactory.getLogger(Scan.class);
+	private static final Logger log= LoggerFactory.getLogger(Scan.class);
 	protected static ClassLoader loader;
 	/** Component组件*/
 	protected Set<Class<?>> componentClass;
@@ -45,6 +50,33 @@ public abstract class Scan {
 				 componentClass.add(aClass);
 			 }
 		 }
+		 jarExpand(applicationBootClass,cl);
+	}
+
+	private void jarExpand(Class<?> applicationBootClass,ClassLoader cl) {
+		if(applicationBootClass!=null
+				&&AnnotationUtils.strengthenIsExist(applicationBootClass, LuckyBootApplication.class)){
+			String jarExpand
+					= AnnotationUtils.strengthenGet(applicationBootClass, LuckyBootApplication.class).get(0).jarExpand();
+			if(!Assert.isBlankString(jarExpand)){
+				List<JarExpand> jars = JarExpand.getJarExpandByJson(jarExpand);
+				URL[] urls=new URL[1];
+				for (JarExpand jar : jars) {
+					jar.printJarInfo();
+
+					try {
+						urls[0]=new URL(jar.getJarPath());
+					}catch (MalformedURLException e){
+						throw new AddJarExpandException(jar.getJarPath());
+					}
+
+					LuckyURLClassLoader luckyURLClassLoader=new LuckyURLClassLoader(urls,loader);
+					Set<Class<?>> beanClass = luckyURLClassLoader.getComponentClass(jar.getGroupId()).getBeanClass();
+					componentClass.addAll(beanClass);
+				}
+
+			}
+		}
 	}
 	
 	/**

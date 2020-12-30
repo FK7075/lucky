@@ -1,6 +1,6 @@
 package com.lucky.web.management;
 
-import com.lucky.boot.startup.LuckyBootApplication;
+import com.lucky.boot.startup.LuckyApplication;
 
 /**
  * Hello world!
@@ -9,6 +9,6 @@ import com.lucky.boot.startup.LuckyBootApplication;
 public class ManagementApplication {
 
     public static void main( String[] args ) {
-        LuckyBootApplication.run(ManagementApplication.class,args);
+        LuckyApplication.run(ManagementApplication.class,args);
     }
 }

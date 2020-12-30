@@ -2,10 +2,8 @@ package com.lucky.web.management.controller;
 
 import com.lucky.web.annotation.Controller;
 import com.lucky.web.annotation.GetMapping;
-import com.lucky.web.controller.JarExpand;
 import com.lucky.web.controller.JarExpandDetailsController;
 
-import java.util.Collection;
 import java.util.List;
 
 /**

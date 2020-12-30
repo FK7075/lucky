@@ -1,5 +1,6 @@
 package com.lucky.web.mapping;
 
+import com.lucky.framework.scan.JarExpand;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.dm5.MD5Utils;
 import com.lucky.utils.file.Resources;
@@ -7,7 +8,6 @@ import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.MethodUtils;
 import com.lucky.web.annotation.CloseRun;
 import com.lucky.web.annotation.InitRun;
-import com.lucky.web.controller.JarExpand;
 import com.lucky.web.core.Model;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.exception.CloseRunException;
@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;

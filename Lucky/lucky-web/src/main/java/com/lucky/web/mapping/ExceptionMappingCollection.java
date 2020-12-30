@@ -1,8 +1,8 @@
 package com.lucky.web.mapping;
 
+import com.lucky.framework.scan.JarExpand;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.base.ExceptionUtils;
-import com.lucky.web.controller.JarExpand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +118,7 @@ public class ExceptionMappingCollection implements Iterable<ExceptionMapping> {
      * @param expand ExceptionHandler映射集
      * @return
      */
-    public boolean addExpand(JarExpand jarExpand,ExceptionMappingCollection expand){
+    public boolean addExpand(JarExpand jarExpand, ExceptionMappingCollection expand){
         String expandName=jarExpand.getExpandName();
         if(deleteExpand.contains(expandName)){
             deleteExpand.remove(expandName);

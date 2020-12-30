@@ -14,7 +14,7 @@ import java.lang.management.RuntimeMXBean;
  * @version 1.0
  * @date 2020/12/3 0003 11:33
  */
-public class LuckyBootApplication {
+public class LuckyApplication {
 
     private static Logger log;
     private static final RuntimeMXBean mxb = ManagementFactory.getRuntimeMXBean();
