@@ -10,6 +10,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Configuration
 public @interface LuckyBootApplication {
 
     /**
@@ -32,4 +33,10 @@ public @interface LuckyBootApplication {
      * @return
      */
     String jarExpand() default "";
+
+    /**
+     * 用于排除某个类型的组件扫描
+     * @return
+     */
+    Class[] exclusions() default {};
 }

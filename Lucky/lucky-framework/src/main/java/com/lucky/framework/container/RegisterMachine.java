@@ -93,7 +93,8 @@ public class RegisterMachine {
     public void register(){
         Set<Class<?>> componentClasses=scan.getComponentClass();
         componentClasses.addAll(
-                LuckyFactoryLoader.loadFactoryClasses(Configuration.class,loader));
+                LuckyFactoryLoader.loadFactoryClasses(Configuration.class,loader)
+                        .stream().filter(c->!scan.exclusions(c)).collect(Collectors.toSet()));
 
         //实例化所有扫描到的Bean实例，并注入到IOC容器中
         for (Class<?> componentClass : componentClasses) {
@@ -129,8 +130,10 @@ public class RegisterMachine {
         ConfigurationBeanFactory configurationBeanFactory=
                 new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"));
         configurationBeanFactory.createBean().stream().forEach((m)->{
-            singletonPool.put(m.getId(),m);
-            log.debug("Configuration Bean `{}`",m);
+            if(!scan.exclusions(m.getOriginalType())){
+                singletonPool.put(m.getId(),m);
+                log.debug("Configuration Bean `{}`",m);
+            }
         });
 
         //找到IOC容器中所有的BeanFactory，并将这些BeanFactory生产的Bean实例注入IOC容器
@@ -142,8 +145,10 @@ public class RegisterMachine {
             BeanFactory beanFactory = (BeanFactory) beanFactoryModule.getComponent();
             log.info("BeanFactory `{}`",beanFactory);
             beanFactory.createBean().stream().forEach((m)->{
-                singletonPool.put(m.getId(),m);
-                log.debug("Factory Create Bean `{}`",m);
+                if(!scan.exclusions(m.getOriginalType())){
+                    singletonPool.put(m.getId(),m);
+                    log.debug("Factory Create Bean `{}`",m);
+                }
             });
             Map<String, Module> replaceBeans = beanFactory.replaceBean();
             replaceBeans.keySet().stream().forEach((k)->{

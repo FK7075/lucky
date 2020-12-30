@@ -16,6 +16,7 @@
  import java.util.List;
  import java.util.Set;
  import java.util.stream.Collectors;
+ import java.util.stream.Stream;
 
  /**
  * 包扫描的基类
@@ -25,7 +26,10 @@
 public abstract class Scan {
 
 	private static final Logger log= LoggerFactory.getLogger(Scan.class);
+	/** 用于加载组件的类加载器*/
 	protected static ClassLoader loader;
+	/** 被排除组件的类型*/
+	protected Set<Class<?>> exclusions;
 	/** Component组件*/
 	protected Set<Class<?>> componentClass;
 
@@ -35,47 +39,65 @@ public abstract class Scan {
 				 .collect(Collectors.toSet());
 	 }
 
+	 public boolean exclusions(Class<?> beanClass){
+	 	return exclusions.contains(beanClass);
+	 }
+
 	 public Set<Class<?>> getAllClasses(){
 	 	return componentClass;
 	 }
 
 	 public Scan(Class<?> applicationBootClass) {
+	 	boolean isA=initExclusions(applicationBootClass);
 	 	ClassLoader cl = Thread.currentThread().getContextClassLoader();
 	 	loader = (cl == null) ? ClassLoader.getSystemClassLoader() : cl;
 		componentClass=new HashSet<>(225);
+
+		//从lucky.factories文件中加载组件
 		List<String> spareComponents = LuckyFactoryLoader.loadFactoryNames(SpareComponents.class, loader);
 		 for (String spareComponent : spareComponents) {
 			 Class<?> aClass = ClassUtils.forName(spareComponent, loader);
 			 if(!AnnotationUtils.strengthenIsExist(aClass,Component.class)){
-				 componentClass.add(aClass);
+			 	if(!exclusions.contains(aClass)){
+					componentClass.add(aClass);
+				}
 			 }
 		 }
-		 jarExpand(applicationBootClass,cl);
+		 if(isA) jarExpand(applicationBootClass);
 	}
 
-	private void jarExpand(Class<?> applicationBootClass,ClassLoader cl) {
-		if(applicationBootClass!=null
-				&&AnnotationUtils.strengthenIsExist(applicationBootClass, LuckyBootApplication.class)){
-			String jarExpand
-					= AnnotationUtils.strengthenGet(applicationBootClass, LuckyBootApplication.class).get(0).jarExpand();
-			if(!Assert.isBlankString(jarExpand)){
-				List<JarExpand> jars = JarExpand.getJarExpandByJson(jarExpand);
-				URL[] urls=new URL[1];
-				for (JarExpand jar : jars) {
-					jar.printJarInfo();
+	private boolean initExclusions(Class<?> applicationBootClass){
+		exclusions=new HashSet<>();
+	 	//applicationBootClass为null，或者applicationBootClass为null没有被@LuckyBootApplication注解标注
+	 	if(applicationBootClass==null||!AnnotationUtils.strengthenIsExist(applicationBootClass, LuckyBootApplication.class)){
+	 		return false;
+		}
+		Stream.of(AnnotationUtils.strengthenGet(applicationBootClass, LuckyBootApplication.class).get(0).exclusions())
+				.forEach(exclusions::add);
+	 	log.info("Exclusions Class `{}`",exclusions);
+	 	return true;
+	}
 
-					try {
-						urls[0]=new URL(jar.getJarPath());
-					}catch (MalformedURLException e){
-						throw new AddJarExpandException(jar.getJarPath());
-					}
-
-					LuckyURLClassLoader luckyURLClassLoader=new LuckyURLClassLoader(urls,loader);
-					Set<Class<?>> beanClass = luckyURLClassLoader.getComponentClass(jar.getGroupId()).getBeanClass();
-					componentClass.addAll(beanClass);
+	private void jarExpand(Class<?> applicationBootClass) {
+		String jarExpand
+				= AnnotationUtils.strengthenGet(applicationBootClass, LuckyBootApplication.class).get(0).jarExpand();
+		if(!Assert.isBlankString(jarExpand)){
+			List<JarExpand> jars = JarExpand.getJarExpandByJson(jarExpand);
+			URL[] urls=new URL[1];
+			for (JarExpand jar : jars) {
+				jar.printJarInfo();
+				try {
+					urls[0]=new URL(jar.getJarPath());
+				}catch (MalformedURLException e){
+					throw new AddJarExpandException(jar.getJarPath());
 				}
 
+				LuckyURLClassLoader luckyURLClassLoader=new LuckyURLClassLoader(urls,loader);
+				Set<Class<?>> beanClass = luckyURLClassLoader.getComponentClass(jar.getGroupId()).getBeanClass()
+						.stream().filter(c->!exclusions.contains(c)).collect(Collectors.toSet());
+				componentClass.addAll(beanClass);
 			}
+
 		}
 	}
 	
@@ -86,6 +108,9 @@ public abstract class Scan {
 
 	public void load(Class<?> beanClass){
 		if(beanClass.isAnnotation()){
+			return;
+		}
+		if(exclusions.contains(beanClass)){
 			return;
 		}
 		componentClass.add(beanClass);
