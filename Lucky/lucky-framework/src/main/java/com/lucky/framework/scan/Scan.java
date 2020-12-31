@@ -74,7 +74,9 @@ public abstract class Scan {
 		}
 		Stream.of(AnnotationUtils.strengthenGet(applicationBootClass, LuckyBootApplication.class).get(0).exclusions())
 				.forEach(exclusions::add);
-	 	log.info("Exclusions Class `{}`",exclusions);
+	 	if(!Assert.isEmptyCollection(exclusions)){
+			log.info("Exclusions Classes `{}`",exclusions);
+		}
 	 	return true;
 	}
 

@@ -62,7 +62,7 @@ public class JarExpand {
         }catch (Exception e){
             throw new RuntimeException
             ("Json解析异常，无法从 `classpath: "+classpath+"` 文件中提取JarExpand信息！请检查文件的格式和内容是否符合如下规范！" +
-                    "\n 1.文件格式：.json \n2.文件内容：[{\"expandName\":\"xxx\",\"groupId\":\"xxx\",\"jarPath\":\"xxx\"},...,{}]");
+                    "\n 1.文件格式：.json \n 2.文件内容：[{\"expandName\":\"xxx\",\"groupId\":\"xxx\",\"jarPath\":\"xxx\"},...,{...}]");
         }
 
     }
