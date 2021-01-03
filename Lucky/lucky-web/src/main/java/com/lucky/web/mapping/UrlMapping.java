@@ -5,6 +5,7 @@ import com.lucky.utils.base.BaseUtils;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.MethodUtils;
 import com.lucky.web.annotation.Download;
+import com.lucky.web.authority.AuthorityCheck;
 import com.lucky.web.core.Model;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.enums.Rest;
@@ -42,6 +43,9 @@ public class UrlMapping extends Mapping{
     private Set<String> ips;
     /** 该请求支持的ip段范围*/
     private String[] ipSection;
+    /** 权限校验*/
+    private AuthorityCheck authorityCheck;
+
 
     public String getUrl() {
         return url;
@@ -107,6 +111,15 @@ public class UrlMapping extends Mapping{
         this.parameters=mapping.getParameters();
         this.ips=ips;
         this.ipSection=ipSection;
+        this.authorityCheck=new AuthorityCheck(controller.getClass(),mapping);
+    }
+
+    /**
+     * 权限校验
+     * @return
+     */
+    public boolean permissionCheck(){
+        return authorityCheck.check();
     }
 
     /**

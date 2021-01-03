@@ -39,4 +39,6 @@ public @interface LuckyBootApplication {
      * @return
      */
     Class[] exclusions() default {};
+
+
 }

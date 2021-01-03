@@ -10,6 +10,7 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Repeatable(NoPackages.class)
 public @interface NoPackage {
 	
 	String value() default "UNIVERSAL";

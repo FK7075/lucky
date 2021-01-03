@@ -36,12 +36,17 @@ public class LuckyDispatcherServlet extends BaseServlet {
             if(!RequestFilter.filter(model,webConfig)){
                 return;
             }
-
-            urlMapping = urlMappingCollection.getMapping(model);
             // URL、IP、RequestMethod校验
+            urlMapping = urlMappingCollection.getMapping(model);
             if(Assert.isNull(urlMapping)){
                 return;
             }
+            //权限验证
+            if(!urlMapping.permissionCheck()){
+                model.error("403", "您没有权限访问该资源！","账号权限不足！");
+                return;
+            }
+
 
             //后置处理，处理Controller的属性和跨域问题以及包装文件类型的参数
             afterDispose(model, urlMapping);

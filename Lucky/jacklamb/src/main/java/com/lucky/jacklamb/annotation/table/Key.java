@@ -10,6 +10,7 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Repeatable(Keys.class)
 public @interface Key {
 
 	/**

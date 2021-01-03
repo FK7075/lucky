@@ -27,6 +27,7 @@ public abstract class Mapping {
     /** 该映射是否已经被禁用*/
     protected boolean isDisable;
 
+
     public Mapping() {
     }
 

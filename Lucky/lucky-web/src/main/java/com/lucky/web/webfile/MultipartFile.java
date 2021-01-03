@@ -2,6 +2,8 @@ package com.lucky.web.webfile;
 
 import com.lucky.utils.base.BaseUtils;
 import com.lucky.utils.file.FileUtils;
+import com.lucky.utils.file.InputStreamSource;
+import com.lucky.web.core.Model;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-public class MultipartFile implements InputStreamSource{
+public class MultipartFile implements InputStreamSource {
 
 	/** 用户上传的文件对应的输入流*/
 	private InputStream originalFileInputStream;
@@ -104,6 +106,11 @@ public class MultipartFile implements InputStreamSource{
 	/** 获得文件对应的byte数组 */
 	public byte[] getByte() throws IOException {
 		return FileUtils.copyToByteArray(originalFileInputStream);
+	}
+
+	/** 获取请求的Content-Type*/
+	public String getFileContentType(){
+		return new Model().getRequest().getContentType();
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.lucky.web.webfile;
+package com.lucky.utils.file;
 
 import java.io.IOException;
 import java.io.InputStream;

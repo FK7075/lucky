@@ -10,6 +10,7 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Repeatable(NoColumns.class)
 public @interface NoColumn {
 	
 	String value() default "UNIVERSAL";
