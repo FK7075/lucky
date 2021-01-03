@@ -6,6 +6,8 @@ import com.lucky.web.authority.annotation.MustGuest;
 import com.lucky.web.authority.annotation.MustPermissions;
 import com.lucky.web.authority.annotation.MustRoles;
 import com.lucky.web.authority.annotation.MustUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -17,6 +19,7 @@ import java.lang.reflect.Method;
  * @date 2021/1/3 下午9:13
  */
 public class AuthorityCheck {
+    private static final Logger log= LoggerFactory.getLogger(AuthorityCheck.class);
     private static final UserInformation userInformation=UserInformationManage.create().getUserInformation();
     private static final Class<? extends Annotation>[] AUTHORITY_ANNOTATION
             =new Class[]{MustGuest.class, MustRoles.class, MustPermissions.class, MustUser.class};
@@ -47,7 +50,7 @@ public class AuthorityCheck {
             if(isAnnotation(controllerClass,controllerMethod,MustPermissions.class)){
                 MustPermissions mustPermissions=AnnotationUtils.isExist(controllerMethod,MustPermissions.class)?
                         AnnotationUtils.get(controllerMethod,MustPermissions.class):AnnotationUtils.get(controllerClass,MustPermissions.class);
-                role=new Role(mustPermissions.value(),mustPermissions.logical());
+                permissions=new Permissions(mustPermissions.value(),mustPermissions.logical());
                 isUser=true;
             }
         }
@@ -63,7 +66,7 @@ public class AuthorityCheck {
      * @return 校验通过返回true，否则返回false
      */
     public boolean check(){
-        //该资源没有被权限管理，返回true
+        //该资源没有配置权限管理，返回true
         if(!isAuthorityMethod){
             return true;
         }
@@ -83,7 +86,9 @@ public class AuthorityCheck {
             return false;
         }
         //权限与资源验证
-        return role.check(userInformation.getUserRoles())&&permissions.check(userInformation.getUserPermissions());
+        final RoleAndPermissions roleAndPermissions = userInformation.roleAndPermissions();
+        return role.check(roleAndPermissions.getRoles())
+                &&permissions.check(roleAndPermissions.getPermissions());
     }
 
     private boolean isAnnotation(Class<?> controllerClass,Method controllerMethod,Class<? extends Annotation> annotationClass){

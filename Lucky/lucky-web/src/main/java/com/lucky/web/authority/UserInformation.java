@@ -1,8 +1,5 @@
 package com.lucky.web.authority;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * 用户信息
  * @author fk7075
@@ -18,18 +15,16 @@ public interface UserInformation {
     boolean isAuthenticated();
 
     /**
-     * 返回用户的角色信息
+     * 用户的角色和拥有的权限信息
      * @return
      */
-    default Set<String> getUserRoles(){
-        return null;
+    default RoleAndPermissions roleAndPermissions(){
+        return new RoleAndPermissions();
     }
 
     /**
-     * 返回用户的权限信息
+     * 获取用户的关键信息
      * @return
      */
-    default Set<String> getUserPermissions(){
-        return null;
-    }
+    Object getUser();
 }

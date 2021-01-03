@@ -1,6 +1,7 @@
 package com.lucky.web.authority;
 
 import com.lucky.utils.base.ArrayUtils;
+import com.lucky.utils.base.Assert;
 
 import java.util.Set;
 
@@ -41,14 +42,14 @@ public class Role {
         if(logical==null){
             return true;
         }
-        if(userRoles==null){
+        if(Assert.isEmptyCollection(userRoles)){
             return false;
         }
         if(logical==Logical.AND){
-           return roles.containsAll(userRoles);
+           return userRoles.containsAll(roles);
         }
-        for (String userRole : userRoles) {
-            if(roles.contains(userRole)){
+        for (String role : roles) {
+            if(userRoles.contains(role)){
                 return true;
             }
         }

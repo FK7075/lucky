@@ -1,6 +1,7 @@
 package com.lucky.web.authority;
 
 import com.lucky.utils.base.ArrayUtils;
+import com.lucky.utils.base.Assert;
 
 import java.util.Set;
 
@@ -16,7 +17,7 @@ public class Permissions {
 
     public Permissions() {}
 
-    public Permissions(Logical logical, String[] permissions) {
+    public Permissions(String[] permissions,Logical logical) {
         this.logical = logical;
         this.permissions = ArrayUtils.arrayToSet(permissions);
     }
@@ -41,14 +42,14 @@ public class Permissions {
         if(logical==null){
             return true;
         }
-        if(userPermissions==null){
+        if(Assert.isEmptyCollection(userPermissions)){
             return false;
         }
         if(logical==Logical.AND){
-            return permissions.containsAll(userPermissions);
+            return userPermissions.containsAll(permissions);
         }
-        for (String userPermission : userPermissions) {
-            if(permissions.contains(userPermission)){
+        for (String permission : permissions) {
+            if(userPermissions.contains(permission)){
                 return true;
             }
         }
