@@ -43,7 +43,7 @@ public class LuckyDispatcherServlet extends BaseServlet {
             }
             //权限验证
             if(!urlMapping.permissionCheck()){
-                model.error("403", "您没有权限访问该资源！","账号权限不足！");
+                model.error("403", "您没有访问该资源的权限！","权限不足！");
                 return;
             }
 

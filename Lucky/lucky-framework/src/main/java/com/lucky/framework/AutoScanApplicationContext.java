@@ -8,13 +8,15 @@ import com.lucky.framework.scan.JarExpandChecklist;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.scan.ScanFactory;
 import com.lucky.framework.welcome.JackLamb;
-import org.apache.logging.log4j.ThreadContext;
+import org.slf4j.MDC;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -32,7 +34,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
 
     static {
         String pid = mxb.getName().split("@")[0];
-        ThreadContext.put("pid",pid);
+        MDC.put("pid",pid);
     }
 
     public static AutoScanApplicationContext create(){

@@ -11,13 +11,13 @@ import java.util.List;
  * @version 1.0
  * @date 2020/12/29 0029 11:26
  */
-@Controller
+@Controller("webmanagement")
 public class HelloController extends JarExpandDetailsController {
 
     @GetMapping("allServers")
     public String hello(){
         List<JarExpandDetailsController.MappingDto> mappingDtos = jarExpandInfo();
         model.addAttribute("jars",mappingDtos);
-        return "jarExpand";
+        return "index";
     }
 }

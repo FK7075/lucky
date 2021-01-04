@@ -28,7 +28,7 @@ public abstract class JarExpandDetailsController extends JarExpandController{
     private static final Logger log= LoggerFactory.getLogger("c.l.web.controller.JarExpandDetailsController");
     private static final String AUTHOR="lucky";
     private static final String VERSION="2.0.0";
-    private static final String MODULE="系统功能扩展模块";
+    private static final String MODULE="LUCKY";
     private static  String TEMP_FOLDER=System.getProperty("java.io.tmpdir");
     static {
         TEMP_FOLDER=TEMP_FOLDER.endsWith(File.separator)?TEMP_FOLDER:TEMP_FOLDER+File.separator;
@@ -238,7 +238,7 @@ public abstract class JarExpandDetailsController extends JarExpandController{
              Map<String, ExceptionMappingCollection> expMap = exceptionMappingCollection.getExpandMap();
              Set<String> keys = urlMap.keySet();
              List<MappingDto> list=new ArrayList<>(keys.size()+1);
-             list.add(new MappingDto("default"
+             list.add(new MappingDto("DEFAULT"
                      ,UrlMappingDto.getUrlMappingDtoList(urlMappingCollection)
                      ,ExceptionMappingDto.getExceptionMappingDtoList(exceptionMappingCollection)));
              for (String key : keys) {

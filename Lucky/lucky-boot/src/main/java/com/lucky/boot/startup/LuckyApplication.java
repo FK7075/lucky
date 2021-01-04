@@ -2,9 +2,9 @@ package com.lucky.boot.startup;
 
 import com.lucky.framework.welcome.JackLamb;
 import com.lucky.utils.base.Assert;
-import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -27,7 +27,7 @@ public class LuckyApplication {
         long start = System.currentTimeMillis();
         log= LoggerFactory.getLogger(applicationClass);
         String pid = mxb.getName().split("@")[0];
-        ThreadContext.put("pid",pid);
+        MDC.put("pid",pid);
         String classpath= Assert.isNotNull(applicationClass.getClassLoader().getResource(""))
                 ?applicationClass.getClassLoader().getResource("").getPath():applicationClass.getResource("").getPath();
         log.info("Starting {} on localhost with PID {} ({} started by {} in {})"

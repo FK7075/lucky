@@ -15,8 +15,15 @@
     <script type="text/javascript" src="/webmanagement/js/ie-emulation-modes-warning.js"></script>
     <script type="text/javascript" src="/webmanagement/js/ie10-viewport-bug-workaround.js"></script>
 </head>
+
+<style>
+    #jarExpand-main{
+        padding: 0;
+        margin: 50px;
+    }
+</style>
 <body>
-    <div class="container">
+    <div id="jarExpand-main" class="container">
         <div th:each="mappingDto:${jars}">
             <h2 th:text="${mappingDto.expandName}"></h2>
             <div th:each="urlMap:${mappingDto.urls}">

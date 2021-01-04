@@ -6,13 +6,16 @@ import com.lucky.utils.base.Assert;
 import java.util.Set;
 
 /**
+ * 角色封装器
  * @author fk7075
  * @version 1.0.0
  * @date 2021/1/4 上午12:48
  */
 public class Role {
 
+    /** 处理逻辑*/
     private Logical logical;
+    /** 可以访问该资源的角色*/
     private Set<String> roles;
 
     public Role(){};
@@ -38,6 +41,11 @@ public class Role {
         this.roles = roles;
     }
 
+    /**
+     * 角色校验
+     * @param userRoles 当前用户所拥有的所有角色
+     * @return 验证通过返回true，否则返回false
+     */
     public boolean check(Set<String> userRoles){
         if(logical==null){
             return true;

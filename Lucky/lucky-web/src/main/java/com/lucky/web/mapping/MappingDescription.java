@@ -52,13 +52,13 @@ public class MappingDescription {
             this.author="".equals(author)?"--":author;
             this.version="".equals(version)?"v1.0.0.0":version;
             this.comment="".equals(comment)?"此功能暂无描述！":author;
-            this.module="".equals(module)?"System Module":module;
+            this.module="".equals(module)?"系统模块":module;
         }else{
             this.description="暂未命名";
             author="--";
             version="v1.0.0.0";
             comment="此功能暂无描述！";
-            module="System Module";
+            module="系统模块";
         }
         if(AnnotationUtils.strengthenIsExist(method, Description.class)){
             Description description=AnnotationUtils.strengthenGet(method, Description.class).get(0);
