@@ -11,5 +11,6 @@
   "-r"  : "redis",
   "-t"  : "thymeleaf",
   "-s"  : "shiro",
-  "-d"  : "data"
+  "-d"  : "data",
+  "-wm" : "web-management"
 }

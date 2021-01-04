@@ -11,6 +11,7 @@
   "redis"           : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-redis</artifactId>\n            </dependency>\n\n",
   "thymeleaf"       : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-thymeleaf</artifactId>\n            </dependency>\n\n",
   "shiro"           : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-shiro</artifactId>\n            </dependency>\n\n",
-  "data"            : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-data</artifactId>\n            </dependency>\n\n"
+  "data"            : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-data</artifactId>\n            </dependency>\n\n",
+  "web-management"  : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-web-management</artifactId>\n            </dependency>\n\n"
 
 }
