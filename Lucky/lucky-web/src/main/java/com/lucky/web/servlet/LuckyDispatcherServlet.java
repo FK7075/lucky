@@ -4,6 +4,7 @@ import com.lucky.utils.base.Assert;
 import com.lucky.web.core.Model;
 import com.lucky.web.core.RequestFilter;
 import com.lucky.web.enums.RequestMethod;
+import com.lucky.web.interceptor.HandlerExecutionChain;
 import com.lucky.web.mapping.ExceptionMapping;
 import com.lucky.web.mapping.UrlMapping;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ public class LuckyDispatcherServlet extends BaseServlet {
     protected void applyFor(HttpServletRequest request, HttpServletResponse response, RequestMethod requestMethod) {
         Model model=null;
         UrlMapping urlMapping =null;
+        HandlerExecutionChain executionChain=null;
         try {
           model = new Model(request, response,
                     this.getServletConfig(), requestMethod, webConfig.getEncoding());
@@ -47,29 +49,46 @@ public class LuckyDispatcherServlet extends BaseServlet {
                 return;
             }
 
-
             //后置处理，处理Controller的属性和跨域问题以及包装文件类型的参数
             afterDispose(model, urlMapping);
 
             //获取执行参数,并为Mapping设置执行参数,并对参数执行增强操作(校验、加密、防注入...)
             urlMapping.setRunParams(getParameterAnalysisChain().analysis(model, urlMapping));
 
+            //拦截器的初始化
+            executionChain= interceptorRegistry.getHandlerExecutionChain(urlMapping,model.getUri());
+
+            //拦截器的preHandle()方法执行
+            final boolean isPass = executionChain.applyPreHandle(model);
+            if(!isPass){
+                return;
+            }
+
             //执行Controller方法并获取返回结果
             Object invoke = urlMapping.invoke(model);
 
-            //响应请求结果
-            response(model,invoke, urlMapping,urlMapping.getRest());
+            //拦截器的postHandle()方法执行
+            invoke=executionChain.applyPostHandle(model,invoke);
 
+            //响应请求结果
+            response(model,invoke, urlMapping.getRest());
+
+            //拦截器的afterCompletion()方法执行
+            executionChain.triggerAfterCompletion(model,null);
         } catch (Throwable e) {
             e=getCauseThrowable(e);
             ExceptionMapping exceptionMapping = exceptionMappingCollection.findExceptionMapping(urlMapping, e);
             if(exceptionMapping==null){
+
+                //拦截器的afterCompletion()方法执行
+                executionChain.triggerAfterCompletion(model,(Exception) e);
+
                 model.e500(e);
                 return;
             }
             try {
                 Object invoke = exceptionMapping.invoke(model, urlMapping, e);
-                response(model,invoke, urlMapping,exceptionMapping.getRest());
+                response(model,invoke, exceptionMapping.getRest());
             } catch (Exception ex) {
                 ex.printStackTrace();
                 model.e500(ex);

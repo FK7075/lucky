@@ -16,6 +16,7 @@ import com.lucky.web.enums.Rest;
 import com.lucky.web.exception.FileSizeCrossingException;
 import com.lucky.web.exception.FileTypeIllegalException;
 import com.lucky.web.exception.RequestFileSizeCrossingException;
+import com.lucky.web.interceptor.InterceptorRegistry;
 import com.lucky.web.mapping.DefaultMappingAnalysis;
 import com.lucky.web.mapping.ExceptionMappingCollection;
 import com.lucky.web.mapping.UrlMapping;
@@ -45,6 +46,7 @@ public abstract class BaseServlet extends HttpServlet {
     protected UrlMappingCollection urlMappingCollection;
     protected ExceptionMappingCollection exceptionMappingCollection;
     protected WebConfig webConfig;
+    protected final static InterceptorRegistry interceptorRegistry=InterceptorRegistry.create();
 
     /**
      * 获取并初始化参数解析链
@@ -62,11 +64,10 @@ public abstract class BaseServlet extends HttpServlet {
      * 处理并返回Controller方法响应的结果
      * @param model 当前请求的Model
      * @param invoke Controller方法执行的结果
-     * @param urlMapping 当前请求的方法映射
      * @throws IOException
      */
-    protected void response(Model model, Object invoke, UrlMapping urlMapping, Rest rest) throws IOException {
-        webConfig.getResponse().jump(model,invoke, urlMapping,rest,webConfig.getPrefix(),webConfig.getSuffix());
+    protected void response(Model model, Object invoke, Rest rest) throws IOException {
+        webConfig.getResponse().jump(model,invoke,rest,webConfig.getPrefix(),webConfig.getSuffix());
     }
 
     /**

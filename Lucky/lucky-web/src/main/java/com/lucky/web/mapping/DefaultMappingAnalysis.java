@@ -17,13 +17,12 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /**
+ * 映射解析器
  * @author fk7075
  * @version 1.0
  * @date 2020/11/17 11:14
  */
 public class DefaultMappingAnalysis implements MappingAnalysis{
-
-
 
     public UrlMappingCollection urlAnalysis(List<Module> controllers){
         UrlMappingCollection mappings=new UrlMappingCollection();
@@ -60,11 +59,13 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
         List<Method> mappingMethods = ClassUtils.getMethodByStrengthenAnnotation(controllerClass, RequestMapping.class);
         String controllerUrl=getControllerUrl(controllerClass);
         for (Method method : mappingMethods) {
+            final Rest rest = getRest(controllerClass, method);
+            returnTypeCheck(rest,method);
             String url=controllerUrl+getMethodUrl(method);
             urlMappingCollection.add(new UrlMapping(url,module.getId(),
                                 module.getType(),controller,
                                 method,getRequestMethod(method),
-                                getRest(controllerClass,method),getIps(controllerClass,method),
+                                rest,getIps(controllerClass,method),
                                 getIpSection(controllerClass,method)));
         }
         List<Method> runMethods = ClassUtils.getMethodByAnnotationArrayOR(controllerClass, RUN_ANNOTATIONS);
@@ -82,8 +83,10 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
         String[] scopes = adviceClass.getAnnotation(ControllerAdvice.class).value();
         List<Method> exceptionMethods = ClassUtils.getMethodByAnnotation(adviceClass, ExceptionHandler.class);
         for (Method method : exceptionMethods) {
+            final Rest rest = getRest(adviceClass, method);
+            returnTypeCheck(rest,method);
             exceptionMappingCollection.add(new ExceptionMapping(controllerAdvice,method,scopes,
-                                            getRest(adviceClass,method),getException(method)));
+                                                rest,getException(method)));
         }
         return exceptionMappingCollection;
     }
@@ -197,4 +200,5 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
     public Class<? extends Throwable>[] getException(Method method){
         return AnnotationUtils.get(method,ExceptionHandler.class).value();
     }
+
 }

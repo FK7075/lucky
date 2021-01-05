@@ -25,7 +25,7 @@ public interface LuckyResponse {
      */
     void redirect(Model model,String url);
 
-    default void jump(Model model, Object invoke, UrlMapping urlMapping, Rest rest, String prefix, String suffix) throws IOException {
+    default void jump(Model model, Object invoke, Rest rest, String prefix, String suffix) throws IOException {
         if (invoke != null) {
             if (rest == Rest.JSON) {
                 model.writerJson(invoke);
@@ -41,12 +41,7 @@ public interface LuckyResponse {
                 return;
             }
             if (rest == Rest.NO) {
-                if (String.class.isAssignableFrom(invoke.getClass())) {
-                    toPage(model, invoke.toString(), prefix,suffix);
-                } else {
-                    RuntimeException e = new RuntimeException("返回值类型错误，无法完成转发和重定向操作!合法的返回值类型为String，错误位置：" + urlMapping.getMapping());
-                    model.error(e,"500");
-                }
+                toPage(model, invoke.toString(), prefix,suffix);
             }
         }
     }
@@ -60,15 +55,15 @@ public interface LuckyResponse {
      */
     default void toPage(Model model, String info, String prefix, String suffix) {
         String topage = "";
-        if (info.contains("@p:")) {//重定向到页面
+        if (info.startsWith("@p:")) {//重定向到页面
             info = info.substring(3);
             topage = model.getRequest().getContextPath() + prefix + info + suffix;
             topage = topage.replaceAll(" ", "");
             redirect(model,topage);
-        } else if (info.contains("@f:")) {//转发到本Controller的某个方法
+        } else if (info.startsWith("@f:")) {//转发到本Controller的某个方法
             info = info.substring(3);
             forward(model,info);
-        } else if (info.contains("@r:")) {//重定向到本Controller的某个方法
+        } else if (info.startsWith("@r:")) {//重定向到本Controller的某个方法
             info = info.substring(3);
             redirect(model,info);
         } else {//转发到页面

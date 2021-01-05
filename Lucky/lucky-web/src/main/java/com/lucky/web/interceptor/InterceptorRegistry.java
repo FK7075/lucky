@@ -1,7 +1,11 @@
 package com.lucky.web.interceptor;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.lucky.utils.base.CollectionUtils;
+import com.lucky.web.mapping.UrlMapping;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 拦截器注册中心
@@ -10,8 +14,9 @@ import java.util.Set;
  * @date 2021/1/3 下午5:01
  */
 public class InterceptorRegistry {
+
     private static InterceptorRegistry registry;
-    private static Set<HandlerInterceptor> interceptors=new HashSet<>(20);
+    private static final List<PathAndInterceptor> interceptors=new ArrayList<>(20);
 
     private InterceptorRegistry(){}
 
@@ -27,10 +32,34 @@ public class InterceptorRegistry {
     }
 
     /**
-     * 注册一个拦截器
+     * 添加一个拦截器
+     * @param path 拦截器要拦截的路径
      * @param interceptor 拦截器实例
      */
-    public void addInterceptor(HandlerInterceptor interceptor){
-        interceptors.add(interceptor);
+    public static void addHandlerInterceptor(String[] path,HandlerInterceptor interceptor){
+        interceptors.add(new PathAndInterceptor(path,interceptor));
     }
+
+    /**
+     * 添加一个拦截器
+     * @param pathAndInterceptor 拦截器实例和路径
+     */
+    public static void addHandlerInterceptor(PathAndInterceptor pathAndInterceptor){
+        interceptors.add(pathAndInterceptor);
+    }
+
+
+    /**
+     * 返回一个用于处理当前请求的拦截器链条
+     * @param urlMapping 映射方法
+     * @param currPath 当前的URL
+     * @return
+     */
+    public HandlerExecutionChain getHandlerExecutionChain(UrlMapping urlMapping,String currPath){
+        final List<HandlerInterceptor> interceptors = InterceptorRegistry.interceptors
+                .stream().filter(inter -> inter.pathCheck(currPath))
+                .map(inter -> inter.getInterceptor()).collect(Collectors.toList());
+        return new HandlerExecutionChain(urlMapping,interceptors);
+    }
+
 }

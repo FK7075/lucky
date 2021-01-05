@@ -12,10 +12,15 @@ import com.lucky.web.annotation.Controller;
 import com.lucky.web.annotation.ControllerAdvice;
 import com.lucky.web.annotation.RestController;
 import com.lucky.web.httpclient.callcontroller.CallControllerProxy;
+import com.lucky.web.interceptor.HandlerInterceptor;
+import com.lucky.web.interceptor.Interceptor;
+import com.lucky.web.interceptor.InterceptorRegistry;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author fk7075
@@ -50,6 +55,17 @@ public class LuckyWebBeanFactory extends IOCBeanFactory {
                                 CallControllerProxy.getCallControllerProxyObject(controllerClass)));
             }
         }
+        List<Class<?>> interceptors = getPluginByAnnotation(Interceptor.class)
+                .stream().sorted(Comparator.comparing(c->c.getAnnotation(Interceptor.class).priority()))
+                .collect(Collectors.toList());
+        for (Class<?> interceptorClass : interceptors) {
+            if(!HandlerInterceptor.class.isAssignableFrom(interceptorClass)){
+                throw new RuntimeException("拦截器注册失败！错误的类型 `"+interceptorClass+"`,拦截器必须是 `com.lucky.web.interceptor.HandlerInterceptor` 的子类！");
+            }
+            InterceptorRegistry.addHandlerInterceptor(interceptorClass.getAnnotation(Interceptor.class).value()
+                    ,(HandlerInterceptor)ClassUtils.newObject(interceptorClass));
+        }
+
         return modules;
     }
 
