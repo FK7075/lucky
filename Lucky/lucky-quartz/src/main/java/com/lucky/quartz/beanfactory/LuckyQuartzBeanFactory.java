@@ -3,6 +3,7 @@ package com.lucky.quartz.beanfactory;
 import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
+import com.lucky.framework.container.factory.Namer;
 import com.lucky.quartz.annotation.QuartzJobs;
 import com.lucky.quartz.proxy.QuartzProxy;
 import com.lucky.utils.base.Assert;
@@ -42,10 +43,9 @@ public class LuckyQuartzBeanFactory extends IOCBeanFactory {
         return quartz;
     }
 
-    @Override
     public String getBeanName(Class<?> aClass) {
         QuartzJobs quartzJobs = AnnotationUtils.get(aClass, QuartzJobs.class);
         String id = quartzJobs.value();
-        return Assert.isBlankString(id)?super.getBeanName(aClass):id;
+        return Assert.isBlankString(id)? Namer.getBeanName(aClass):id;
     }
 }

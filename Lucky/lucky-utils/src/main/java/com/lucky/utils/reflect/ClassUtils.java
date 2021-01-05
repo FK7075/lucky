@@ -24,7 +24,7 @@ public abstract class ClassUtils {
             return Class.forName(fullPath,true,loader);
         } catch (ClassNotFoundException e) {
             LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error("ClassNotFoundException",lex);
+            log.error("ClassNotFoundException: `"+fullPath+"` 不存在！",lex);
             throw lex;
         }
     }
@@ -117,7 +117,7 @@ public abstract class ClassUtils {
             return constructor.newInstance(cparams);
         } catch (NoSuchMethodException e) {
             LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error("NoSuchMethodException",lex);
+            log.error("NoSuchMethodException: 找不到 `"+tclass.getName()+"` 的无参构造器，无法实例化其对象！",lex);
             throw lex;
         } catch (IllegalAccessException e) {
             LuckyReflectionException lex = new LuckyReflectionException(e);
@@ -125,7 +125,7 @@ public abstract class ClassUtils {
             throw lex;
         } catch (InstantiationException e) {
             LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error("InstantiationException",lex);
+            log.error("InstantiationException: 在实例化 `"+tclass.getName()+"` 时出现错误！",lex);
             throw lex;
         } catch (InvocationTargetException e) {
             LuckyReflectionException lex = new LuckyReflectionException(e);

@@ -36,7 +36,7 @@ public class RegisterMachine {
     private SingletonContainer singletonPool;
     private Set<Class<?>> plugins;
     private Set<Class<?>> allClasses;
-    private static Namer namer=new BeanNamer();
+    private static BeanNamer namer=new BeanNamer();
     private Scan scan;
     private RegisterMachine(){
         singletonPool=new SingletonContainer();

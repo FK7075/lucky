@@ -112,11 +112,6 @@ public abstract class IOCBeanFactory implements BeanFactory,Namer {
     }
 
     @Override
-    public String getBeanName(Class<?> aClass){
-        return BaseUtils.lowercaseFirstLetter(aClass.getSimpleName());
-    }
-
-    @Override
     public String getBeanType(Class<?> aClass){
         return "component";
     }

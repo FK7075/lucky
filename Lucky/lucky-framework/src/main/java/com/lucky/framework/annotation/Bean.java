@@ -20,4 +20,6 @@ public @interface Bean {
 
 	String type() default "component";
 
+	double priority() default 5;
+
 }

@@ -4,6 +4,7 @@ import com.lucky.framework.annotation.Component;
 import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
+import com.lucky.framework.container.factory.Namer;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
@@ -15,6 +16,7 @@ import com.lucky.web.httpclient.callcontroller.CallControllerProxy;
 import com.lucky.web.interceptor.HandlerInterceptor;
 import com.lucky.web.interceptor.Interceptor;
 import com.lucky.web.interceptor.InterceptorRegistry;
+import com.lucky.web.interceptor.PathAndInterceptor;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -55,25 +57,27 @@ public class LuckyWebBeanFactory extends IOCBeanFactory {
                                 CallControllerProxy.getCallControllerProxyObject(controllerClass)));
             }
         }
-        List<Class<?>> interceptors = getPluginByAnnotation(Interceptor.class)
-                .stream().sorted(Comparator.comparing(c->c.getAnnotation(Interceptor.class).priority()))
-                .collect(Collectors.toList());
+        List<Class<?>> interceptors = getPluginByAnnotation(Interceptor.class);
         for (Class<?> interceptorClass : interceptors) {
             if(!HandlerInterceptor.class.isAssignableFrom(interceptorClass)){
                 throw new RuntimeException("拦截器注册失败！错误的类型 `"+interceptorClass+"`,拦截器必须是 `com.lucky.web.interceptor.HandlerInterceptor` 的子类！");
             }
-            InterceptorRegistry.addHandlerInterceptor(interceptorClass.getAnnotation(Interceptor.class).value()
-                    ,(HandlerInterceptor)ClassUtils.newObject(interceptorClass));
+            PathAndInterceptor pathAndInterceptor=new PathAndInterceptor();
+            Interceptor annotation = interceptorClass.getAnnotation(Interceptor.class);
+            pathAndInterceptor.setInterceptor((HandlerInterceptor)ClassUtils.newObject(interceptorClass));
+            pathAndInterceptor.setPath(annotation.value());
+            pathAndInterceptor.setExcludePath(annotation.excludePath());
+            pathAndInterceptor.setPriority(annotation.priority());
+            InterceptorRegistry.addHandlerInterceptor(pathAndInterceptor);
         }
 
         return modules;
     }
 
-    @Override
     public String getBeanName(Class<?> aClass) {
         Annotation controllerAnnotation = AnnotationUtils.getByArray(aClass, CONTROLLER_ANNOTATION);
         String id= (String) AnnotationUtils.getValue(controllerAnnotation,"id");
-        return Assert.isBlankString(id)?super.getBeanName(aClass):id;
+        return Assert.isBlankString(id)? Namer.getBeanName(aClass):id;
     }
 
     @Override

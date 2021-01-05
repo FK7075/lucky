@@ -17,6 +17,7 @@ import java.lang.annotation.*;
 @Component(type = "interceptor")
 @Plugin
 public @interface Interceptor {
-    String[] value();
+    String[] value() default {};
+    String[] excludePath() default {};
     double priority() default 5;
 }

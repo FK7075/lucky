@@ -1,6 +1,7 @@
 package com.lucky.framework.container.factory;
 
 import com.lucky.framework.annotation.Bean;
+import com.lucky.framework.annotation.Configuration;
 import com.lucky.framework.container.Injection;
 import com.lucky.framework.container.Module;
 import com.lucky.utils.base.Assert;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +32,10 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
     private List<Module> configurationBeans;
 
     public ConfigurationBeanFactory(List<Module> configurationBeans) {
-        this.configurationBeans = configurationBeans;
+        this.configurationBeans = configurationBeans
+                .stream()
+                .sorted(Comparator.comparing(m->AnnotationUtils.strengthenGet(m.getOriginalType(), Configuration.class).get(0).priority()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -46,6 +51,7 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
             Class<?> confClass=conf.getClass();
             ClassUtils.getMethodByAnnotation(confClass, Bean.class)
                     .stream().filter((m)-> MethodUtils.getParameter(m).length == 0)
+                    .sorted(Comparator.comparing(m->AnnotationUtils.strengthenGet(m,Bean.class).get(0).priority()))
                     .forEach((method)-> {
                         Object invoke = MethodUtils.invoke(conf, method);
                         if(Assert.isNotNull(invoke)){
@@ -60,6 +66,7 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
             Class<?> confClass = conf.getClass();
             List<Method> haveParamBeanMethods = ClassUtils.getMethodByAnnotation(confClass, Bean.class)
                     .stream().filter((m) -> MethodUtils.getParameter(m).length != 0)
+                    .sorted(Comparator.comparing(m->AnnotationUtils.strengthenGet(m,Bean.class).get(0).priority()))
                     .collect(Collectors.toList());
             for (Method beanMethod : haveParamBeanMethods) {
                 String beanId=getBeanId(confClass,beanMethod);

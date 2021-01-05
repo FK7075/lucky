@@ -15,7 +15,5 @@ public @interface Configuration {
 
 	String value() default "";
 
-	String section() default "";
-
-	String ini() default "appconfig.ini";
+	double priority() default 5;
 }

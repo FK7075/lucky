@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
  */
 public class AuthorityCheck {
     private static final Logger log= LoggerFactory.getLogger(AuthorityCheck.class);
-    private static final UserInformation userInformation=UserInformationManage.create().getUserInformation();
+    private static final UserInformation userInformation=UserInformationManage.get();
     private static final Class<? extends Annotation>[] AUTHORITY_ANNOTATION
             =new Class[]{MustGuest.class, MustRoles.class, MustPermissions.class, MustUser.class};
 

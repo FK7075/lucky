@@ -23,16 +23,15 @@ public class BeanNamer implements Namer {
     private Class<? extends Annotation>[] COMPONENT_ANNOTATION=
             new Class[]{Component.class, Repository.class, Service.class, Configuration.class};
 
-    @Override
     public String getBeanName(Class<?> beanClass) {
         Annotation annotation;
         try {
             annotation= AnnotationUtils.getByArray(beanClass, COMPONENT_ANNOTATION);
         }catch (LuckyReflectionException e){
-            return getDefBeanName(beanClass);
+            return Namer.getBeanName(beanClass);
         }
         if(Assert.isNull(annotation)){
-            return getDefBeanName(beanClass);
+            return Namer.getBeanName(beanClass);
         }
         String id = (String) AnnotationUtils.getValue(annotation, "id");
         String value= (String) AnnotationUtils.getValue(annotation,"value");
@@ -42,7 +41,7 @@ public class BeanNamer implements Namer {
         if(!Assert.isBlankString(value)){
             return value;
         }
-        return getDefBeanName(beanClass);
+        return Namer.getBeanName(beanClass);
     }
 
 
@@ -56,9 +55,5 @@ public class BeanNamer implements Namer {
 
         }
         return components.get(0).type();
-    }
-
-    protected String getDefBeanName(Class<?> beanClass){
-        return BaseUtils.lowercaseFirstLetter(beanClass.getSimpleName());
     }
 }

@@ -42,6 +42,6 @@ public interface HandlerInterceptor {
      * @param ex
      * @throws Exception
      */
-    default void afterCompletion(Model model, final UrlMapping handler, Exception ex) throws Exception {
+    default void afterCompletion(Model model, final UrlMapping handler, Throwable ex) throws Exception {
     }
 }

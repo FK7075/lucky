@@ -9,6 +9,7 @@ import com.lucky.aop.core.PointRun;
 import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.AopBeanFactory;
+import com.lucky.framework.container.factory.Namer;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.base.BaseUtils;
 import com.lucky.utils.reflect.AnnotationUtils;
@@ -92,9 +93,8 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
         return super.replaceBean();
     }
 
-    @Override
     public String getBeanName(Class<?> aClass) {
         String value = AnnotationUtils.get(aClass, Aspect.class).value();
-        return Assert.isBlankString(value)? BaseUtils.lowercaseFirstLetter(aClass.getSimpleName()):value;
+        return Assert.isBlankString(value)? Namer.getBeanName(aClass) :value;
     }
 }

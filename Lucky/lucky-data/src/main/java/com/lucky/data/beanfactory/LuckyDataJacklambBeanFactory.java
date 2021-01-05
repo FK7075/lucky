@@ -3,6 +3,7 @@ package com.lucky.data.beanfactory;
 import com.lucky.data.annotation.Mapper;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
+import com.lucky.framework.container.factory.Namer;
 import com.lucky.jacklamb.annotation.table.Table;
 import com.lucky.jacklamb.annotation.table.Tables;
 import com.lucky.jacklamb.datasource.LuckyDataSource;
@@ -60,11 +61,10 @@ public class LuckyDataJacklambBeanFactory extends IOCBeanFactory {
         return mappers;
     }
 
-    @Override
     public String getBeanName(Class<?> aClass) {
         Mapper mapper = AnnotationUtils.get(aClass, Mapper.class);
         String id=mapper.id();
-        return Assert.isBlankString(id)?super.getBeanName(aClass):id;
+        return Assert.isBlankString(id)? Namer.getBeanName(aClass):id;
     }
 
     @Override

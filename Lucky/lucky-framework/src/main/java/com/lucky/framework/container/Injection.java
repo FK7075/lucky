@@ -32,13 +32,8 @@ public abstract class Injection implements Namer {
 
     public Injection(){
         Module module=
-                new Module(getBeanName(getClass()),getBeanType(getClass()),this);
+                new Module(Namer.getBeanName(getClass()),getBeanType(getClass()),this);
         Injection.injection(module);
-    }
-
-    @Override
-    public String getBeanName(Class<?> aClass){
-        return BaseUtils.lowercaseFirstLetter(aClass.getSimpleName());
     }
 
     @Override
@@ -113,8 +108,7 @@ public abstract class Injection implements Namer {
     }
 
     public static void injection(Object bean,String beanType){
-        String beanId=BaseUtils.lowercaseFirstLetter(bean.getClass().getSimpleName());
-        Module module=new Module(beanId,beanType,bean);
+        Module module=new Module(Namer.getBeanName(bean.getClass()),beanType,bean);
         injection(module);
     }
 

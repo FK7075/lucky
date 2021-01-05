@@ -4,6 +4,7 @@ import com.lucky.utils.base.CollectionUtils;
 import com.lucky.web.mapping.UrlMapping;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,8 @@ public class InterceptorRegistry {
      */
     public HandlerExecutionChain getHandlerExecutionChain(UrlMapping urlMapping,String currPath){
         final List<HandlerInterceptor> interceptors = InterceptorRegistry.interceptors
-                .stream().filter(inter -> inter.pathCheck(currPath))
+                .stream().filter(pi -> pi.pathCheck(currPath))
+                .sorted(Comparator.comparing(pi->pi.getPriority()))
                 .map(inter -> inter.getInterceptor()).collect(Collectors.toList());
         return new HandlerExecutionChain(urlMapping,interceptors);
     }

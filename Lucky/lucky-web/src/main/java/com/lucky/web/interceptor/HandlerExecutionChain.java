@@ -71,7 +71,7 @@ public class HandlerExecutionChain {
         return result;
     }
 
-    public 	void triggerAfterCompletion(Model model, Exception ex) {
+    public 	void triggerAfterCompletion(Model model, Throwable ex) {
         for (int i = this.interceptorIndex; i >= 0; i--) {
             HandlerInterceptor interceptor = this.interceptorList.get(i);
             try {

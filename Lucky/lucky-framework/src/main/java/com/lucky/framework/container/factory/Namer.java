@@ -1,5 +1,7 @@
 package com.lucky.framework.container.factory;
 
+import com.lucky.utils.base.BaseUtils;
+
 /**
  * 起名器，用于给需要注册的Bean起名字
  * @author fk7075
@@ -13,7 +15,14 @@ public interface Namer {
      * @param beanClass BeanClass
      * @return 唯一ID
      */
-    String getBeanName(Class<?> beanClass);
+    static String getBeanName(Class<?> beanClass){
+        String simpleName = beanClass.getSimpleName();
+        if("".equals(simpleName)){
+            String classStr = beanClass.toString();
+            simpleName=classStr.substring(classStr.lastIndexOf(".")+1);
+        }
+        return BaseUtils.lowercaseFirstLetter(simpleName);
+    }
 
     /**
      * 返回Bean实例在IOC容器中的类型

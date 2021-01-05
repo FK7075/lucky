@@ -11,6 +11,9 @@ import com.lucky.web.core.LuckyResponse;
 import com.lucky.web.core.MappingPreprocess;
 import com.lucky.web.core.parameter.analysis.ParameterAnalysis;
 import com.lucky.web.core.parameter.enhance.ParameterEnhance;
+import com.lucky.web.interceptor.HandlerInterceptor;
+import com.lucky.web.interceptor.InterceptorRegistry;
+import com.lucky.web.interceptor.PathAndInterceptor;
 
 import java.util.HashSet;
 import java.util.List;
@@ -88,6 +91,35 @@ public abstract class YamlParsing {
                                    webMap.get("httpclient-socket-timeout").toString(),
                                     int.class,
                                     true));
+                        }
+                        if(webMap.containsKey("interceptor")){
+                            List<Map<String,Object>> interceptors= (List<Map<String, Object>>) webMap.get("interceptor");
+                            for (Map<String, Object> interceptor : interceptors) {
+                                if(interceptor.containsKey("class")){
+                                    PathAndInterceptor pi=new PathAndInterceptor();
+                                    pi.setInterceptor((HandlerInterceptor) ClassUtils.newObject(interceptor.get("class").toString()));
+                                    if(interceptor.containsKey("priority")){
+                                        pi.setPriority((Double) JavaConversion.strToBasic(interceptor.get("priority").toString(),double.class));
+                                    }
+                                    if(interceptor.containsKey("path")){
+                                        Object path = interceptor.get("path");
+                                        if(path instanceof String){
+                                            pi.setPath((String)path);
+                                        }else{
+                                            pi.setPath((String[])path);
+                                        }
+                                    }
+                                    if(interceptor.containsKey("exclude-path")){
+                                        Object excludePath = interceptor.get("exclude-path");
+                                        if(excludePath instanceof String){
+                                            pi.setExcludePath((String)excludePath);
+                                        }else{
+                                            pi.setExcludePath((String[])excludePath);
+                                        }
+                                    }
+                                    InterceptorRegistry.addHandlerInterceptor(pi);
+                                }
+                            }
                         }
                         if(webMap.containsKey("static-handler")){
                             web.setStaticHander((Map<String, String>) webMap.get("static-handler"));

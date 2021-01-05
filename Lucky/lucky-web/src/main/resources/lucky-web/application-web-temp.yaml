@@ -20,7 +20,21 @@ lucky:
     #定义远程API访问路径
     call-api:
       allName: http://localhost:8080/getAllName
-    #json序列化方案
+    #添加一个拦截器
+    interceptor:
+      #拦截器的全路径
+      - class: com.lucky.web.interceptor.HandlerInterceptor1
+        #要拦截的URL
+        path: /**
+        #要排除的URL
+        exclude-path:
+        #优先级
+        priority: 5
+      - class: com.lucky.web.interceptor.HandlerInterceptor2
+        path: /**
+        exclude-path: [/user/*,\*/admin]
+        priority: 6
+    #序列化方案
     serialization:
       xml : com.lucky.framework.serializable.implement.XtreamSerializationScheme
       json: com.lucky.framework.serializable.implement.GsonSerializationScheme

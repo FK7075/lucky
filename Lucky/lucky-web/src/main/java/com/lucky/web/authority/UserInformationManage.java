@@ -1,29 +1,25 @@
 package com.lucky.web.authority;
 
+import com.lucky.framework.container.Injection;
+
 /**
  * @author fk7075
  * @version 1.0.0
  * @date 2021/1/3 下午9:27
  */
-public class UserInformationManage {
+public abstract class UserInformationManage {
 
-    private static UserInformationManage manage;
-    private UserInformation userInformation;
+    private static UserInformation userInformation;
 
-    public UserInformation getUserInformation() {
+    public static UserInformation get() {
+        if(userInformation!=null){
+            Injection.injection(userInformation,"user-information");
+        }
         return userInformation;
     }
 
-    public void setUserInformation(UserInformation userInformation) {
-        this.userInformation = userInformation;
+    public static void set(UserInformation userInfo) {
+        userInformation = userInfo;
     }
 
-    private UserInformationManage(){};
-
-    public static UserInformationManage create(){
-        if(manage==null){
-            manage=new UserInformationManage();
-        }
-        return manage;
-    }
 }
