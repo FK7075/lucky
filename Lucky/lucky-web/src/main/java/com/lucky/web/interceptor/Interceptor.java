@@ -17,7 +17,10 @@ import java.lang.annotation.*;
 @Component(type = "interceptor")
 @Plugin
 public @interface Interceptor {
+    /** 指定要拦截的路径*/
     String[] value() default {};
+    /** 指定要排除的路径*/
     String[] excludePath() default {};
+    /** 指定拦截器执行的优先级*/
     double priority() default 5;
 }

@@ -20,8 +20,8 @@ lucky:
     #定义远程API访问路径
     call-api:
       allName: http://localhost:8080/getAllName
-    #添加一个拦截器
-    interceptor:
+    #添加拦截器
+    interceptors:
       #拦截器的全路径
       - class: com.lucky.web.interceptor.HandlerInterceptor1
         #要拦截的URL

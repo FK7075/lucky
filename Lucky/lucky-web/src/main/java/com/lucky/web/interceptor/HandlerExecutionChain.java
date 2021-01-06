@@ -6,8 +6,6 @@ import com.lucky.web.mapping.UrlMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,9 +20,11 @@ import java.util.List;
 public class HandlerExecutionChain {
 
     private static final Logger log = LoggerFactory.getLogger(HandlerExecutionChain.class);
-
+    /** 响应当前请求的UrlMapping*/
     private final UrlMapping handler;
+    /** 作用于当前请求的拦截器集合*/
     private final List<HandlerInterceptor> interceptorList = new ArrayList<>();
+    /** 索引*/
     private int interceptorIndex = -1;
 
     public HandlerExecutionChain(Object handler, HandlerInterceptor... interceptors) {
@@ -49,7 +49,17 @@ public class HandlerExecutionChain {
         return this.handler;
     }
 
-   public boolean applyPreHandle(Model model) throws Exception {
+    /**
+     * ##                                      ##
+     * --找到UrlMapping之后，执行UrlMapping之前执行--
+     * ##                                      ##
+     * 执行所有拦截器的preHandle方法，如果此方法返回true，则正常响应请求
+     * 返回false则表示请求将会被拦截，不会正常响应
+     * @param model Model对象
+     * @return
+     * @throws Exception
+     */
+    public boolean applyPreHandle(Model model) throws Exception {
         for (int i = 0; i < this.interceptorList.size(); i++) {
             HandlerInterceptor interceptor = this.interceptorList.get(i);
             if (!interceptor.preHandle(model, this.handler)) {
@@ -61,6 +71,18 @@ public class HandlerExecutionChain {
         return true;
     }
 
+    /**
+     * ##                                ##
+     * --执行UrlMapping之后，响应数据之前执行--
+     * ##                                ##
+     * 执行所有拦截器的postHandle方法，
+     * @param model Model对象
+     * @param result UrlMapping执行结果，正常情况下这个结果会直接响应给客户端
+     *               当然，最终的响应结果还会受各个拦截器的影响
+     * @return 每一个拦截器的postHandle都将会返回一个新的Result，返回的Result可能
+     * 是最初的Result也有可能是一个全新的Result，这个新的Result将会被响应给客户端
+     * @throws Exception
+     */
     public Object applyPostHandle(Model model,Object result)
             throws Exception {
 
@@ -71,6 +93,13 @@ public class HandlerExecutionChain {
         return result;
     }
 
+    /**
+     * ##                                      ##
+     * --响应数据之后执行，用于释放资源、异常处理等操作--
+     * ##                                      ##
+     * @param model Model对象
+     * @param ex 异常(如果有)，执行过程中未出现异常此参数值将为null
+     */
     public 	void triggerAfterCompletion(Model model, Throwable ex) {
         for (int i = this.interceptorIndex; i >= 0; i--) {
             HandlerInterceptor interceptor = this.interceptorList.get(i);

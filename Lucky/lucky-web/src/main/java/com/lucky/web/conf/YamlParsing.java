@@ -92,7 +92,7 @@ public abstract class YamlParsing {
                                     int.class,
                                     true));
                         }
-                        if(webMap.containsKey("interceptor")){
+                        if(webMap.containsKey("interceptors")){
                             List<Map<String,Object>> interceptors= (List<Map<String, Object>>) webMap.get("interceptor");
                             for (Map<String, Object> interceptor : interceptors) {
                                 if(interceptor.containsKey("class")){

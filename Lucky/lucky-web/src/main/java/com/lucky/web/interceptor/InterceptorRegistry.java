@@ -1,6 +1,5 @@
 package com.lucky.web.interceptor;
 
-import com.lucky.utils.base.CollectionUtils;
 import com.lucky.web.mapping.UrlMapping;
 
 import java.util.ArrayList;

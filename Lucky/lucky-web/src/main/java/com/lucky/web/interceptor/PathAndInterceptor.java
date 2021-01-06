@@ -3,15 +3,27 @@ package com.lucky.web.interceptor;
 import com.lucky.utils.base.Assert;
 
 /**
+ * 拦截器和该拦截器的作用范围
  * @author fk
  * @version 1.0
  * @date 2021/1/5 0005 14:18
  */
 public class PathAndInterceptor {
+    /*
+        path和excludePath同时配置时，两者同时生效，真实的作用为两者取交集
+        也即，只有当某个资源存在于path列表中，但又不存在于excludePath列表
+        中时，此拦截器才会生效！
 
+        当path和excludePath均没有配置时，此拦截器将被视为无效拦截器，永不生效！
+     */
+
+    /** 需要拦截的路径*/
     private String[] path;
+    /** 需要排除的路径*/
     private String[] excludePath;
+    /** 执行的优先级*/
     private double priority=5;
+    /** 拦截器实例*/
     private HandlerInterceptor interceptor;
 
     public PathAndInterceptor() {
@@ -58,21 +70,27 @@ public class PathAndInterceptor {
         this.priority = priority;
     }
 
+    /**
+     * 路径校验，判断给定的URL是否在本拦截器的作用范围内
+     * @param currPath 给定的URL
+     * @return 在作用范围返回true，否则返回false
+     */
     public boolean pathCheck(String currPath){
         //既没有配置path，也没有配置excludePath,则此拦截器始终不会生效
         if(Assert.isEmptyArray(path) && Assert.isEmptyArray(excludePath)){
             return false;
         }
-        //判断当前URL是否存在与该拦截器的拦截列表中
+        //判断当前URL是否存在于该拦截器的拦截列表中
         boolean pathCheck=pathCheck(path,currPath);
 
-        //判断当前URL是否不存在与该拦截器的排除列表中
+        //判断当前URL是否不存在于该拦截器的排除列表中
         boolean excludePathCheck= Assert.isEmptyArray(excludePath) || !pathCheck(excludePath, currPath);
 
-        //当前URL存在与该拦截器的拦截列表中，且不存在与排除列表中，此时此拦截器生效
+        //当前URL存在于该拦截器的拦截列表中，且不存在于排除列表中，此时此拦截器生效
         return pathCheck && excludePathCheck;
     }
 
+    //判断给定的URL是否匹配一组拦截规则
     private boolean pathCheck(String[] paths,String currPath) {
         if(Assert.isEmptyArray(paths)){
             return true;
@@ -85,21 +103,24 @@ public class PathAndInterceptor {
         return false;
     }
 
+    //判断给定URL是否匹配某个拦截规则
     private boolean pathCheck(String confPath,String currPath){
+        // </**> 表示所有资源
         if("/**".equals(confPath)){
             return true;
         }
         String name;
+        // </*> 表示以某个字符开头
         if(confPath.endsWith("/*")){
             name=confPath.substring(0,confPath.length()-2);
             return currPath.startsWith(name);
         }
+        // <*/> 表示以某个字符结尾
         if(confPath.startsWith("*/")){
             name=confPath.substring(2);
             return currPath.endsWith(name);
         }
+        // 全匹配
         return currPath.equals(confPath);
     }
-
-
 }
