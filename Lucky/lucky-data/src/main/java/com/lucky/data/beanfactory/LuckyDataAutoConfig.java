@@ -35,14 +35,4 @@ public class LuckyDataAutoConfig {
     public LuckyDataDestroy luckyDataDestroy(){
         return new LuckyDataDestroy();
     }
-
-//    @Bean
-    public void addAutoCreateTables(){
-        List<LuckyDataSource> allDataSource = LuckyDataSourceManage.getAllDataSource();
-        Set<Class<?>> autoTables = AutoScanApplicationContext.create().getClasses(Table.class, Tables.class);
-        for (LuckyDataSource luckyDataSource : allDataSource) {
-            Set<String> autoTablesStr = autoTables.stream().map(c -> c.getName()).collect(Collectors.toSet());
-            luckyDataSource.setCreateTable(autoTablesStr);
-        }
-    }
 }
