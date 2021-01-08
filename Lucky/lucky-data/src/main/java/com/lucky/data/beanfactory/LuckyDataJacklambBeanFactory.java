@@ -1,13 +1,13 @@
 package com.lucky.data.beanfactory;
 
 import com.lucky.data.annotation.Mapper;
+import com.lucky.datasource.sql.LuckyDataSource;
+import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.container.factory.Namer;
 import com.lucky.jacklamb.annotation.table.Table;
 import com.lucky.jacklamb.annotation.table.Tables;
-import com.lucky.jacklamb.datasource.LuckyDataSource;
-import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
 import com.lucky.jacklamb.jdbc.core.abstcore.SqlCoreFactory;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.reflect.AnnotationUtils;

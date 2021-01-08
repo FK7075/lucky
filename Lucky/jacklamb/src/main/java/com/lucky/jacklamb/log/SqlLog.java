@@ -1,7 +1,7 @@
 package com.lucky.jacklamb.log;
 
-import com.lucky.jacklamb.datasource.LuckyDataSource;
-import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
+import com.lucky.datasource.sql.LuckyDataSource;
+import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.jacklamb.jdbc.core.sql.CreateSql;
 import com.lucky.utils.base.BaseUtils;
 import com.lucky.utils.base.Console;

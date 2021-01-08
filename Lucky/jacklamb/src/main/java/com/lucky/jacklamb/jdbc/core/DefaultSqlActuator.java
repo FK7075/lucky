@@ -1,6 +1,6 @@
 package com.lucky.jacklamb.jdbc.core;
 
-import com.lucky.jacklamb.datasource.LuckyDataSource;
+import com.lucky.datasource.sql.LuckyDataSource;
 import com.lucky.jacklamb.exception.LuckyTransactionException;
 import com.lucky.jacklamb.jdbc.transaction.Transaction;
 import org.slf4j.Logger;

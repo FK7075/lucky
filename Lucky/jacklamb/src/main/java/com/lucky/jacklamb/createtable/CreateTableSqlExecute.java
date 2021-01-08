@@ -1,6 +1,6 @@
 package com.lucky.jacklamb.createtable;
 
-import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
+import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.jacklamb.jdbc.core.DefaultSqlActuator;
 import com.lucky.jacklamb.jdbc.potable.PojoManage;
 

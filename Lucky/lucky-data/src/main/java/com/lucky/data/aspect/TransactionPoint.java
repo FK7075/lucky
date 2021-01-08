@@ -3,13 +3,14 @@ package com.lucky.data.aspect;
 
 import com.lucky.aop.annotation.Transaction;
 import com.lucky.aop.core.AopChain;
-import com.lucky.aop.core.InjectionAopPoint ;
+import com.lucky.aop.core.InjectionAopPoint;
 import com.lucky.aop.core.TargetMethodSignature;
 import com.lucky.aop.exception.TransactionPerformException;
 import com.lucky.data.annotation.Mapper;
 import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.jacklamb.jdbc.core.abstcore.SqlCore;
 import com.lucky.jacklamb.jdbc.core.abstcore.SqlCoreFactory;
+import com.lucky.jacklamb.mapper.LuckyMapper;
 import com.lucky.utils.proxy.CglibProxy;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
@@ -162,14 +163,9 @@ public class TransactionPoint extends InjectionAopPoint {
     private Object getTrObject(Map<String,SqlCore> dbCores,Object fieldObject){
         Class<?> fClass = fieldObject.getClass();
         Object copyFieldObj = copy(fieldObject);
-        Field[] allFields;
-        if(CglibProxy.isAgent(fClass)){
-            allFields = ClassUtils.getAllFields(fClass.getSuperclass());
-        }else{
-            allFields = ClassUtils.getAllFields(fClass);
-        }
+        Field[] allFields = ClassUtils.getAllFields(CglibProxy.getOriginalType(fClass));
         for (Field field : allFields) {
-            Class<?> fieldClass = field.getType();
+            Class<?> fieldClass = CglibProxy.getOriginalType(field.getType());
             Object fieldValue=FieldUtils.getValue(copyFieldObj,field);
             SqlCore trCore;
             String dbname;
@@ -192,6 +188,9 @@ public class TransactionPoint extends InjectionAopPoint {
                 }
                 FieldUtils.setValue(copyFieldObj,field,trCore.getMapper(fieldClass));
                 //&&!CglibProxy.isAgent(fieldValue.getClass())
+            }else if(fieldClass== LuckyMapper.class){
+                Object luckyMapper = AutoScanApplicationContext.create().getBeanByField(fClass, fieldClass);
+                FieldUtils.setValue(copyFieldObj,field,luckyMapper);
             }else if(AutoScanApplicationContext.create().isIOCClass(fieldClass)){
                 FieldUtils.setValue(copyFieldObj,field,getTrObject(dbCores,fieldValue));
             }

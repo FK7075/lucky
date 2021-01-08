@@ -1,4 +1,4 @@
-package com.lucky.jacklamb.exception;
+package com.lucky.datasource.sql;
 
 public class NoDataSourceException extends RuntimeException {
 

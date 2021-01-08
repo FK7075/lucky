@@ -162,7 +162,20 @@ public class AutoScanApplicationContext implements ApplicationContext{
     }
 
     @Override
+    public Module getModuleByField(Class<?> beanClass, Class<?> autowiredClass) {
+        return singletonPool.getBeanByField(beanClass, autowiredClass);
+    }
+
+    @Override
+    public Object getBeanByField(Class<?> beanClass, Class<?> autowiredClass) {
+        Module module = getModuleByField(beanClass, autowiredClass);
+        return module==null?null:module.getComponent();
+    }
+
+    @Override
     public void destroy() {
         getBean(Destroy.class).stream().forEach(d->d.destroy());
     }
+
+
 }

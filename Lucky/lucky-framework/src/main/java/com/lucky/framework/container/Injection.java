@@ -53,6 +53,8 @@ public abstract class Injection implements Namer {
         for (Field field : fields) {
             Autowired autowired= AnnotationUtils.strengthenGet(field,Autowired.class).get(0);
             String value = autowired.value();
+
+            //ID注入
             if(!Assert.isBlankString(value)){
                 Module module = singletonPool.getBean(value);
                 if(module==null){
@@ -63,7 +65,9 @@ public abstract class Injection implements Namer {
                 Object component = singletonPool.getBean(value).getComponent();
                 FieldUtils.setValue(bean,field,component);
                 log.debug("Attribute injection [BY-ID] `"+beanName+"`「"+field.getName()+"」 <= "+component);
-           }else{
+           }
+            //类型注入
+            else{
                 Class<?> fieldType = field.getType();
                 List<Module> modules = singletonPool.getBeanByClass(fieldType);
                 if(Assert.isEmptyCollection(modules)){
@@ -71,26 +75,10 @@ public abstract class Injection implements Namer {
                     log.error("AutowiredException",lex);
                     throw lex;
                 }else if(modules.size()!=1){
-                    Class<?>[] genericTypes = ClassUtils.getGenericType(beanClass.getGenericSuperclass());
-                    if(!Assert.isEmptyArray(genericTypes)){
-                        Class<?> genericType=null;
-                        List<Object> filterBeans=new ArrayList<>();
-                        for (Class<?> type : genericTypes) {
-                            if(fieldType.isAssignableFrom(type)){
-                                genericType=type;
-                                continue;
-                            }
-                        }
-                        for (Module module : modules) {
-                            if(genericType.isAssignableFrom(module.getOriginalType())){
-                                filterBeans.add(module.getComponent());
-                            }
-                        }
-
-                        if(filterBeans.size()==1){
-                            FieldUtils.setValue(bean,field,filterBeans.get(0));
-                            continue;
-                        }
+                    Module beanByField = singletonPool.getBeanByField(beanClass, fieldType);
+                    if(beanByField!=null){
+                        FieldUtils.setValue(bean,field,beanByField.getComponent());
+                        continue;
                     }
                     AutowiredException lex=new AutowiredException("无法为【组件ID："+mod.getId()+"】\""+beanClass+"\" 注入【属性名称："+field.getName()+"】类型为 \""+field.getType()+"\" 的属性，因为在IOC容器中存在多个该类型的组件！建议您使用@Autowired注解的value属性来指定该属性组件的ID");
                     log.error("AutowiredException",lex);

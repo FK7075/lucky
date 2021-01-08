@@ -40,7 +40,7 @@ public class MappingDescription {
     }
 
     public MappingDescription(Class<?> aClass, Method method){
-        aClass=CglibProxy.isAgent(aClass)?aClass.getSuperclass():aClass;
+        aClass=CglibProxy.getOriginalType(aClass);
         if(AnnotationUtils.strengthenIsExist(aClass,Description.class)){
             Description description=AnnotationUtils.strengthenGet(aClass, Description.class).get(0);
             String desc = description.desc();

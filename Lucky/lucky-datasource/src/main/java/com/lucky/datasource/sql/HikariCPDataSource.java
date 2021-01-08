@@ -1,4 +1,4 @@
-package com.lucky.jacklamb.datasource;
+package com.lucky.datasource.sql;
 
 import com.lucky.utils.config.Value;
 import com.zaxxer.hikari.HikariConfig;

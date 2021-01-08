@@ -1,7 +1,7 @@
 package com.lucky.jacklamb.reverse;
 
-import com.lucky.jacklamb.datasource.LuckyDataSource;
-import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
+import com.lucky.datasource.sql.LuckyDataSource;
+import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.utils.base.BaseUtils;
 
 import java.util.ArrayList;

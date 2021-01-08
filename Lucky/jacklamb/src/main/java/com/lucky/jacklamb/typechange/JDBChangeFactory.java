@@ -1,6 +1,6 @@
 package com.lucky.jacklamb.typechange;
 
-import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
+import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.jacklamb.exception.NotSupportDataBasesException;
 
 public class JDBChangeFactory {

@@ -1,5 +1,6 @@
 package com.lucky.utils.proxy;
 
+import com.lucky.utils.reflect.ClassUtils;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 
@@ -17,6 +18,14 @@ public abstract class CglibProxy {
 
     public static boolean isAgent(Class<?> aClass){
         return aClass.getName().contains(PROXY_NAME);
+    }
+
+    public static Class<?> getOriginalType(Class<?> aClass){
+        if(isAgent(aClass)){
+            String name = aClass.getName();
+            return ClassUtils.getClass(name.substring(0,name.indexOf(PROXY_NAME)));
+        }
+        return aClass;
     }
 }
 

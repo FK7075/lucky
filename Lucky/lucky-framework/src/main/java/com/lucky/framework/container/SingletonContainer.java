@@ -1,15 +1,16 @@
 package com.lucky.framework.container;
 
+import com.lucky.framework.exception.AutowiredException;
 import com.lucky.framework.exception.LuckyBeanCreateException;
+import com.lucky.utils.base.Assert;
 import com.lucky.utils.reflect.AnnotationUtils;
+import com.lucky.utils.reflect.ClassUtils;
+import com.lucky.utils.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -143,6 +144,38 @@ public class SingletonContainer implements Map<String, Module> {
                     return false;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public Module getBeanByField(Class<?> beanClass, Class<?> autowiredClass){
+        List<Module> modules = getBeanByClass(autowiredClass);
+        if(Assert.isEmptyCollection(modules)){
+            return null;
+        }
+        if(modules.size()==1){
+            return modules.get(0);
+        }
+        Class<?>[] genericTypes = ClassUtils.getGenericType(beanClass.getGenericSuperclass());
+        if(!Assert.isEmptyArray(genericTypes)){
+            Class<?> genericType=null;
+            List<Module> filterBeans=new ArrayList<>();
+            for (Class<?> type : genericTypes) {
+                if(autowiredClass.isAssignableFrom(type)){
+                    genericType=type;
+                    continue;
+                }
+            }
+            for (Module module : modules) {
+                if(genericType.isAssignableFrom(module.getOriginalType())){
+                    filterBeans.add(module);
+                }
+            }
+
+            if(filterBeans.size()==1){
+                return filterBeans.get(0);
+            }
+        }
+        return null;
+
     }
 
     public List<Module> getBeanByAnnotation(Class<? extends Annotation>...annotationClasses){

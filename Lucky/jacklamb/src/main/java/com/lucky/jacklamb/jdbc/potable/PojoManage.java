@@ -1,11 +1,11 @@
 package com.lucky.jacklamb.jdbc.potable;
 
+import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.jacklamb.annotation.jpa.ManyToMany;
 import com.lucky.jacklamb.annotation.jpa.ManyToOne;
 import com.lucky.jacklamb.annotation.jpa.OneToMany;
 import com.lucky.jacklamb.annotation.jpa.OneToOne;
 import com.lucky.jacklamb.annotation.table.*;
-import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.exception.NotFindPrimaryKeyFieldException;
 import com.lucky.utils.reflect.AnnotationUtils;

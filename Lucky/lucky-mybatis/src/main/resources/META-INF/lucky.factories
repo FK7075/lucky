@@ -1,0 +1,4 @@
+# @Configuration
+com.lucky.framework.annotation.Configuration=\
+com.lucky.mybatis.beanfactory.MybatisAutoConfigBeans,\
+com.lucky.mybatis.beanfactory.RegisteredDefaultDataSource

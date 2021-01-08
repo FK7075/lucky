@@ -1,10 +1,14 @@
-package com.lucky.jacklamb.datasource;
+package com.lucky.datasource.sql;
 
+import com.lucky.utils.annotation.NonNull;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.config.ConfigUtils;
 import com.lucky.utils.reflect.ClassUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 数据源管理器
@@ -16,13 +20,9 @@ public class LuckyDataSourceManage {
 
     private LuckyDataSourceManage(){}
     private static boolean isFirst=true;
-    private static final String DEFAULT_POOL_TYPE_NAME="HikariCP";
+    private static String DEFAULT_POOL_TYPE_NAME;
     private static Map<String, LuckyDataSource> dbMap=new HashMap<>();
     private static Map<String,Class<? extends LuckyDataSource>> poolTypeMap=new HashMap<>();
-
-    static {
-        poolTypeMap.put(DEFAULT_POOL_TYPE_NAME,HikariCPDataSource.class);
-    }
 
     /**
      * 获取一个数据源对象
@@ -32,7 +32,7 @@ public class LuckyDataSourceManage {
     public static LuckyDataSource getDataSource(String dbname){
         init();
         LuckyDataSource luckyDataSource = dbMap.get(dbname);
-        Assert.notNull(luckyDataSource,"没有找到与`"+dbname+"`相关的数据源！");
+        Assert.notNull(luckyDataSource,"没有找到dbname=`"+dbname+"`的数据源！");
         return luckyDataSource;
     }
 
@@ -51,13 +51,15 @@ public class LuckyDataSourceManage {
 
     /**
      * 注册一个新的连接池
-     * @param poolName 连接池的名字
      * @param poolType 连接池的类型
      */
-    public static void registerPool(String poolName,Class<? extends LuckyDataSource> poolType){
-        Assert.isNull(poolType,"无法注册连接池信息: 因为poolType为NULL！");
-        Assert.isNull(poolName,"无法注册连接池信息: 因为poolName为NULL！");
-        poolTypeMap.put(poolName,poolType);
+    public static void registerPool(@NonNull Class<? extends LuckyDataSource> poolType){
+        Assert.notNull(poolType,"无法注册连接池信息: 因为poolType为NULL！");
+        LuckyDataSource luckyDataSource = ClassUtils.newObject(poolType);
+        if(poolTypeMap.isEmpty()){
+            DEFAULT_POOL_TYPE_NAME=luckyDataSource.poolType();
+        }
+        poolTypeMap.put(luckyDataSource.poolType(),poolType);
     }
 
     /**
@@ -87,7 +89,7 @@ public class LuckyDataSourceManage {
         Map<String, Object> jdbc = (Map<String, Object>) lucky.get("jdbc");
         for(Map.Entry<String,Object> datasource:jdbc.entrySet()){
             Map<String,Object> dataInfo= (Map<String, Object>) datasource.getValue();
-            LuckyDataSource luckyDataSource = createLuckyDataSourceByConf(dataInfo);
+            LuckyDataSource luckyDataSource = createLuckyDataSourceByConf(datasource.getKey(),dataInfo);
             luckyDataSource.setDbname(datasource.getKey());
             addLuckyDataSource(luckyDataSource);
         }
@@ -96,11 +98,19 @@ public class LuckyDataSourceManage {
 
 
     //使用配置文件创建一个LuckyDataSource
-    private static LuckyDataSource createLuckyDataSourceByConf(Map<String,Object> confMap){
-        String poolType=confMap.containsKey("pool-type")?
-                confMap.get("pool-type").toString():DEFAULT_POOL_TYPE_NAME;
+    private static LuckyDataSource createLuckyDataSourceByConf(String dbname,Map<String,Object> confMap){
+        Object pt = confMap.get("pool-type");
+        String poolType;
+        if(pt==null){
+            Assert.notNull(DEFAULT_POOL_TYPE_NAME,
+                    "从配置文件初始化dbname=`"+dbname+"`数据源时失败！由于找不到连接池配置项`pool-type`,尝试使用默认的连接池初始化，尝试失败！（未设置默认的连接池）DEFAULT_POOL_TYPE_NAME=NULL");
+            poolType=DEFAULT_POOL_TYPE_NAME;
+        }else{
+            poolType=pt.toString();
+        }
+
         if(!poolTypeMap.containsKey(poolType)){
-            throw new RuntimeException("数据源解析错误：没有找到poolType为`"+poolType+"`的连接池！");
+            throw new RuntimeException("从配置文件初始化dbname=`"+dbname+"`数据源时失败！数据源解析错误：poolType为`"+poolType+"`的连接池没有注册！");
         }
         LuckyDataSource luckyDataSource = ClassUtils.newObject(poolTypeMap.get(poolType));
         luckyDataSource.mapInit(confMap);

@@ -1,6 +1,6 @@
 package com.lucky.jacklamb.jdbc.core.fixedcoreImpl;
 
-import com.lucky.jacklamb.datasource.LuckyDataSource;
+import com.lucky.datasource.sql.LuckyDataSource;
 import com.lucky.jacklamb.jdbc.core.DefaultSqlActuator;
 import com.lucky.jacklamb.jdbc.core.SqlActuator;
 import com.lucky.jacklamb.jdbc.core.TransactionSqlActuator;

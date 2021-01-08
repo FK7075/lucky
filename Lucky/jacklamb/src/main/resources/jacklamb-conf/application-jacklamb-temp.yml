@@ -1,7 +1,7 @@
 lucky:
   jdbc:
-    defaultDB: ##定位数据源
-      #用于创建数据源
+    defaultDB: ##数据源名称
+      #使用的连接池类型
       pool-type: HikariCP
       ##数据库地址
       url: jdbc:mysql://127.0.0.1:3306/test-2?useUnicode=true&characterEncoding=utf-8&useSSL=true&useTimezone=true&serverTimezone=GMT%2B8

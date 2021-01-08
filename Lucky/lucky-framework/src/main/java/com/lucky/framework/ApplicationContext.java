@@ -43,4 +43,8 @@ public interface ApplicationContext extends Destroy {
     void put(Module module);
 
     Set<Class<?>> getClasses(Class<?>...Class);
+
+    Module getModuleByField(Class<?> beanClass, Class<?> autowiredClass);
+
+    Object getBeanByField(Class<?> beanClass, Class<?> autowiredClass);
 }

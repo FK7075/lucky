@@ -1,7 +1,7 @@
 package com.lucky.jacklamb.jdbc.core.abstcore;
 
 
-import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
+import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.jacklamb.exception.DatabaseTypeUnableIdentifyException;
 import com.lucky.jacklamb.jdbc.core.dynamiccoreImpl.*;
 import com.lucky.jacklamb.jdbc.core.fixedcoreImpl.StatementCoreImpl;

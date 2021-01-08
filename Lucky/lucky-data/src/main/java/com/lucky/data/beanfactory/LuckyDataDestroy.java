@@ -1,7 +1,7 @@
 package com.lucky.data.beanfactory;
 
+import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.framework.container.factory.Destroy;
-import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
 
 /**
  * @author fk7075

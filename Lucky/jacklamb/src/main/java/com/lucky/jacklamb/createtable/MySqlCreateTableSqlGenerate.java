@@ -1,9 +1,9 @@
 package com.lucky.jacklamb.createtable;
 
+import com.lucky.datasource.sql.LuckyDataSource;
 import com.lucky.jacklamb.annotation.jpa.ManyToMany;
 import com.lucky.jacklamb.annotation.jpa.ManyToOne;
 import com.lucky.jacklamb.annotation.table.Id;
-import com.lucky.jacklamb.datasource.LuckyDataSource;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.jdbc.core.abstcore.SqlCoreFactory;
 import com.lucky.jacklamb.jdbc.potable.PojoManage;

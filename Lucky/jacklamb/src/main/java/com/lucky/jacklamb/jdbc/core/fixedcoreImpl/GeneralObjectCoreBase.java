@@ -1,8 +1,8 @@
 package com.lucky.jacklamb.jdbc.core.fixedcoreImpl;
 
+import com.lucky.datasource.sql.LuckyDataSource;
+import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.jacklamb.createtable.CreateTableSqlExecute;
-import com.lucky.jacklamb.datasource.LuckyDataSource;
-import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.jdbc.core.abstcore.GeneralObjectCore;
 import com.lucky.jacklamb.jdbc.core.abstcore.UniqueSqlCore;

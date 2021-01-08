@@ -38,7 +38,7 @@ public class AuthorityCheck {
      */
     public AuthorityCheck(Class<?> controllerClass,Method controllerMethod){
         this.controllerMethod=controllerMethod;
-        controllerClass= CglibProxy.isAgent(controllerClass)?controllerClass.getSuperclass():controllerClass;
+        controllerClass= CglibProxy.getOriginalType(controllerClass);
         isAuthorityMethod= AnnotationUtils.isExistOrByArray(controllerClass,AUTHORITY_ANNOTATION)
                          ||AnnotationUtils.isExistOrByArray(controllerMethod,AUTHORITY_ANNOTATION);
         if(isAuthorityMethod){

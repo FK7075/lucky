@@ -166,6 +166,12 @@
 
             <dependency>
                 <groupId>com.lucky.jacklamb</groupId>
+                <artifactId>lucky-mybatis</artifactId>
+                <version>${lucky.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.lucky.jacklamb</groupId>
                 <artifactId>jacklamb</artifactId>
                 <version>${lucky.version}</version>
             </dependency>

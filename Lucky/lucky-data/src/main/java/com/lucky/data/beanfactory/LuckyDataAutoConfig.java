@@ -1,17 +1,8 @@
 package com.lucky.data.beanfactory;
 
 import com.lucky.data.aspect.TransactionPoint;
-import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.annotation.Bean;
 import com.lucky.framework.annotation.Configuration;
-import com.lucky.jacklamb.annotation.table.Table;
-import com.lucky.jacklamb.annotation.table.Tables;
-import com.lucky.jacklamb.datasource.LuckyDataSource;
-import com.lucky.jacklamb.datasource.LuckyDataSourceManage;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author fk7075

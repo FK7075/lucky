@@ -1,3 +1,4 @@
 # @Configuration
 com.lucky.framework.annotation.Configuration=\
-com.lucky.data.beanfactory.LuckyDataAutoConfig
+com.lucky.data.beanfactory.LuckyDataAutoConfig,\
+com.lucky.data.beanfactory.RegisteredDefaultDataSource

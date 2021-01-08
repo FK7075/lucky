@@ -19,13 +19,11 @@ public @interface LuckyBootApplication {
      * 文件描述的是jar扩展的相关信息，例如：
      * [
      *  {
-     *     "expandName" : "SERVER-01",
      *     "groupId"    : "org.jack.lamb",
      *     "jarPath"    : "jar:file:/E:/TEST/Lucky-v2/service-01/target/service-01-1.0-SNAPSHOT-jar-with-dependencies.jar!/"
      *  },
      *  ....
      *  {
-     *     "expandName" : "SERVER-02",
      *     "groupId"    : "com.czx",
      *     "jarPath"    : "jar:file:/D:/jar/report-1.0-SNAPSHOT-jar-with-dependencies.jar!/"
      *  }
@@ -39,6 +37,8 @@ public @interface LuckyBootApplication {
      * @return
      */
     Class[] exclusions() default {};
+
+    Class<?>[] beforeInit() default {};
 
 
 }
