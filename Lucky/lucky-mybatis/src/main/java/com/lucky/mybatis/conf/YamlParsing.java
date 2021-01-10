@@ -21,9 +21,18 @@ public abstract class YamlParsing {
         conf.setFirst(false);
     }
 
-    private static void load(Map<String,Object> config,MybatisConfig web){
-        if(config.containsKey("lucky")){
-
+    private static void load(Map<String,Object> config,MybatisConfig conf){
+        if(config.containsKey("mybatis")){
+            Object mybatisNode = config.get("mybatis");
+            if(mybatisNode instanceof Map){
+                Map<String,Object> mybatisMap= (Map<String, Object>) mybatisNode;
+                if(mybatisMap.containsKey("mapper-locations")){
+                    conf.setMapperLocations(mybatisMap.get("mapper-locations").toString());
+                }
+                if(mybatisMap.containsKey("type-aliases-package")){
+                    conf.setTypeAliasesPackage(mybatisMap.get("type-aliases-package").toString());
+                }
+            }
         }
     }
 }

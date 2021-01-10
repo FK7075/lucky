@@ -44,7 +44,7 @@ import java.util.*;
  */
 public abstract class StringUtils {
 
-    private static final String[] EMPTY_STRING_ARRAY = {};
+    public static final String[] EMPTY_STRING_ARRAY = {};
 
     private static final String FOLDER_SEPARATOR = "/";
 

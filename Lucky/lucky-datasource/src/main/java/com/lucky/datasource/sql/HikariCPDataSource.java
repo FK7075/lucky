@@ -195,40 +195,44 @@ public class HikariCPDataSource extends LuckyDataSource {
     @Override
     public DataSource createDataSource() {
         if(hikariDataSource==null){
-            HikariConfig hikariCfg = new HikariConfig();
-            hikariCfg.setDriverClassName(getDriverClass());
-            hikariCfg.setJdbcUrl(getJdbcUrl());
-            hikariCfg.setUsername(getUsername());
-            hikariCfg.setPassword(getPassword());
-            hikariCfg.setAutoCommit(autoCommit);
-            hikariCfg.setConnectionTimeout(connectionTimeout);
-            hikariCfg.setIdleTimeout(idleTimeout);
-            hikariCfg.setMaxLifetime(maxLifetime);
-            hikariCfg.setConnectionTestQuery(connectionTestQuery);//Object
-            hikariCfg.setMinimumIdle(minimumIdle);
-            hikariCfg.setMaximumPoolSize(maximumPoolSize);
-            hikariCfg.setMetricRegistry(metricRegistry);//Object
-            if (healthCheckRegistry != null)
-                hikariCfg.setHealthCheckProperties(healthCheckRegistry);//Object
-            if (poolName != null)
-                hikariCfg.setPoolName(poolName);
-            hikariCfg.setIsolateInternalQueries(isolateInternalQueries);
-            hikariCfg.setAllowPoolSuspension(allowPoolSuspension);
-            hikariCfg.setReadOnly(readOnly);
-            hikariCfg.setRegisterMbeans(registerMbeans);
-            hikariCfg.setInitializationFailTimeout(initializationFailTimeout);
-            hikariCfg.setConnectionInitSql(connectionInitSql);
-            hikariCfg.setLeakDetectionThreshold(leakDetectionThreshold);
-            hikariCfg.setDataSource(dataSource);
-            hikariCfg.setSchema(schema);
-            hikariCfg.setCatalog(catalog);
-            hikariCfg.setValidationTimeout(validationTimeout);
-            hikariCfg.setTransactionIsolation(transactionIsolation);
-            hikariCfg.setThreadFactory(threadFactory);
-            hikariCfg.setScheduledExecutor(scheduledExecutorService);
-            hikariDataSource= new HikariDataSource(hikariCfg);
+            hikariDataSource= new HikariDataSource(createConfig());
         }
         return hikariDataSource;
+    }
+
+    protected HikariConfig createConfig(){
+        HikariConfig hikariCfg = new HikariConfig();
+        hikariCfg.setDriverClassName(getDriverClass());
+        hikariCfg.setJdbcUrl(getJdbcUrl());
+        hikariCfg.setUsername(getUsername());
+        hikariCfg.setPassword(getPassword());
+        hikariCfg.setAutoCommit(autoCommit);
+        hikariCfg.setConnectionTimeout(connectionTimeout);
+        hikariCfg.setIdleTimeout(idleTimeout);
+        hikariCfg.setMaxLifetime(maxLifetime);
+        hikariCfg.setConnectionTestQuery(connectionTestQuery);//Object
+        hikariCfg.setMinimumIdle(minimumIdle);
+        hikariCfg.setMaximumPoolSize(maximumPoolSize);
+        hikariCfg.setMetricRegistry(metricRegistry);//Object
+        if (healthCheckRegistry != null)
+            hikariCfg.setHealthCheckProperties(healthCheckRegistry);//Object
+        if (poolName != null)
+            hikariCfg.setPoolName(poolName);
+        hikariCfg.setIsolateInternalQueries(isolateInternalQueries);
+        hikariCfg.setAllowPoolSuspension(allowPoolSuspension);
+        hikariCfg.setReadOnly(readOnly);
+        hikariCfg.setRegisterMbeans(registerMbeans);
+        hikariCfg.setInitializationFailTimeout(initializationFailTimeout);
+        hikariCfg.setConnectionInitSql(connectionInitSql);
+        hikariCfg.setLeakDetectionThreshold(leakDetectionThreshold);
+        hikariCfg.setDataSource(dataSource);
+        hikariCfg.setSchema(schema);
+        hikariCfg.setCatalog(catalog);
+        hikariCfg.setValidationTimeout(validationTimeout);
+        hikariCfg.setTransactionIsolation(transactionIsolation);
+        hikariCfg.setThreadFactory(threadFactory);
+        hikariCfg.setScheduledExecutor(scheduledExecutorService);
+        return hikariCfg;
     }
 
     @Override

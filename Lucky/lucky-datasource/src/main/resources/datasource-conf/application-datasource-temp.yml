@@ -1,5 +1,5 @@
 lucky:
-  jdbc:
+  datasource:
     defaultDB: ##数据源名称
       #使用的连接池类型
       pool-type: HikariCP

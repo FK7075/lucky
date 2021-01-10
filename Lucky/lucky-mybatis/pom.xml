@@ -23,9 +23,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.mybatis</groupId>
-      <artifactId>mybatis</artifactId>
-      <version>3.5.6</version>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus</artifactId>
+      <version>3.1.0</version>
     </dependency>
 
     <!-- HikariCP数据库连接池 -->

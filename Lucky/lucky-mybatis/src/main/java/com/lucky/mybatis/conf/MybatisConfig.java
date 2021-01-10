@@ -1,13 +1,7 @@
 package com.lucky.mybatis.conf;
 
 import com.lucky.framework.confanalysis.LuckyConfig;
-import org.apache.ibatis.mapping.Environment;
-import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.transaction.TransactionFactory;
-import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
-
-import javax.sql.DataSource;
-import java.util.stream.Stream;
+import com.lucky.utils.config.MapConfigAnalysis;
 
 /**
  * @author fk
@@ -16,40 +10,49 @@ import java.util.stream.Stream;
  */
 public class MybatisConfig extends LuckyConfig {
 
-    private static MybatisConfig config;
-    private Configuration configuration;
+    private static MybatisConfig mybatisConfig;
+    private String mapperLocations;
+    private String typeAliasesPackage;
 
-    public Configuration getConfiguration() {
-        return configuration;
+    public String getMapperLocations() {
+        if(mapperLocations.startsWith("classpath:")){
+            mapperLocations=mapperLocations.substring(10);
+        }
+        mapperLocations=mapperLocations.startsWith("/")?mapperLocations:"/"+mapperLocations;
+        mapperLocations=mapperLocations.endsWith("/")?mapperLocations:mapperLocations+"/";
+        return mapperLocations;
     }
 
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
+    public void setMapperLocations(String mapperLocations) {
+        this.mapperLocations = mapperLocations;
     }
 
-    public void addMapper(Class<?>...mapper){
-        Stream.of(mapper).forEach(configuration::addMapper);
+    public String getTypeAliasesPackage() {
+        return typeAliasesPackage;
+    }
+
+    public void setTypeAliasesPackage(String typeAliasesPackage) {
+        this.typeAliasesPackage = typeAliasesPackage;
     }
 
     private MybatisConfig(){};
 
     public static MybatisConfig defaultMybatisConfig(){
-        if(config==null){
-            config=new MybatisConfig();
-            Configuration configuration=new Configuration();
-            DataSource dataSource = null;
-            TransactionFactory transactionFactory = new JdbcTransactionFactory();
-            Environment environment = new Environment("development", transactionFactory, dataSource);
-            configuration.setEnvironment(environment);
+        if(mybatisConfig==null){
+            mybatisConfig=new MybatisConfig();
+            mybatisConfig.setMapperLocations("classpath:/mapper/");
+            mybatisConfig.setFirst(true);
         }
-        return config;
+        return mybatisConfig;
     }
 
     public static MybatisConfig getMybatisConfig(){
-        MybatisConfig webConfig = defaultMybatisConfig();
-        if(webConfig.isFirst()){
-            YamlParsing.loadMyBatis(webConfig);
+        MybatisConfig serverConfig = defaultMybatisConfig();
+        if(serverConfig.isFirst()){
+            YamlParsing.loadMyBatis(serverConfig);
         }
-        return webConfig;
+        return serverConfig;
     }
+
+
 }

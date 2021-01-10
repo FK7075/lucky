@@ -83,10 +83,10 @@ public class LuckyDataSourceManage {
             return;
         }
         Map<String, Object> lucky = (Map<String, Object>) map.get("lucky");
-        if(!lucky.containsKey("jdbc")){
+        if(!lucky.containsKey("datasource")){
             return;
         }
-        Map<String, Object> jdbc = (Map<String, Object>) lucky.get("jdbc");
+        Map<String, Object> jdbc = (Map<String, Object>) lucky.get("datasource");
         for(Map.Entry<String,Object> datasource:jdbc.entrySet()){
             Map<String,Object> dataInfo= (Map<String, Object>) datasource.getValue();
             LuckyDataSource luckyDataSource = createLuckyDataSourceByConf(datasource.getKey(),dataInfo);
