@@ -1,5 +1,6 @@
 package com.lucky.web.core;
 
+import com.lucky.utils.file.FileUtils;
 import com.lucky.utils.file.Resources;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.webfile.StaticResourceManage;
@@ -18,7 +19,8 @@ import java.io.IOException;
 public abstract class RequestFilter {
 
     private static final Logger log= LoggerFactory.getLogger(RequestFilter.class);
-    private static final  String ICO ="/favicon.ico";
+    private static final String ICO ="/favicon.ico";
+    private static byte[] IOC_BYTE;
 
     /**
      * 过滤处理当前请求，无法处理返回true，可以处理并已经处理返回false
@@ -50,8 +52,11 @@ public abstract class RequestFilter {
      */
     public static boolean isICO(Model model, WebConfig webConfig) throws IOException {
         if(ICO.equals(model.getUri())){
+            if(IOC_BYTE==null){
+                IOC_BYTE= FileUtils.copyToByteArray(Resources.getInputStream(webConfig.getFavicon()));
+            }
             model.getResponse().setContentType("image/x-icon");
-            WebFileUtils.preview(model, Resources.getInputStream(webConfig.getFavicon()),ICO);
+            WebFileUtils.preview(model, IOC_BYTE,ICO);
             return false;
         }
         return true;
