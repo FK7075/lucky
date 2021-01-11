@@ -8,6 +8,8 @@ import com.lucky.framework.scan.JarExpandChecklist;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.scan.ScanFactory;
 import com.lucky.framework.welcome.JackLamb;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.io.IOException;
@@ -26,8 +28,11 @@ import java.util.stream.Collectors;
  */
 public class AutoScanApplicationContext implements ApplicationContext{
 
+    private static final Logger log= LoggerFactory.getLogger("c.l.framework.AutoScanApplicationContext");
+
     private static AutoScanApplicationContext autoScanApplicationContext;
     private static final RuntimeMXBean mxb = ManagementFactory.getRuntimeMXBean();
+    public static boolean isInit=false;
     public Class<?> applicationBootClass;
     public SingletonContainer singletonPool;
     private RegisterMachine registerMachine;
@@ -35,6 +40,10 @@ public class AutoScanApplicationContext implements ApplicationContext{
     static {
         String pid = mxb.getName().split("@")[0];
         MDC.put("pid",pid);
+    }
+
+    public Class<?> getApplicationBootClass() {
+        return applicationBootClass;
     }
 
     public static AutoScanApplicationContext create(){
@@ -68,6 +77,8 @@ public class AutoScanApplicationContext implements ApplicationContext{
         registerMachine.setScan(scan);
         registerMachine.init();
         singletonPool=registerMachine.getSingletonPool();
+        isInit=true;
+        log.info("IOC container initialized successfully！ROOT-CLASS => `{}`",applicationBootClass);
     }
 
     @Override

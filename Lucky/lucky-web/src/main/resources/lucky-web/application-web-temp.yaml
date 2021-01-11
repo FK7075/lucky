@@ -1,6 +1,8 @@
 lucky:
   #lucky-web配置
   web:
+    ##扫描的根配置类，如果存在该配置，IOC容器将会以此类作为ROOT类来初始化IOC容器
+    root-class: com.lucky.demo.LuckyBootApplication
     #URL编码格式
     encoding: UTF-8
     ##静态文件的根目录

@@ -1,7 +1,5 @@
 package com.lucky.mybatis.beanfactory;
 
-import com.baomidou.mybatisplus.core.MybatisConfiguration;
-import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.lucky.datasource.sql.LuckyDataSource;
 import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.framework.container.Module;
@@ -13,7 +11,6 @@ import com.lucky.utils.base.Assert;
 import com.lucky.utils.file.Resources;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.mapping.Environment;
-import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;

@@ -1,11 +1,9 @@
 package com.lucky.framework.container;
 
-import com.lucky.framework.exception.AutowiredException;
 import com.lucky.framework.exception.LuckyBeanCreateException;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
-import com.lucky.utils.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

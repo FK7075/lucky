@@ -1,5 +1,7 @@
 package com.lucky.boot.web;
 
+import com.lucky.framework.container.Injection;
+
 import javax.servlet.http.HttpServlet;
 
 public class ServletMapping extends WebMapping{
@@ -22,5 +24,6 @@ public class ServletMapping extends WebMapping{
 
 	public void setServlet(HttpServlet servlet) {
 		this.servlet = servlet;
+		Injection.injection(this.servlet,"web-servlet");
 	}
 }

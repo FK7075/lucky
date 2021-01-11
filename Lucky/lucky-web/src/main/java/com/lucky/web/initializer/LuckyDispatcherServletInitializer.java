@@ -1,6 +1,7 @@
 package com.lucky.web.initializer;
 
 import com.lucky.web.servlet.LuckyDispatcherServlet;
+import com.lucky.web.servlet.LuckyServletContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,8 @@ public class LuckyDispatcherServletInitializer implements WebApplicationInitiali
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
+        servletContext.addListener(new LuckyServletContextListener());
+        log.info("WebApplicationInitialize Add Listener `class = com.lucky.web.servlet.LuckyServletContextListener`");
         ServletRegistration.Dynamic luckyDispatcherServlet = servletContext.addServlet("LuckyDispatcherServlet", new LuckyDispatcherServlet());
         luckyDispatcherServlet.setLoadOnStartup(0);
         luckyDispatcherServlet.addMapping("/");

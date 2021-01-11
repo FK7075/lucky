@@ -1,5 +1,7 @@
 package com.lucky.boot.web;
 
+import com.lucky.framework.container.Injection;
+
 import java.util.EventListener;
 
 /**
@@ -15,6 +17,7 @@ public class ListenerMapping {
     public ListenerMapping(String name, EventListener listener) {
         this.name = name;
         this.listener = listener;
+        Injection.injection(this.listener,"web-listener");
     }
 
     public String getName() {

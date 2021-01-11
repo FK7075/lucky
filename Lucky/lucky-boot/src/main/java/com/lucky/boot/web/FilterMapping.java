@@ -1,8 +1,9 @@
 package com.lucky.boot.web;
 
+import com.lucky.framework.container.Injection;
+
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
-import java.util.Set;
 
 public class FilterMapping extends WebMapping{
 	
@@ -16,6 +17,7 @@ public class FilterMapping extends WebMapping{
 
 	public void setFilter(Filter filter) {
 		this.filter = filter;
+		Injection.injection(this.filter,"web-filter");
 	}
 
 	public String[] getServletNames() {

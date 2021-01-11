@@ -1,5 +1,7 @@
 package com.lucky.web.interceptor;
 
+import com.lucky.framework.container.Injection;
+import com.lucky.framework.container.Module;
 import com.lucky.web.mapping.UrlMapping;
 
 import java.util.ArrayList;
@@ -59,7 +61,12 @@ public class InterceptorRegistry {
         final List<HandlerInterceptor> interceptors = InterceptorRegistry.interceptors
                 .stream().filter(pi -> pi.pathCheck(currPath))
                 .sorted(Comparator.comparing(pi->pi.getPriority()))
-                .map(inter -> inter.getInterceptor()).collect(Collectors.toList());
+                .map((pi) -> {
+                    Module interceptorModule = pi.getInterceptor();
+                    Injection.injection(interceptorModule);
+                    return (HandlerInterceptor)interceptorModule.getComponent();
+                })
+                .collect(Collectors.toList());
         return new HandlerExecutionChain(urlMapping,interceptors);
     }
 

@@ -1,5 +1,7 @@
 package com.lucky.web.interceptor;
 
+import com.lucky.framework.container.Module;
+import com.lucky.framework.container.factory.Namer;
 import com.lucky.utils.base.Assert;
 
 /**
@@ -24,14 +26,14 @@ public class PathAndInterceptor {
     /** 执行的优先级*/
     private double priority=5;
     /** 拦截器实例*/
-    private HandlerInterceptor interceptor;
+    private Module interceptor;
 
     public PathAndInterceptor() {
     }
 
     public PathAndInterceptor(String[] paths, HandlerInterceptor interceptor) {
         this.path = paths;
-        this.interceptor = interceptor;
+        this.interceptor = new Module(Namer.getBeanName(interceptor.getClass()),"interceptor",interceptor);
     }
 
     public PathAndInterceptor(HandlerInterceptor interceptor,String...path){
@@ -54,12 +56,12 @@ public class PathAndInterceptor {
         this.path = path;
     }
 
-    public HandlerInterceptor getInterceptor() {
+    public Module getInterceptor() {
         return interceptor;
     }
 
     public void setInterceptor(HandlerInterceptor interceptor) {
-        this.interceptor = interceptor;
+        this.interceptor = new Module(Namer.getBeanName(interceptor.getClass()),"interceptor",interceptor);
     }
 
     public double getPriority() {

@@ -51,7 +51,7 @@ public class QuartzMethodInterceptor implements MethodInterceptor {
             JobDetail jobDetail = JobBuilder.newJob(jobClass)
                     .withIdentity(jobRunBeanId, LUCKY_JOB_GROUP)
                     .build();
-            //将任务逻辑的IocId put到job上下文中
+            //将任务逻辑的Id put到job上下文中
             jobDetail.getJobDataMap().put(LUCKY_JOB_KEY,jobRunBeanId);
             Map<String, Object> paramKV = MethodUtils.getClassMethodParamsNV(method, params);
             Trigger trigger =getTrigger(paramKV,method,quartzJob,jobRunBeanId);
