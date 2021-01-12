@@ -88,7 +88,7 @@ public abstract class Scan {
 			}
 		});
 	 	if(!Assert.isEmptyCollection(componentClass)){
-			log.info("Import Classes `{}`",exclusions);
+			log.info("Import Classes `{}`",componentClass);
 		}
 
 		//获取需要排除的组件类型
