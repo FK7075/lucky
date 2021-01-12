@@ -1,5 +1,6 @@
 package com.lucky.data.beanfactory;
 
+import com.lucky.data.aspect.DynamicDataSourcePoint;
 import com.lucky.data.aspect.TransactionPoint;
 import com.lucky.framework.annotation.Bean;
 import com.lucky.framework.annotation.Configuration;
@@ -15,6 +16,11 @@ public class LuckyDataAutoConfig {
     @Bean
     public TransactionPoint transactionPoint(){
         return new TransactionPoint();
+    }
+
+    @Bean
+    public DynamicDataSourcePoint dynamicDataSourcePoint(){
+        return new DynamicDataSourcePoint();
     }
 
     @Bean

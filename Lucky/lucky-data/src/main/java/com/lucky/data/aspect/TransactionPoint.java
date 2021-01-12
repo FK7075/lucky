@@ -65,7 +65,7 @@ public class TransactionPoint extends InjectionAopPoint {
 
     private final ThreadLocal<Map<Field,Object>> thlSourceFieldKVMap=new ThreadLocal();
 
-    private static final Logger log= LoggerFactory.getLogger("c.l.j.aop.expandpoint.TransactionPoint");
+    private static final Logger log= LoggerFactory.getLogger("c.l.d.aspect.TransactionPoint");
 
     private static final Method[] objectMethod=Object.class.getDeclaredMethods();
 
@@ -82,8 +82,9 @@ public class TransactionPoint extends InjectionAopPoint {
 
         //没有被@Transaction注解标注的继承自Object的方法不执行代理
         for (Method m : objectMethod) {
-            if(m.equals(method))
+            if(m.equals(method)){
                 return chain.proceed();
+            }
         }
 
         //当前方法上不存在@Transaction，但是当前方法的类上存在@Transaction，同样执行事务代理
@@ -125,7 +126,7 @@ public class TransactionPoint extends InjectionAopPoint {
         Object aspectObject=tms.getAspectObject();
         Map<String, SqlCore> dbCores=new HashMap<>();
         for(Map.Entry<Field,Object> entry:oldFieldMapperMap.entrySet()){
-            Class<?> fieldClass = entry.getKey().getType();
+            Class<?> fieldClass = CglibProxy.getOriginalType(entry.getValue().getClass());
             SqlCore trCore;
             String dbname;
             if(SqlCore.class.isAssignableFrom(fieldClass)){
@@ -189,8 +190,16 @@ public class TransactionPoint extends InjectionAopPoint {
                 FieldUtils.setValue(copyFieldObj,field,trCore.getMapper(fieldClass));
                 //&&!CglibProxy.isAgent(fieldValue.getClass())
             }else if(fieldClass== LuckyMapper.class){
-                Object luckyMapper = AutoScanApplicationContext.create().getBeanByField(fClass, fieldClass);
-                FieldUtils.setValue(copyFieldObj,field,luckyMapper);
+                Class<?> luckyMapperClass = AutoScanApplicationContext.create().getBeanByField(fClass, fieldClass).getClass();
+                luckyMapperClass=CglibProxy.getOriginalType(luckyMapperClass);
+                dbname=luckyMapperClass.getAnnotation(Mapper.class).dbname();
+                if(!dbCores.containsKey(dbname)){
+                    trCore= SqlCoreFactory.createTransactionSqlCore(dbname);
+                    dbCores.put(dbname,trCore);
+                }else{
+                    trCore=dbCores.get(dbname);
+                }
+                FieldUtils.setValue(copyFieldObj,field,trCore.getMapper(luckyMapperClass));
             }else if(AutoScanApplicationContext.create().isIOCClass(fieldClass)){
                 FieldUtils.setValue(copyFieldObj,field,getTrObject(dbCores,fieldValue));
             }

@@ -38,7 +38,10 @@ public @interface LuckyBootApplication {
      */
     Class[] exclusions() default {};
 
-    Class<?>[] beforeInit() default {};
-
+    /**
+     * 配置的这些Class将会参与组件扫描
+     * @return
+     */
+    Class[] imports() default {};
 
 }

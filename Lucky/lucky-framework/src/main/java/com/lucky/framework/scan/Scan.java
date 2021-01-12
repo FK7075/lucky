@@ -1,10 +1,10 @@
  package com.lucky.framework.scan;
 
  import com.lucky.framework.annotation.Component;
- import com.lucky.framework.annotation.JarScan;
- import com.lucky.framework.annotation.JarScans;
  import com.lucky.framework.annotation.LuckyBootApplication;
  import com.lucky.framework.exception.AddJarExpandException;
+ import com.lucky.framework.scan.exclusions.Exclusions;
+ import com.lucky.framework.scan.imports.Imports;
  import com.lucky.framework.spi.LuckyFactoryLoader;
  import com.lucky.utils.base.Assert;
  import com.lucky.utils.reflect.AnnotationUtils;
@@ -15,10 +15,7 @@
  import java.lang.annotation.Annotation;
  import java.net.MalformedURLException;
  import java.net.URL;
- import java.util.ArrayList;
- import java.util.HashSet;
- import java.util.List;
- import java.util.Set;
+ import java.util.*;
  import java.util.stream.Collectors;
  import java.util.stream.Stream;
 
@@ -52,12 +49,11 @@ public abstract class Scan {
 	 }
 
 	 public Scan(Class<?> applicationBootClass) {
-	 	//获取需要排除的类型
-	 	initExclusions(applicationBootClass);
+		 componentClass=new HashSet<>(225);
+	 	//获取需要排除、以及需要导入的类型
+	 	initExclusionsAndImports(applicationBootClass);
 	 	ClassLoader cl = Thread.currentThread().getContextClassLoader();
 	 	loader = (cl == null) ? ClassLoader.getSystemClassLoader() : cl;
-		componentClass=new HashSet<>(225);
-
 		//从lucky.factories文件中加载组件
 		List<String> spareComponents = LuckyFactoryLoader.loadFactoryNames(SpareComponents.class, loader);
 		 for (String spareComponent : spareComponents) {
@@ -72,16 +68,39 @@ public abstract class Scan {
 		 loadJarExpand(applicationBootClass);
 	}
 
-	//获取需要排除的类型
-	private void initExclusions(Class<?> applicationBootClass){
+	//获取需要排除、以及需要导入的类型
+	private void initExclusionsAndImports(Class<?> applicationBootClass){
 		exclusions=new HashSet<>();
 	 	//applicationBootClass为null，或者applicationBootClass为null没有被@LuckyBootApplication注解标注
 	 	if(applicationBootClass==null || !AnnotationUtils.strengthenIsExist(applicationBootClass, LuckyBootApplication.class)){
 	 		return ;
 		}
-		Stream.of(AnnotationUtils.strengthenGet(applicationBootClass, LuckyBootApplication.class).get(0).exclusions())
-				.forEach(exclusions::add);
-	 	if(!Assert.isEmptyCollection(exclusions)){
+
+		LuckyBootApplication bootAnn = AnnotationUtils.strengthenGet(applicationBootClass, LuckyBootApplication.class).get(0);
+
+	 	//获取需要导入的组件类型
+		Stream.of(bootAnn.imports()).forEach((ec)->{
+			if(Imports.class.isAssignableFrom(ec)){
+				Imports imp= (Imports) ClassUtils.newObject(ec);
+				componentClass.addAll(Arrays.asList(imp.imports()));
+			}else{
+				componentClass.add(ec);
+			}
+		});
+	 	if(!Assert.isEmptyCollection(componentClass)){
+			log.info("Import Classes `{}`",exclusions);
+		}
+
+		//获取需要排除的组件类型
+		Stream.of(bootAnn.exclusions()).forEach((ec)->{
+			if(Exclusions.class.isAssignableFrom(ec)){
+				Exclusions excs= (Exclusions) ClassUtils.newObject(ec);
+				exclusions.addAll(Arrays.asList(excs.exclusions()));
+			}else{
+				exclusions.add(ec);
+			}
+		});
+		if(!Assert.isEmptyCollection(exclusions)){
 			log.info("Exclusions Classes `{}`",exclusions);
 		}
 	}
@@ -106,37 +125,15 @@ public abstract class Scan {
 
 	private List<JarExpand> getJarExpandByBootClass(Class<?> bootClass){
 		List<JarExpand> jars=new ArrayList<>();
-		//applicationBootClass为null，或者applicationBootClass没有被@LuckyBootApplication而且也没有被@JarScan注解标注
-		if(bootClass==null ||
-				(!AnnotationUtils.strengthenIsExist(bootClass, LuckyBootApplication.class) && !bootClass.isAnnotationPresent(JarScans.class))){
+		//applicationBootClass为null，或者applicationBootClass没有被@LuckyBootApplication标注
+		if(bootClass==null || !AnnotationUtils.strengthenIsExist(bootClass, LuckyBootApplication.class)){
 			return jars;
 		}
-		if(AnnotationUtils.strengthenIsExist(bootClass, LuckyBootApplication.class)){
-			final String jarExpand = AnnotationUtils.strengthenGet(bootClass, LuckyBootApplication.class).get(0).jarExpand();
-			if(!Assert.isBlankString(jarExpand)){
-				jars.addAll(JarExpand.getJarExpandByJsonFile(jarExpand));
-			}
-		}
-		if(bootClass.isAnnotationPresent(JarScans.class)){
-			JarScan[] jarScans = bootClass.getAnnotation(JarScans.class).value();
-			for (JarScan jarScan : jarScans) {
-				loadJaScan(jars,jarScan);
-			}
-		}else if(bootClass.isAnnotationPresent(JarScan.class)){
-			loadJaScan(jars,bootClass.getAnnotation(JarScan.class));
+		final String jarExpand = AnnotationUtils.strengthenGet(bootClass, LuckyBootApplication.class).get(0).jarExpand();
+		if(!Assert.isBlankString(jarExpand)){
+			jars.addAll(JarExpand.getJarExpandByJsonFile(jarExpand));
 		}
 		return jars;
-	}
-
-	private void loadJaScan(List<JarExpand> jarExpands,JarScan jarScan){
-		String jsonFile = jarScan.jsonFile();
-		if(!Assert.isBlankString(jsonFile)){
-			jarExpands.addAll(JarExpand.getJarExpandByJsonFile(jsonFile));
-		}
-		String jarPath = jarScan.jarPath();
-		if(!Assert.isBlankString(jarPath)){
-			jarExpands.add(new JarExpand(null,jarScan.groupId(),jarPath));
-		}
 	}
 	
 	/**

@@ -262,7 +262,4 @@ public class BaseService<M extends LuckyMapper<E>,E> {
         return luckyMapper.delete(tr);
     }
 
-
-
-
 }
