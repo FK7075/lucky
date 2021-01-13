@@ -21,6 +21,7 @@ public class LuckyDataSourceManage {
     private LuckyDataSourceManage(){}
     private static boolean isFirst=true;
     private static String DEFAULT_POOL_TYPE_NAME;
+    private static final String DEFAULT_DBNAME="defaultDB";
     private static Map<String, LuckyDataSource> dbMap=new HashMap<>();
     private static Map<String,Class<? extends LuckyDataSource>> poolTypeMap=new HashMap<>();
 
@@ -86,14 +87,21 @@ public class LuckyDataSourceManage {
         if(!lucky.containsKey("datasource")){
             return;
         }
-        Map<String, Object> jdbc = (Map<String, Object>) lucky.get("datasource");
-        for(Map.Entry<String,Object> datasource:jdbc.entrySet()){
-            Map<String,Object> dataInfo= (Map<String, Object>) datasource.getValue();
+        Map<String, Object> datasources = (Map<String, Object>) lucky.get("datasource");
+        for(Map.Entry<String,Object> datasource:datasources.entrySet()){
+            Object datasourceValue = datasource.getValue();
+            //只有一个数据源，而且这个数据源配置使用了"省略dbname"的简写方式
+            if(!(datasourceValue instanceof Map)){
+                LuckyDataSource luckyDataSource = createLuckyDataSourceByConf(DEFAULT_DBNAME,datasources);
+                luckyDataSource.setDbname(DEFAULT_DBNAME);
+                addLuckyDataSource(luckyDataSource);
+                break;
+            }
+            Map<String,Object> dataInfo= (Map<String, Object>) datasourceValue;
             LuckyDataSource luckyDataSource = createLuckyDataSourceByConf(datasource.getKey(),dataInfo);
             luckyDataSource.setDbname(datasource.getKey());
             addLuckyDataSource(luckyDataSource);
         }
-
     }
 
 
