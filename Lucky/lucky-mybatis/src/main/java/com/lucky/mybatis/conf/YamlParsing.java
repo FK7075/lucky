@@ -32,6 +32,9 @@ public abstract class YamlParsing {
                 if(mybatisMap.containsKey("type-aliases-package")){
                     conf.setTypeAliasesPackage(mybatisMap.get("type-aliases-package").toString());
                 }
+                if(mybatisMap.containsKey("map-underscore-to-camel-case")){
+                    conf.setMapUnderscoreToCamelCase((Boolean) mybatisMap.get("map-underscore-to-camel-case"));
+                }
             }
         }
     }

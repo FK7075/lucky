@@ -19,10 +19,10 @@ import java.util.Map;
  */
 public class MapperXMLParsing {
 
-    private static final String MAPPER_INTERFACE="MapperInterface";
+    private static final String MAPPER_INTERFACE="mapper";
     private static final String CLASS="class";
     private static final String NAME="name";
-    private static final String METHOD="Method";
+    private static final String METHOD="method";
 
     private Map<String, Map<String,String>> xmlMap=new HashMap<>();
 
@@ -45,7 +45,7 @@ public class MapperXMLParsing {
         SAXReader saxReader = new SAXReader();
         Document document = saxReader.read(xmlReader);
         Element root = document.getRootElement();
-        return "MapperConfig".equals(root.getName());
+        return "mapper-config".equals(root.getName());
     }
 
     public MapperXMLParsing(String xmlPath) throws IOException {

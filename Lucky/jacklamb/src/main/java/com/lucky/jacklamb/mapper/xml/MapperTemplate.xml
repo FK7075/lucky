@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<MapperConfig>
-    <MapperInterface class="com.lucky.jacklamb.sqlcore.mapper.LuckyMapper">
-        <Method name="init">
+<!DOCTYPE mapper-config PUBLIC "LUCKY-DATA 2.0" "https://github.com/FK7075/lucky">
+<mapper-config>
+    <mapper class="com.lucky.jacklamb.sqlcore.mapper.LuckyMapper">
+        <method name="init">
             SELECT * FROM table WHERE id=@:id
-        </Method>
-        <Method name="upd">
+        </method>
+        <method name="upd">
             UPDATE book SET price=price+100
             WHERE name=@:name
-        </Method>
-    </MapperInterface>
+        </method>
+    </mapper>
     <!-- < &lt; > &gt; -->
-    <MapperInterface class="com.lucky.jacklamb.sqlcore.mapper.xml.MapperXMLParsing">
+    <mapper class="com.lucky.jacklamb.sqlcore.mapper.xml.MapperXMLParsing">
         <Method name="gtg">
             DELETE FROM table WHETE id &gt;=@:id AND name='付款'
         </Method>
-    </MapperInterface>
+    </mapper>
 
-</MapperConfig>
+</mapper-config>
 

@@ -1,8 +1,0 @@
-##Web
-com.lucky.web.beanfactory.LuckyWebBeanFactory:REPLACE
-
-##Quartz
-com.lucky.quartz.beanfactory.LuckyQuartzBeanFactory:REPLACE
-
-##AOP
-com.lucky.aop.beanfactory.LuckyAopBeanFactory:SUPPLEMENT

@@ -13,6 +13,7 @@ public class MybatisConfig extends LuckyConfig {
     private static MybatisConfig mybatisConfig;
     private String mapperLocations;
     private String typeAliasesPackage;
+    private boolean mapUnderscoreToCamelCase;
 
     public String getMapperLocations() {
         if(mapperLocations.startsWith("classpath:")){
@@ -35,12 +36,21 @@ public class MybatisConfig extends LuckyConfig {
         this.typeAliasesPackage = typeAliasesPackage;
     }
 
+    public boolean isMapUnderscoreToCamelCase() {
+        return mapUnderscoreToCamelCase;
+    }
+
+    public void setMapUnderscoreToCamelCase(boolean mapUnderscoreToCamelCase) {
+        this.mapUnderscoreToCamelCase = mapUnderscoreToCamelCase;
+    }
+
     private MybatisConfig(){};
 
     public static MybatisConfig defaultMybatisConfig(){
         if(mybatisConfig==null){
             mybatisConfig=new MybatisConfig();
             mybatisConfig.setMapperLocations("classpath:/mapper/");
+            mybatisConfig.setMapUnderscoreToCamelCase(false);
             mybatisConfig.setFirst(true);
         }
         return mybatisConfig;

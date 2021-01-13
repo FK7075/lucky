@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!ELEMENT mapper-config (mapper+)>
+
+<!ELEMENT mapper (method+)>
+<!ATTLIST mapper
+          class CDATA #REQUIRED
+        >
+<!ELEMENT method (#PCDATA)>
+<!ATTLIST method
+          name CDATA #REQUIRED
+        >
+

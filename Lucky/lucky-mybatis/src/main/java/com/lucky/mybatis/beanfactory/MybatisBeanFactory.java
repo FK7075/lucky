@@ -53,6 +53,7 @@ public class MybatisBeanFactory extends IOCBeanFactory {
             TransactionFactory transactionFactory = new JdbcTransactionFactory();
             Environment environment = new Environment("development", transactionFactory, luckyDataSource.createDataSource());
             configuration.setEnvironment(environment);
+            configuration.setMapUnderscoreToCamelCase(mybatisConfig.isMapUnderscoreToCamelCase());
             if(mybatisConfig.getTypeAliasesPackage()!=null){
                 configuration.getTypeAliasRegistry().registerAliases(mybatisConfig.getTypeAliasesPackage());
             }
