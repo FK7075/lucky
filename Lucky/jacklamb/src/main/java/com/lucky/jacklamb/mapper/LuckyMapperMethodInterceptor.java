@@ -14,6 +14,7 @@ import com.lucky.jacklamb.querybuilder.QueryBuilder;
 import com.lucky.jacklamb.querybuilder.SqlAndObject;
 import com.lucky.jacklamb.querybuilder.SqlFragProce;
 import com.lucky.jacklamb.querybuilder.Translator;
+import com.lucky.utils.base.Assert;
 import com.lucky.utils.base.BaseUtils;
 import com.lucky.utils.conversion.proxy.Conversion;
 import com.lucky.utils.reflect.ClassUtils;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.lucky.utils.regula.Regular.Sharp;
 
@@ -128,7 +130,7 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
      * @param method 接口方法
      * @return List的泛型类型的Class
      */
-    private Class<?> getListGeneric(Method method) {
+    private Class<?> getGeneric(Method method) {
         ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
         Type[] entry = type.getActualTypeArguments();
         Class<?> cla = (Class<?>) entry[0];
@@ -162,11 +164,11 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
             String sql = sel.value();
             if ("".equals(sql)) {
                 if (sel.sResults().length == 0 && sel.hResults().length == 0) {
-                    if (List.class.isAssignableFrom(c)) {
-                        return sqlCore.getList(args[0]);
-                    } else {
-                        return sqlCore.getObject(args[0]);
+                    if (List.class.isAssignableFrom(c)||Set.class.isAssignableFrom(c)) {
+                        List<Object> listResult = sqlCore.getList(args[0]);
+                        return List.class.isAssignableFrom(c)?listResult:new HashSet<>(listResult);
                     }
+                    return sqlCore.getObject(args[0]);
                 } else {// 有指定列的标注
                     if (sel.hResults().length != 0 && sel.sResults().length != 0) {
                         throw new RuntimeException("@Select注解的\"hResults\"属性和\"sResults\"属性不可以同时使用！错误位置：" + method);
@@ -181,17 +183,13 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
                     if (sel.hResults().length != 0) {
                         query.hiddenResult(sel.hResults());
                     }
-                    if (List.class.isAssignableFrom(c)) {
-                        Class<?> listGeneric = getListGeneric(method);
-                        return sqlCore.query(query, listGeneric);
-                    } else {
-                        List<?> list = sqlCore.query(query, c);
-                        if (list == null || list.isEmpty()) {
-                            return null;
-                        } else {
-                            return list.get(0);
-                        }
+                    if (List.class.isAssignableFrom(c)||Set.class.isAssignableFrom(c)) {
+                        Class<?> listGeneric = getGeneric(method);
+                        List<?> listResult = sqlCore.query(query, listGeneric);
+                        return List.class.isAssignableFrom(c)?listResult: new HashSet<>(listResult);
                     }
+                    List<?> list = sqlCore.query(query, c);
+                    return Assert.isEmptyCollection(list)?null:list.get(0);
                 }
             } else {
                 if (sql.contains("#{")) {
@@ -199,8 +197,8 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
                         pageParam(method, args);
                     }
                     SqlAndArray sqlArr = noSqlTo(args[0], sql);
-                    if (List.class.isAssignableFrom(c)) {
-                        Class<?> listGeneric = getListGeneric(method);
+                    if (List.class.isAssignableFrom(c)||Set.class.isAssignableFrom(c)) {
+                        Class<?> listGeneric = getGeneric(method);
                         if (method.isAnnotationPresent(Change.class)) {
                             SqlAndObject so = sql_fp.filterSql(sqlArr.getSql(), sqlArr.getArray());
                             if (method.getParameterCount() == 3) {
@@ -208,18 +206,22 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
                                 list.addAll(Arrays.asList(so.getObjects()));
                                 list.add(args[1]);
                                 list.add(args[2]);
-                                return (List<T>) sqlCore.getListMethod(listGeneric, method, so.getSqlStr(), list.toArray());
+                                List<?> listResult = sqlCore.getListMethod(listGeneric, method, so.getSqlStr(), list.toArray());
+                                return List.class.isAssignableFrom(c)?listResult:new HashSet<>(listResult);
                             }
-                            return (List<T>) sqlCore.getListMethod(listGeneric, method, so.getSqlStr(), so.getObjects());
+                            List<?> listResult = sqlCore.getListMethod(listGeneric, method, so.getSqlStr(), so.getObjects());
+                            return  List.class.isAssignableFrom(c)?listResult:new HashSet<>(listResult);
                         } else {
                             if (method.getParameterCount() == 3) {
                                 List<Object> list = new ArrayList<>();
                                 list.addAll(Arrays.asList(sqlArr.getArray()));
                                 list.add(args[1]);
                                 list.add(args[2]);
-                                return (List<T>) sqlCore.getListMethod(listGeneric, method, sqlArr.getSql(), list.toArray());
+                                List<?> listResult = sqlCore.getListMethod(listGeneric, method, sqlArr.getSql(), list.toArray());
+                                return List.class.isAssignableFrom(c)?listResult:new HashSet<>(listResult);
                             }
-                            return (List<T>) sqlCore.getListMethod(listGeneric, method, sqlArr.getSql(), sqlArr.getArray());
+                            List<?> listResult = sqlCore.getListMethod(listGeneric, method, sqlArr.getSql(), sqlArr.getArray());
+                            return List.class.isAssignableFrom(c)?listResult:new HashSet<>(listResult);
                         }
                     } else {
                         List<T> list = new ArrayList<>();
@@ -230,37 +232,40 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
                                 lists.addAll(Arrays.asList(so.getObjects()));
                                 lists.add(args[1]);
                                 lists.add(args[2]);
-                                return (List<T>) sqlCore.getListMethod(c, method, so.getSqlStr(), lists.toArray());
+                                List<?> listResult = sqlCore.getListMethod(c, method, so.getSqlStr(), lists.toArray());
+                                return Assert.isEmptyCollection(listResult)?null:listResult.get(0);
                             }
-                            return (T) sqlCore.getObjectMethod(c, method, so.getSqlStr(), so.getObjects());
+                            return sqlCore.getObjectMethod(c, method, so.getSqlStr(), so.getObjects());
                         } else {
                             if (method.getParameterCount() == 3) {
                                 List<Object> lists = new ArrayList<>();
                                 lists.addAll(Arrays.asList(sqlArr.getArray()));
                                 lists.add(args[1]);
                                 lists.add(args[2]);
-                                return (List<T>) sqlCore.getListMethod(c, method, sqlArr.getSql(), list.toArray());
+                                List<?> listResult = sqlCore.getListMethod(c, method, sqlArr.getSql(), list.toArray());
+                                return  Assert.isEmptyCollection(listResult)?null:listResult.get(0);
                             }
-                            return (T) sqlCore.getObjectMethod(c, method, sqlArr.getSql(), sqlArr.getArray());
+                            return sqlCore.getObjectMethod(c, method, sqlArr.getSql(), sqlArr.getArray());
                         }
                     }
                 } else {
                     pageParam(method, args);
-                    if (List.class.isAssignableFrom(c)) {
-                        Class<?> listGeneric = getListGeneric(method);
+                    if (List.class.isAssignableFrom(c)||Set.class.isAssignableFrom(c)) {
+                        Class<?> listGeneric = getGeneric(method);
+                        List<?> listResult;
                         if (method.isAnnotationPresent(Change.class)) {
                             SqlAndObject so = sql_fp.filterSql(sql, args);
-                            return (List<T>) sqlCore.getListMethod(listGeneric, method, so.getSqlStr(), so.getObjects());
+                            listResult = sqlCore.getListMethod(listGeneric, method, so.getSqlStr(), so.getObjects());
                         } else {
-                            return (List<T>) sqlCore.getListMethod(listGeneric, method, sql, args);
+                            listResult=sqlCore.getListMethod(listGeneric, method, sql, args);
                         }
+                        return List.class.isAssignableFrom(c)?listResult:new HashSet<>(listResult);
                     } else {
-                        List<T> list = new ArrayList<>();
                         if (method.isAnnotationPresent(Change.class)) {
                             SqlAndObject so = sql_fp.filterSql(sql, args);
-                            return (T) sqlCore.getObjectMethod(c, method, so.getSqlStr(), so.getObjects());
+                            return sqlCore.getObjectMethod(c, method, so.getSqlStr(), so.getObjects());
                         } else {
-                            return (T) sqlCore.getObjectMethod(c, method, sql, args);
+                            return sqlCore.getObjectMethod(c, method, sql, args);
                         }
                     }
                 }
@@ -422,6 +427,7 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
      * @throws NoSuchFieldException
      */
     private Object notHave(Method method, Object[] args, SqlFragProce sql_fp, Class<?> luckyMapperGeneric) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Class<?> returnType = method.getReturnType();
         if (sqlMap.containsKey(method.getName())) {
             pageParam(method, args);
             String methodName = method.getName();
@@ -452,29 +458,31 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
             }
             if (sqlCopy.contains("SELECT")) {
                 if ("C:".equalsIgnoreCase(sqlCopy.substring(0, 2))) {
-                    sqlStr = sqlStr.substring(2, sqlStr.length());
+                    sqlStr = sqlStr.substring(2);
                     SqlAndObject so = sql_fp.filterSql(sqlStr, args);
-                    if (List.class.isAssignableFrom(method.getReturnType())) {
+                    if (List.class.isAssignableFrom(returnType)||Set.class.isAssignableFrom(returnType)) {
                         ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
                         Type[] entry = type.getActualTypeArguments();
                         Class<?> cla = (Class<?>) entry[0];
-                        return sqlCore.getListMethod(cla, method, so.getSqlStr(), so.getObjects());
+                        List<?> listResult = sqlCore.getListMethod(cla, method, so.getSqlStr(), so.getObjects());
+                        return List.class.isAssignableFrom(returnType)?listResult:new HashSet<>(listResult);
                     } else {
                         return sqlCore.getObjectMethod(method.getReturnType(), method, so.getSqlStr(), so.getObjects());
                     }
                 } else {
-                    if (List.class.isAssignableFrom(method.getReturnType())) {
+                    if (List.class.isAssignableFrom(returnType)||Set.class.isAssignableFrom(returnType)) {
                         ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
                         Type[] entry = type.getActualTypeArguments();
                         Class<?> cla = (Class<?>) entry[0];
-                        return sqlCore.getListMethod(cla, method, sqlStr, args);
+                        List<?> listResult = sqlCore.getListMethod(cla, method, sqlStr, args);
+                        return List.class.isAssignableFrom(returnType)?listResult:new HashSet<>(listResult);
                     } else {
                         return sqlCore.getObjectMethod(method.getReturnType(), method, sqlStr, args);
                     }
                 }
             } else {
                 if ("C:".equalsIgnoreCase(sqlCopy.substring(0, 2))) {
-                    sqlStr = sqlStr.substring(2, sqlStr.length());
+                    sqlStr = sqlStr.substring(2);
                     return dynamicUpdateSql(sql_fp, method, sqlStr, args);
                 } else {
                     return sqlCore.updateMethod(sqlStr, method, args);
@@ -483,10 +491,10 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
         } else if(luckyMapperGeneric!=null){
             JpaSample jpaSample = new JpaSample(luckyMapperGeneric,sqlCore.getDbName());
             sqlCore.setFullMap(true);
-            Class<?> returnType = method.getReturnType();
-            if(List.class.isAssignableFrom(returnType)){
+            if(List.class.isAssignableFrom(returnType)||Set.class.isAssignableFrom(returnType)){
                 try {
-                    return sqlCore.getList(MethodUtils.getReturnTypeGeneric(method)[0],jpaSample.sampleToSql(method.getName()), args);
+                    List<?> listResult = sqlCore.getList(MethodUtils.getReturnTypeGeneric(method)[0], jpaSample.sampleToSql(method.getName()), args);
+                    return List.class.isAssignableFrom(returnType)?listResult:new HashSet<>(listResult);
                 } catch (IllegalJPAExpressionException e) {
                     throw new RuntimeException("找不到与Mapper接口方法 "+method+" 相关的SQL配置，尝试使用JPA查询解释器解析该方法的方法名！解析失败，该方法名不符合JPA查询规范...",e);
                 }
@@ -497,10 +505,7 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
                 } catch (IllegalJPAExpressionException e) {
                     throw new RuntimeException("找不到与Mapper接口方法 "+method+" 相关的SQL配置，尝试使用JPA查询解释器解析该方法的方法名！解析失败，该方法名不符合JPA查询规范...",e);
                 }
-                if(result==null||result.isEmpty()) {
-                    return null;
-                }
-                return result.get(0);
+                return Assert.isEmptyCollection(result)?null:result.get(0);
             }
         }else{
             throw new RuntimeException("无法代理的Mapper方法："+method+" ,没有为该方法配置相关的SQL操作...");
@@ -597,14 +602,14 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
                     tr.setPojoClass(LuckyMapperGeneric);
                     return sqlCore.getList(tr);
                 }
-                tr.setPojoClass(getListGeneric(method));
+                tr.setPojoClass(getGeneric(method));
                 return sqlCore.getList(tr);
              } else{
                  if(LuckyMapperGeneric!=null){
                      tr.setPojoClass(LuckyMapperGeneric);
                      return sqlCore.getObject(tr);
                  }
-                 tr.setPojoClass(getListGeneric(method));
+                 tr.setPojoClass(getGeneric(method));
                  return sqlCore.getObject(tr);
              }
             }
@@ -612,7 +617,7 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
                 if(LuckyMapperGeneric!=null){
                     return sqlCore.delete(LuckyMapperGeneric,tr);
                 }else{
-                    sqlCore.delete(getListGeneric(method),tr);
+                    sqlCore.delete(getGeneric(method),tr);
                 }
             }
             case "UPDATE" :{
@@ -620,7 +625,7 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
                     tr.setPojoClass(LuckyMapperGeneric);
                     return sqlCore.update(tr);
                 }else{
-                    tr.setPojoClass(getListGeneric(method));
+                    tr.setPojoClass(getGeneric(method));
                     sqlCore.update(tr);
                 }
             }
