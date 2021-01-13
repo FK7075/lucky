@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper-config PUBLIC "LUCKY-DATA 2.0" "https://github.com/FK7075/lucky">
+<!DOCTYPE mapper-config PUBLIC "LUCKY-DATA 2.0"
+        "https://gitee.com/Fk7075/lucky/blob/main/Lucky/jacklamb/src/main/java/com/lucky/jacklamb/mapper/xml/lucky-jacklabm.dtd">
 <mapper-config>
     <mapper class="com.lucky.jacklamb.sqlcore.mapper.LuckyMapper">
         <method name="init">
@@ -12,9 +13,9 @@
     </mapper>
     <!-- < &lt; > &gt; -->
     <mapper class="com.lucky.jacklamb.sqlcore.mapper.xml.MapperXMLParsing">
-        <Method name="gtg">
+        <method name="gtg">
             DELETE FROM table WHETE id &gt;=@:id AND name='付款'
-        </Method>
+        </method>
     </mapper>
 
 </mapper-config>
