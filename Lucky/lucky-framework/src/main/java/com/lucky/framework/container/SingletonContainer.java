@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class SingletonContainer implements Map<String, Module> {
 
-    private static final Logger log= LoggerFactory.getLogger(SingletonContainer.class);
+    private static final Logger log= LoggerFactory.getLogger("c.l.f.container.SingletonContainer");
 
     /** 单例池*/
     private Map<String,Module> singletonPool=new ConcurrentHashMap<>(256);
@@ -63,15 +63,21 @@ public class SingletonContainer implements Map<String, Module> {
         return singletonPool.put(key, value);
     }
 
+    public Module put(Module module){
+        return put(module.getId(),module);
+    }
+
     @Override
     public Module replace(String key, Module value){
         if(containsKey(key)){
             remove(key);
-            put(key,value);
-        }else {
-            put(key,value);
         }
+        put(key,value);
         return value;
+    }
+
+    public Module replace(Module module){
+        return replace(module.getId(),module);
     }
 
     @Override

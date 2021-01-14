@@ -1,6 +1,6 @@
 lucky:
   datasource:
-    defaultDB: ##数据源名称
+    defaultDB: ##数据源名称(如果只有单个数据源，这个dbname配置可以省略)
       #使用的连接池类型
       pool-type: HikariCP
       ##数据库地址

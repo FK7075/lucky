@@ -1,7 +1,7 @@
 package com.lucky.thymeleaf.template;
 
 
-import com.lucky.utils.file.Resources;
+import com.lucky.utils.io.file.Resources;
 import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.util.Validate;
 

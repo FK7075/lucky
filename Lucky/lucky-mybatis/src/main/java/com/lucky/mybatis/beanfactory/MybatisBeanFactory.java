@@ -3,12 +3,13 @@ package com.lucky.mybatis.beanfactory;
 import com.lucky.datasource.sql.LuckyDataSource;
 import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.framework.container.Module;
+import com.lucky.framework.container.factory.BeanFactoryInitializationException;
 import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.container.factory.Namer;
 import com.lucky.mybatis.annotation.Mapper;
 import com.lucky.mybatis.conf.MybatisConfig;
 import com.lucky.utils.base.Assert;
-import com.lucky.utils.file.Resources;
+import com.lucky.utils.io.file.Resources;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
@@ -18,7 +19,6 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,14 +38,16 @@ public class MybatisBeanFactory extends IOCBeanFactory {
     @Override
     public List<Module> createBean() {
         List<Module> mappers = super.createBean();
-        //注册数据源
+        //将用户配置在IOC容器中的数据源注册到数据源管理器中
         getBeanByClass(LuckyDataSource.class)
                 .stream()
                 .map(m->(LuckyDataSource)m.getComponent())
                 .forEach(LuckyDataSourceManage::addLuckyDataSource);
 
-
         List<LuckyDataSource> allDataSource = LuckyDataSourceManage.getAllDataSource();
+        if(Assert.isEmptyCollection(allDataSource)){
+            throw new BeanFactoryInitializationException("Mybatis BeanFactory initialization failed！ No data source is registered in the data source manager!");
+        }
         Map<String, List<Class<?>>> mapperClassesMap = dbnameGroup();
         for (LuckyDataSource luckyDataSource : allDataSource) {
             String dbname = luckyDataSource.getDbname();

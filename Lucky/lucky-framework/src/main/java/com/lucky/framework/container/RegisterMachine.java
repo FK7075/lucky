@@ -16,10 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -113,7 +110,7 @@ public class RegisterMachine {
                 Module module=new Module(namer.getBeanName(componentClass)
                         ,namer.getBeanType(componentClass)
                         , ConversionProxy.getLuckyConversion((Class<? extends LuckyConversion>)componentClass));
-                singletonPool.put(module.getId(),module);
+                singletonPool.put(module);
                 log.debug("Conversion `{}`",module);
                 continue;
             }
@@ -122,41 +119,47 @@ public class RegisterMachine {
             Module module=new Module(namer.getBeanName(componentClass)
                                     ,namer.getBeanType(componentClass)
                                     , ClassUtils.newObject(componentClass));
-            singletonPool.put(module.getId(),module);
+            singletonPool.put(module);
             log.debug("Component `{}`",module);
         }
 
         //找到IOC容器中所有的配置类，初始化所有配置类生产的Bean实例，并注入IOC容器
         ConfigurationBeanFactory configurationBeanFactory=
                 new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"));
-        configurationBeanFactory.createBean().stream().forEach((m)->{
-            if(!scan.exclusions(m.getOriginalType())){
-                singletonPool.put(m.getId(),m);
-                log.debug("Configuration Bean `{}`",m);
+        List<Module> configurationFactoryCreateBeans = configurationBeanFactory.createBean();
+        for (Module configurationBean : configurationFactoryCreateBeans) {
+            if(!scan.exclusions(configurationBean.getOriginalType())){
+                singletonPool.put(configurationBean);
+                log.debug("Configuration Bean `{}`",configurationBean);
             }
-        });
+        }
 
-        //找到IOC容器中所有的BeanFactory，并将这些BeanFactory生产的Bean实例注入IOC容器
-        Set<Module> collect = singletonPool.getBeanByClass(BeanFactory.class).stream().collect(Collectors.toSet());
-        collect.stream().sorted(Comparator.comparing((m)->{
-            BeanFactory beanFactory=(BeanFactory)m.getComponent();
-            return beanFactory.priority();
-        })).forEach(beanFactoryModule->{
-            BeanFactory beanFactory = (BeanFactory) beanFactoryModule.getComponent();
-            log.info("BeanFactory `{}`",beanFactory);
-            beanFactory.createBean().stream().forEach((m)->{
-                if(!scan.exclusions(m.getOriginalType())){
-                    singletonPool.put(m.getId(),m);
-                    log.debug("Factory Create Bean `{}`",m);
+        //找到IOC容器中所有的BeanFactory，并使用优先级进行排序
+        List<Module> beanFactoryModules = singletonPool.getBeanByClass(BeanFactory.class)
+                .stream().sorted(Comparator.comparing((m) -> {
+                    BeanFactory beanFactory = (BeanFactory) m.getComponent();
+                    return beanFactory.priority();
+                })).collect(Collectors.toList());
+
+        //将这些由BeanFactory生产的Bean实例注入IOC容器
+        for(Module factoryModules:beanFactoryModules){
+            //Bean实例的注册
+            BeanFactory beanFactory = (BeanFactory) factoryModules.getComponent();
+            List<Module> factoryCreateBeans = beanFactory.createBean();
+            for (Module bean : factoryCreateBeans) {
+                if(!scan.exclusions(bean.getOriginalType())){
+                    singletonPool.put(bean);
+                    log.debug("Factory Create Bean `{}`",bean);
                 }
-            });
+            }
+            //Bean实例的替换
             Map<String, Module> replaceBeans = beanFactory.replaceBean();
-            replaceBeans.keySet().stream().forEach((k)->{
-                Module newModule = replaceBeans.get(k);
-                singletonPool.replace(k,newModule);
+            for(Map.Entry<String,Module> replaceEntry:replaceBeans.entrySet()){
+                Module newModule = replaceEntry.getValue();
+                singletonPool.replace(newModule);
                 log.info("Replace Bean To `{}`",newModule);
-            });
-        });
+            }
+        }
     }
 
     /**
@@ -186,7 +189,7 @@ public class RegisterMachine {
                 Module module=new Module(namer.getBeanName(componentClass)
                         ,namer.getBeanType(componentClass)
                         , ConversionProxy.getLuckyConversion((Class<? extends LuckyConversion>)componentClass));
-                singletonPool.put(module.getId(),module);
+                singletonPool.put(module);
                 log.debug("Conversion `{}`",module);
                 continue;
             }
@@ -199,17 +202,18 @@ public class RegisterMachine {
             Module module=new Module(namer.getBeanName(componentClass)
                     ,namer.getBeanType(componentClass)
                     , ClassUtils.newObject(componentClass));
-            singletonPool.put(module.getId(),module);
+            singletonPool.put(module);
             log.debug("Component `{}`",module);
         }
 
         //找到IOC容器中所有的配置类，初始化所有配置类生产的Bean实例，并注入IOC容器
         ConfigurationBeanFactory configurationBeanFactory=
                 new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"));
-        configurationBeanFactory.createBean().stream().forEach((m)->{
-            singletonPool.put(m.getId(),m);
-            log.debug("Configuration Bean `{}`",m);
-        });
+        List<Module> configurationFactoryCreateBeans = configurationBeanFactory.createBean();
+        for (Module configurationBean : configurationFactoryCreateBeans) {
+            singletonPool.put(configurationBean);
+            log.debug("Configuration Bean `{}`",configurationBean);
+        }
 
         //找到IOC容器中所有的BeanFactory，并将这些BeanFactory生产的Bean实例注入IOC容器
         beanFactorys.stream().sorted(Comparator.comparing(m-> m.priority())).forEach(beanFactory->{

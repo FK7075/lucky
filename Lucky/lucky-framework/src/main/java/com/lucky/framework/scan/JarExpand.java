@@ -2,7 +2,7 @@ package com.lucky.framework.scan;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.lucky.utils.file.Resources;
+import com.lucky.utils.io.file.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +19,7 @@ import java.util.List;
  * @date 2020/12/8 0008 15:52
  */
 public class JarExpand {
+
     private static final Logger log= LoggerFactory.getLogger("com.lucky.framework.scan.JarExpand");
     /** 扩展名，每一个Jar扩展都应该拥有的一个唯一的扩展名*/
     private String expandName;
@@ -76,10 +77,10 @@ public class JarExpand {
             path=path.substring(10).trim();
             return getJarExpandByClassPathJson(path);
         }
-        return getJarExpandByJson(path);
+        return getJarExpandByAbsolutePathJson(path);
     }
 
-    public static List<JarExpand> getJarExpandByJson(String path){
+    public static List<JarExpand> getJarExpandByAbsolutePathJson(String path){
         try {
             Type type=new TypeToken<List<JarExpand>>(){}.getType();
             BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));

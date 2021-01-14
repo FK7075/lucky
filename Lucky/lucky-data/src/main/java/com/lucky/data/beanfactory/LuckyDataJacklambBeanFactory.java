@@ -4,6 +4,7 @@ import com.lucky.data.annotation.Mapper;
 import com.lucky.datasource.sql.LuckyDataSource;
 import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.framework.container.Module;
+import com.lucky.framework.container.factory.BeanFactoryInitializationException;
 import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.container.factory.Namer;
 import com.lucky.jacklamb.annotation.table.Table;
@@ -32,7 +33,7 @@ public class LuckyDataJacklambBeanFactory extends IOCBeanFactory {
     public List<Module> createBean() {
         List<Module> mappers=new ArrayList<>();
         List<Class<?>> mapperClasses = getPluginByAnnotation(Mapper.class);
-        //注册数据源
+        //将用户配置在IOC容器中的数据源注册到数据源管理器中
         getBeanByClass(LuckyDataSource.class)
                 .stream()
                 .map(m->(LuckyDataSource)m.getComponent())
@@ -40,6 +41,9 @@ public class LuckyDataJacklambBeanFactory extends IOCBeanFactory {
 
         //创建SqlCore对象
         List<LuckyDataSource> allDataSource = LuckyDataSourceManage.getAllDataSource();
+        if(Assert.isEmptyCollection(allDataSource)){
+            throw new BeanFactoryInitializationException("Lucky Data BeanFactory initialization failed！ No data source is registered in the data source manager!");
+        }
         Set<String> createTables = getClasses(Table.class, Tables.class).stream().map(c->c.getName()).collect(Collectors.toSet());
         for (LuckyDataSource luckyDataSource : allDataSource) {
             luckyDataSource.setCreateTable(createTables);

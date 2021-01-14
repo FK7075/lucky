@@ -1,4 +1,4 @@
-package com.lucky.utils.file;
+package com.lucky.utils.io.file;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -2,7 +2,7 @@ package com.lucky.web.core;
 
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.base.BaseUtils;
-import com.lucky.utils.file.FileUtils;
+import com.lucky.utils.io.file.FileUtils;
 import com.lucky.web.annotation.Upload;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.exception.FileSizeCrossingException;

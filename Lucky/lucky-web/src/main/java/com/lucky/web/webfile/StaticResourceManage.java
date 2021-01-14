@@ -3,7 +3,7 @@ package com.lucky.web.webfile;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lucky.utils.base.Assert;
-import com.lucky.utils.file.Resources;
+import com.lucky.utils.io.file.Resources;
 import com.lucky.web.conf.WebConfig;
 import com.lucky.web.core.Model;
 

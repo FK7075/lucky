@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!ELEMENT mapper-config (mapper+)>
 
-<!ELEMENT mapper (method+)>
+<!ELEMENT mapper (method*)>
 <!ATTLIST mapper
           class CDATA #REQUIRED
         >

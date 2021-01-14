@@ -1,6 +1,6 @@
 package com.lucky.utils.base64;
 
-import com.lucky.utils.file.FileUtils;
+import com.lucky.utils.io.file.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;

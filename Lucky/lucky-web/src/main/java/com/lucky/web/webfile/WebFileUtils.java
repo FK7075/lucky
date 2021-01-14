@@ -1,6 +1,6 @@
 package com.lucky.web.webfile;
 
-import com.lucky.utils.file.FileUtils;
+import com.lucky.utils.io.file.FileUtils;
 import com.lucky.web.core.Model;
 
 import javax.servlet.ServletOutputStream;

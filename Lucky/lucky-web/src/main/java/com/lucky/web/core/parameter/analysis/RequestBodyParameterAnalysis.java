@@ -1,7 +1,7 @@
 package com.lucky.web.core.parameter.analysis;
 
 import com.lucky.utils.conversion.JavaConversion;
-import com.lucky.utils.file.FileUtils;
+import com.lucky.utils.io.file.FileUtils;
 import com.lucky.web.annotation.RequestBody;
 import com.lucky.web.core.Model;
 import com.lucky.web.core.parameter.ParameterAnalysisException;

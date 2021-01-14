@@ -12,6 +12,7 @@ import com.lucky.framework.container.factory.AopBeanFactory;
 import com.lucky.framework.container.factory.Namer;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.base.BaseUtils;
+import com.lucky.utils.proxy.CglibProxy;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
 import org.slf4j.Logger;
@@ -31,7 +32,6 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
 
     private static final Logger log= LoggerFactory.getLogger("c.l.f.beanfactory.LuckyAopBeanFactory");
     private Set<PointRun> pointRunSet;
-    private static final String PROXY_NAME="$$LUCKY_PROXY$$";
     public LuckyAopBeanFactory(){
         super();
         pointRunSet=new HashSet<>(30);
@@ -74,13 +74,11 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
         AopProxyFactory.injectionAopPointSet=injectionAopPoints;
         Collection<Module> beans = getBeans();
         for (Module bean : beans) {
-            Class<?> originalType = bean.getOriginalType();
-            if(originalType.getName().contains(PROXY_NAME)
-                    ||bean.getComponent().getClass().getName().contains(PROXY_NAME)){
+            if(CglibProxy.isAgent(bean.getComponent().getClass())){
                 continue;
             }
             Object aspect = AopProxyFactory.aspect(pointRunSet, bean);
-            if(aspect.getClass().getName().contains(PROXY_NAME)){
+            if(CglibProxy.isAgent(aspect.getClass())){
                 bean.setComponent(aspect);
                 log.info("Create Aop Proxy Bean `{}`",bean.getComponent());
             }

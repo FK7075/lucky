@@ -19,7 +19,7 @@ package com.lucky.utils.base;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import com.lucky.utils.file.FileUtils;
+import com.lucky.utils.io.file.FileUtils;
 
 
 /**

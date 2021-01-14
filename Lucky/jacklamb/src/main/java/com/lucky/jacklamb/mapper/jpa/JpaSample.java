@@ -3,7 +3,7 @@ package com.lucky.jacklamb.mapper.jpa;
 import com.google.gson.reflect.TypeToken;
 import com.lucky.jacklamb.jdbc.potable.PojoManage;
 import com.lucky.utils.base.BaseUtils;
-import com.lucky.utils.file.Resources;
+import com.lucky.utils.io.file.Resources;
 import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.utils.regula.Regular;
 
