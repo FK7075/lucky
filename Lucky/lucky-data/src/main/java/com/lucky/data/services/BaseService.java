@@ -21,7 +21,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
     protected static final Logger log = LoggerFactory.getLogger(BaseService.class);
 
     @Autowired
-    protected M luckyMapper;
+    protected M mapper;
 
     /**
      * 根据ID得到一条记录
@@ -30,7 +30,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return E
      */
     public E selectById(Object id){
-        return luckyMapper.selectById(id);
+        return mapper.selectById(id);
     }
 
     /**
@@ -40,7 +40,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public int deleteById(Object id){
-        return luckyMapper.deleteById(id);
+        return mapper.deleteById(id);
     }
 
     /**
@@ -50,7 +50,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public int delete(E pojo){
-        return luckyMapper.delete(pojo);
+        return mapper.delete(pojo);
     }
 
     /**
@@ -60,7 +60,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return 对应类型的查询结果
      */
     public E select(E pojo){
-        return luckyMapper.select(pojo);
+        return mapper.select(pojo);
     }
 
     /**
@@ -70,7 +70,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return 对应类型集合的查询结果
      */
     public List<E> selectList(E pojo){
-        return luckyMapper.selectList(pojo);
+        return mapper.selectList(pojo);
     }
 
     /**
@@ -79,7 +79,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public List<E> selectList(){
-        return luckyMapper.selectList();
+        return mapper.selectList();
     }
 
     /**
@@ -89,7 +89,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public int update(E pojo){
-        return luckyMapper.update(pojo);
+        return mapper.update(pojo);
     }
 
     /**
@@ -99,7 +99,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public int insertAutoId(E pojo){
-       return luckyMapper.insertAutoId(pojo);
+       return mapper.insertAutoId(pojo);
     }
 
     /**
@@ -109,7 +109,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public int insert(E pojo){
-        return luckyMapper.insertAutoId(pojo);
+        return mapper.insertAutoId(pojo);
     }
 
     /**
@@ -119,7 +119,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public int batchInsert(Collection<E> pojos){
-        return luckyMapper.batchInsert(pojos);
+        return mapper.batchInsert(pojos);
     }
 
     /**
@@ -129,7 +129,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public int batchUpdate(Collection<E> pojos){
-        return luckyMapper.batchUpdate(pojos);
+        return mapper.batchUpdate(pojos);
     }
 
     /**
@@ -139,7 +139,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public int batchDelete(Collection<E> pojos){
-        return luckyMapper.batchDelete(pojos);
+        return mapper.batchDelete(pojos);
     }
 
     /**
@@ -152,7 +152,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      */
     public Page<E> selectLimit(E pojo, int page, int rows){
         Page<E> pg=new Page<>();
-        List<E> list = luckyMapper.selectLimit(pojo, page, rows);
+        List<E> list = mapper.selectLimit(pojo, page, rows);
         pg.setData(list);
         pg.setCurrPage(page);
         pg.setRows(rows);
@@ -170,7 +170,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public Page<E> limit(int page, int rows){
-        return luckyMapper.limit(page, rows);
+        return mapper.limit(page, rows);
     }
 
     /**
@@ -180,7 +180,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public List<E> query(QueryBuilder queryBuilder){
-        return luckyMapper.query(queryBuilder);
+        return mapper.query(queryBuilder);
     }
 
     /**
@@ -190,7 +190,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public int count(E pojo){
-        return luckyMapper.count(pojo);
+        return mapper.count(pojo);
     }
 
     /**
@@ -199,7 +199,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public int count(){
-        return luckyMapper.count();
+        return mapper.count();
     }
 
     /**
@@ -209,7 +209,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public int deleteByIdIn(List<?> ids){
-        return luckyMapper.deleteByIdIn(ids);
+        return mapper.deleteByIdIn(ids);
     }
 
     /**
@@ -219,7 +219,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return
      */
     public List<E> selectByIdIn(List<?> ids){
-        return luckyMapper.selectByIdIn(ids);
+        return mapper.selectByIdIn(ids);
     }
 
     /**
@@ -229,7 +229,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return 集合
      */
     public List<E> select(Translator tr){
-        return (List<E>) luckyMapper.select(tr);
+        return (List<E>) mapper.select(tr);
     }
 
     /**
@@ -239,7 +239,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return 对象
      */
     public E selectOne(Translator tr){
-        return (E) luckyMapper.selectOne(tr);
+        return (E) mapper.selectOne(tr);
     }
 
     /**
@@ -249,7 +249,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return 受影响的行数
      */
     public int update(Translator tr){
-        return luckyMapper.update(tr);
+        return mapper.update(tr);
     }
 
     /**
@@ -259,7 +259,7 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      * @return 受影响的行数
      */
     public int delete(Translator tr){
-        return luckyMapper.delete(tr);
+        return mapper.delete(tr);
     }
 
 }

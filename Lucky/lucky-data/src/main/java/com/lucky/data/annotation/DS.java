@@ -3,6 +3,7 @@ package com.lucky.data.annotation;
 import java.lang.annotation.*;
 
 /**
+ * 数据源切换注解
  * @author fk
  * @version 1.0
  * @date 2021/1/12 0012 9:15

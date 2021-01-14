@@ -1,0 +1,2 @@
+#Mybatis扩展时需要使用的特征BeanFactory
+com.lucky.mybatis.beanfactory.MybatisBeanFactory:REPLACE
