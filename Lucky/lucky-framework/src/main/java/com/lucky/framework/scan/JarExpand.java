@@ -2,7 +2,7 @@ package com.lucky.framework.scan;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.lucky.utils.io.file.Resources;
+import com.lucky.utils.file.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

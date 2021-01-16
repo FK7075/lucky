@@ -1,4 +1,4 @@
-package com.lucky.utils.io.file;
+package com.lucky.utils.file;
 
 import com.google.gson.reflect.TypeToken;
 import com.lucky.utils.exception.ClasspathFileLoadException;

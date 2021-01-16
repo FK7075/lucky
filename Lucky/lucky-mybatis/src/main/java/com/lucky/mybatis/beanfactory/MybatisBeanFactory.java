@@ -9,7 +9,7 @@ import com.lucky.framework.container.factory.Namer;
 import com.lucky.mybatis.annotation.Mapper;
 import com.lucky.mybatis.conf.MybatisConfig;
 import com.lucky.utils.base.Assert;
-import com.lucky.utils.io.file.Resources;
+import com.lucky.utils.file.*;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;

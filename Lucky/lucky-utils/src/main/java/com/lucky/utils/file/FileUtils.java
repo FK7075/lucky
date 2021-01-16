@@ -1,4 +1,4 @@
-package com.lucky.utils.io.file;
+package com.lucky.utils.file;
 
 import java.io.*;
 import java.nio.file.Files;

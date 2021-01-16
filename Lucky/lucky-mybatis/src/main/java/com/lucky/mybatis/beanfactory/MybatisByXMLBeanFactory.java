@@ -6,7 +6,7 @@ import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.container.factory.Namer;
 import com.lucky.mybatis.annotation.Mapper;
 import com.lucky.utils.base.Assert;
-import com.lucky.utils.io.file.Resources;
+import com.lucky.utils.file.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 

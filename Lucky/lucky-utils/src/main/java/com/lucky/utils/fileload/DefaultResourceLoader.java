@@ -1,4 +1,4 @@
-package com.lucky.utils.io.resources;
+package com.lucky.utils.fileload;
 
 import com.lucky.utils.annotation.Nullable;
 import com.lucky.utils.base.Assert;

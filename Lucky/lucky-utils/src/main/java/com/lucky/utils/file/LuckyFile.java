@@ -1,4 +1,4 @@
-package com.lucky.utils.io.file;
+package com.lucky.utils.file;
 
 /**
  * @author fk7075

@@ -1,6 +1,6 @@
 package com.lucky.web.controller;
 
-import com.lucky.utils.io.file.ZipUtils;
+import com.lucky.utils.file.ZipUtils;
 import com.lucky.web.webfile.WebFileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

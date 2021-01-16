@@ -6,15 +6,12 @@ import com.lucky.framework.annotation.Plugin;
 import java.lang.annotation.*;
 
 /**
- * 标注在Mapper接口上，注入一个java类型的mapper配置文件 java配置文件的SQl配置规则：
- * 每个没有使用注解的mapper接口方法都可以在配置类中绑定一组执行SQL，形式为一个String类型变量名+"特定SQL"
- * eg：
- * 普通模式：正常SQL->[SELECT * FROM book WHERE bid=?]
- * 开启基于非空检查的动态sql模式：C:SQL->[C:SELECT * FROM book WHERE bid=? AND bprice=?]
+ * 标注在Mapper接口上，注入一个java类型的mapper配置文件 java配置文件的SQl配置规则：<br/>
+ * 每个没有使用注解的mapper接口方法都可以在配置类中绑定一组执行SQL，<br/>形式为一个String类型变量名+"特定SQL"
+ * eg：<br/>
+ * 普通模式：正常SQL->[SELECT * FROM book WHERE bid=?]<br/>
+ * 开启基于非空检查的动态sql模式：C:SQL->[C:SELECT * FROM book WHERE bid=? AND bprice=?]<br/>
  * 
- * value() SQl配置类的Class
- * properties() SQl配置文件的classpth( eg : com/lucky/mapper/user.properties)
- * codedformat() properties配置文件的编码格式(默认值为gbk)
  * @author fk-7075
  *
  */

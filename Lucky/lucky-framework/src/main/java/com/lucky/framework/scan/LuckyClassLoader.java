@@ -1,6 +1,6 @@
 package com.lucky.framework.scan;
 
-import com.lucky.utils.io.file.FileUtils;
+import com.lucky.utils.file.FileUtils;
 
 import java.io.*;
 

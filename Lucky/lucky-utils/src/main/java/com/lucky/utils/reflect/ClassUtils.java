@@ -18,6 +18,10 @@ public abstract class ClassUtils {
     private static final Logger log= LoggerFactory.getLogger(ClassUtils.class);
     public static final Class<?>[] SIMPLE_CLASSES={String.class,Byte.class,Short.class,Integer.class,
     Long.class,Float.class,Double.class,Boolean.class};
+    /** The package separator character: {@code '.'}. */
+    private static final char PACKAGE_SEPARATOR = '.';
+    /** The path separator character: {@code '/'}. */
+    private static final char PATH_SEPARATOR = '/';
 
     public static Class<?> forName(String fullPath,ClassLoader loader){
         Assert.notNull(fullPath, "Name must not be null");
@@ -81,6 +85,19 @@ public abstract class ClassUtils {
         return delCoverMethods(clzzMethods,superMethods);
     }
 
+
+    public static String classPackageAsResourcePath(@Nullable Class<?> clazz) {
+        if (clazz == null) {
+            return "";
+        }
+        String className = clazz.getName();
+        int packageEndIndex = className.lastIndexOf(PACKAGE_SEPARATOR);
+        if (packageEndIndex == -1) {
+            return "";
+        }
+        String packageName = className.substring(0, packageEndIndex);
+        return packageName.replace(PACKAGE_SEPARATOR, PATH_SEPARATOR);
+    }
     /**
      * 过滤掉被@Cover注解标注的方法
      * @param thisMethods 当前类的所有方法
@@ -343,6 +360,11 @@ public abstract class ClassUtils {
             }
         }
         return false;
+    }
+
+    public static String convertClassNameToResourcePath(String className) {
+        Assert.notNull(className, "Class name must not be null");
+        return className.replace(PACKAGE_SEPARATOR, PATH_SEPARATOR);
     }
 
     @Nullable

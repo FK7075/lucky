@@ -1,6 +1,7 @@
-package com.lucky.utils.io.resources;
+package com.lucky.utils.fileload;
 
 import com.lucky.utils.annotation.Nullable;
+import com.lucky.utils.io.utils.ResourceUtils;
 
 /**
  * @author fk
@@ -9,7 +10,7 @@ import com.lucky.utils.annotation.Nullable;
  */
 public interface ResourceLoader {
 
-    String CLASSPATH_URL_PREFIX = "classpath:";
+    String CLASSPATH_URL_PREFIX = ResourceUtils.CLASSPATH_URL_PREFIX;
 
     @Nullable
     ClassLoader getClassLoader();
