@@ -3,6 +3,8 @@ package com.lucky.mybatis.conf;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.config.ConfigUtils;
 import com.lucky.utils.config.YamlConfAnalysis;
+import com.lucky.utils.reflect.ClassUtils;
+import org.apache.ibatis.logging.Log;
 
 import java.util.Map;
 
@@ -34,6 +36,12 @@ public abstract class YamlParsing {
                 }
                 if(mybatisMap.containsKey("map-underscore-to-camel-case")){
                     conf.setMapUnderscoreToCamelCase((Boolean) mybatisMap.get("map-underscore-to-camel-case"));
+                }
+                if(mybatisMap.containsKey("auto-commit")){
+                    conf.setAutoCommit((Boolean) mybatisMap.get("auto-commit"));
+                }
+                if(mybatisMap.containsKey("log-impl")){
+                    conf.setLogImpl((Class<? extends Log>) ClassUtils.getClass(mybatisMap.get("log-impl").toString()));
                 }
             }
         }

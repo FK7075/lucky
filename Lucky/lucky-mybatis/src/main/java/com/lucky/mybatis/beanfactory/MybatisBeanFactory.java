@@ -10,6 +10,9 @@ import com.lucky.mybatis.annotation.Mapper;
 import com.lucky.mybatis.conf.MybatisConfig;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.file.*;
+import com.lucky.utils.fileload.Resource;
+import com.lucky.utils.fileload.ResourcePatternResolver;
+import com.lucky.utils.fileload.resourceimpl.PathMatchingResourcePatternResolver;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
@@ -18,6 +21,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +36,9 @@ public class MybatisBeanFactory extends IOCBeanFactory {
 
     private final static String TYPE="mybatis-mapper";
     private final static MybatisConfig mybatisConfig=MybatisConfig.getMybatisConfig();
+    private final ResourcePatternResolver resourcePatternResolver;
     public MybatisBeanFactory(){
+        resourcePatternResolver=new PathMatchingResourcePatternResolver();
     }
 
     @Override
@@ -55,21 +61,29 @@ public class MybatisBeanFactory extends IOCBeanFactory {
             TransactionFactory transactionFactory = new JdbcTransactionFactory();
             Environment environment = new Environment("development", transactionFactory, luckyDataSource.createDataSource());
             configuration.setEnvironment(environment);
+            configuration.setLogImpl(mybatisConfig.getLogImpl());
             configuration.setMapUnderscoreToCamelCase(mybatisConfig.isMapUnderscoreToCamelCase());
             if(mybatisConfig.getTypeAliasesPackage()!=null){
                 configuration.getTypeAliasRegistry().registerAliases(mybatisConfig.getTypeAliasesPackage());
             }
             List<Class<?>> mapperClasses = mapperClassesMap.get(dbname);
-            String mapperPackage = mybatisConfig.getMapperLocations();
+            Resource[] resources;
+            String mapperLocations = mybatisConfig.getMapperLocations();
+            if(mapperLocations!=null){
+                try {
+                    resources = resourcePatternResolver.getResources(mybatisConfig.getMapperLocations());
+                    for (Resource resource : resources) {
+                        new XMLMapperBuilder(resource.getInputStream(),configuration,resource.getDescription(),configuration.getSqlFragments()).parse();
+                    }
+                }catch (IOException e){
+                    throw new BeanFactoryInitializationException(e,"Mybatis BeanFactory initialization failed！Error loading mapper resource file!");
+                }
+            }
             if(mapperClasses!=null){
                 for (Class<?> mapperClass : mapperClasses) {
-                    String xmlPath=mapperPackage+mapperClass.getSimpleName()+".xml";
-                    InputStream inputStream = Resources.getInputStream(xmlPath);
-                    if(inputStream!=null){
-                        new XMLMapperBuilder(inputStream,configuration,mapperClass.getName(),configuration.getSqlFragments()).parse();
-                    }else{
+                    try {
                         configuration.addMapper(mapperClass);
-                    }
+                    }catch (Exception e){}
                     SqlSessionFactory sessionFactory
                             = new SqlSessionFactoryBuilder().build(configuration);
                     mappers.add(new Module(getBeanId(mapperClass),TYPE,sessionFactory.openSession().getMapper(mapperClass)));

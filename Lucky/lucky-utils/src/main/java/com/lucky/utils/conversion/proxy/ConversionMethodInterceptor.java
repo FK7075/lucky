@@ -100,10 +100,11 @@ public class ConversionMethodInterceptor extends Conversion implements MethodInt
     }
 
     private Mapping[] getMappings(Method method){
+        if(method.isAnnotationPresent(Mappings.class)){
+            return method.getAnnotation(Mappings.class).value();
+        }
         if(method.isAnnotationPresent(Mapping.class))
             return new Mapping[]{method.getAnnotation(Mapping.class)};
-        if(method.isAnnotationPresent(Mappings.class))
-            return method.getAnnotation(Mappings.class).value();
         return new Mapping[]{};
     }
 }

@@ -2,6 +2,8 @@ package com.lucky.mybatis.conf;
 
 import com.lucky.framework.confanalysis.LuckyConfig;
 import com.lucky.utils.config.MapConfigAnalysis;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.nologging.NoLoggingImpl;
 
 /**
  * @author fk
@@ -14,13 +16,10 @@ public class MybatisConfig extends LuckyConfig {
     private String mapperLocations;
     private String typeAliasesPackage;
     private boolean mapUnderscoreToCamelCase;
+    private boolean autoCommit;
+    private Class<? extends Log> logImpl;
 
     public String getMapperLocations() {
-        if(mapperLocations.startsWith("classpath:")){
-            mapperLocations=mapperLocations.substring(10);
-        }
-        mapperLocations=mapperLocations.startsWith("/")?mapperLocations:"/"+mapperLocations;
-        mapperLocations=mapperLocations.endsWith("/")?mapperLocations:mapperLocations+"/";
         return mapperLocations;
     }
 
@@ -44,13 +43,30 @@ public class MybatisConfig extends LuckyConfig {
         this.mapUnderscoreToCamelCase = mapUnderscoreToCamelCase;
     }
 
+    public boolean isAutoCommit() {
+        return autoCommit;
+    }
+
+    public void setAutoCommit(boolean autoCommit) {
+        this.autoCommit = autoCommit;
+    }
+
+    public Class<? extends Log> getLogImpl() {
+        return logImpl;
+    }
+
+    public void setLogImpl(Class<? extends Log> logImpl) {
+        this.logImpl = logImpl;
+    }
+
     private MybatisConfig(){};
 
     public static MybatisConfig defaultMybatisConfig(){
         if(mybatisConfig==null){
             mybatisConfig=new MybatisConfig();
-            mybatisConfig.setMapperLocations("classpath:/mapper/");
+            mybatisConfig.setLogImpl(NoLoggingImpl.class);
             mybatisConfig.setMapUnderscoreToCamelCase(false);
+            mybatisConfig.setAutoCommit(false);
             mybatisConfig.setFirst(true);
         }
         return mybatisConfig;

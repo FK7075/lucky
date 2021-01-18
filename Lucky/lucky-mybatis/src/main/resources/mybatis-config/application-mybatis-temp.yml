@@ -2,3 +2,4 @@ mybatis:
   mapper-locations: classpath:/mapper/*.xml
   type-aliases-package: com.mybatis.test.entity
   map-underscore-to-camel-case: false
+  auto-commit: false
