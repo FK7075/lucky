@@ -1,9 +1,22 @@
 package com.lucky.mybatis.conf;
 
 import com.lucky.framework.confanalysis.LuckyConfig;
+import com.lucky.utils.base.Assert;
 import com.lucky.utils.config.MapConfigAnalysis;
+import com.lucky.utils.reflect.ClassUtils;
 import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.commons.JakartaCommonsLoggingImpl;
+import org.apache.ibatis.logging.jdk14.Jdk14LoggingImpl;
+import org.apache.ibatis.logging.log4j.Log4jImpl;
+import org.apache.ibatis.logging.log4j2.Log4j2AbstractLoggerImpl;
+import org.apache.ibatis.logging.log4j2.Log4j2Impl;
+import org.apache.ibatis.logging.log4j2.Log4j2LoggerImpl;
 import org.apache.ibatis.logging.nologging.NoLoggingImpl;
+import org.apache.ibatis.logging.slf4j.Slf4jImpl;
+import org.apache.ibatis.logging.stdout.StdOutImpl;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author fk
@@ -18,6 +31,20 @@ public class MybatisConfig extends LuckyConfig {
     private boolean mapUnderscoreToCamelCase;
     private boolean autoCommit;
     private Class<? extends Log> logImpl;
+    private final static Map<String,Class<?extends Log>> logImplMap;
+
+    static {
+        logImplMap=new HashMap<>(9);
+        logImplMap.put("STDOUT_LOGGING", StdOutImpl.class);
+        logImplMap.put("SLF4J", Slf4jImpl.class);
+        logImplMap.put("NO_LOGGING",NoLoggingImpl.class);
+        logImplMap.put("LOG4J", Log4jImpl.class);
+        logImplMap.put("LOG4J2_LOGGING", Log4j2LoggerImpl.class);
+        logImplMap.put("LOG4j2", Log4j2Impl.class);
+        logImplMap.put("LOG4J2_ABSTRACT_LOGGING", Log4j2AbstractLoggerImpl.class);
+        logImplMap.put("JDK14_LOGGING", Jdk14LoggingImpl.class);
+        logImplMap.put("JDK_ARTA_COMMONS_LOGGING", JakartaCommonsLoggingImpl.class);
+    }
 
     public String getMapperLocations() {
         return mapperLocations;
@@ -55,9 +82,17 @@ public class MybatisConfig extends LuckyConfig {
         return logImpl;
     }
 
+    public void setLogImpl(String logImpl){
+        Class<? extends Log> logImplClass = logImplMap.get(logImpl);
+        logImplClass= Assert.isNull(logImplClass)? (Class<? extends Log>) ClassUtils.getClass(logImpl) :logImplClass;
+        setLogImpl(logImplClass);
+    }
+
     public void setLogImpl(Class<? extends Log> logImpl) {
         this.logImpl = logImpl;
     }
+
+
 
     private MybatisConfig(){};
 

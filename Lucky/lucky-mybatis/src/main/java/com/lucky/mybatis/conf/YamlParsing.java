@@ -41,7 +41,7 @@ public abstract class YamlParsing {
                     conf.setAutoCommit((Boolean) mybatisMap.get("auto-commit"));
                 }
                 if(mybatisMap.containsKey("log-impl")){
-                    conf.setLogImpl((Class<? extends Log>) ClassUtils.getClass(mybatisMap.get("log-impl").toString()));
+                    conf.setLogImpl(mybatisMap.get("log-impl").toString());
                 }
             }
         }

@@ -1,5 +1,11 @@
 mybatis:
-  mapper-locations: classpath:/mapper/*.xml
+  ##Mybatis的Mapper.xml文件的位置
+  mapper-locations: classpath:/mapper/**/*.xml
+  ##实体类的别名
   type-aliases-package: com.mybatis.test.entity
+  #是否开启下划线与驼峰的自动转换
   map-underscore-to-camel-case: false
+  ##是否开启事务的自动提交
   auto-commit: false
+  ##选用Mybatis的日志实现，列表中选一个，如果你想用自己的实现，则将实现类的全路径配置在此处
+  log-impl: [STDOUT_LOGGING,SLF4J,NO_LOGGING,LOG4J,LOG4J2_LOGGING,LOG4j2,LOG4J2_ABSTRACT_LOGGING,JDK14_LOGGING,JDK_ARTA_COMMONS_LOGGING]
