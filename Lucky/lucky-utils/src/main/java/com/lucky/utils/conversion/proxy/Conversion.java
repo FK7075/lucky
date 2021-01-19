@@ -98,24 +98,36 @@ public abstract class Conversion {
                 }else{
                     field.set(targetObject,setTargetObject(fieldValue,sourceMap,eds,toDto,fieldName));
                 }
-            }if(Collection.class.isAssignableFrom(field.getType())){
+            }else if(Collection.class.isAssignableFrom(field.getType())){
                 Class<?> genericClass=FieldUtils.getGenericType(field)[0];
+                String collectionClassKey="Collection<"+genericClass.getName()+">";
+                if(sourceMap.containsKey(collectionClassKey)){
+                    Collection source = (Collection) sourceMap.get(collectionClassKey);
+                    if(List.class.isAssignableFrom(field.getType())){
+                        field.set(targetObject,new ArrayList<>(source));
+                    }else if(Set.class.isAssignableFrom(field.getType())){
+                        field.set(targetObject,new HashSet(source));
+                    }
+                    continue;
+                }
                 EntityAndDto ed;
                 String classKey;
                 LuckyConversion conversion;
                 if(toDto){
                     ed=EntityAndDto.getEntityAndDtoByDaoClass(eds,genericClass);
-                    if(ed==null)
+                    if(ed==null) {
                         throw new RuntimeException("在@Conversion注解中找不到"+genericClass+"类相对应的LuckyConversion，无法转换属性（"+field.getType()+"）"+field.getName());
+                    }
                     conversion=ed.getConversion();
                     classKey="Collection<"+ed.getEntityClass().getName()+">";
                     if(sourceMap.containsKey(classKey)){
                         Collection coll=(Collection) sourceMap.get(classKey);
                         Object collect = coll.stream().map(a -> conversion.toDto(a)).collect(Collectors.toList());
-                        if(List.class.isAssignableFrom(field.getType()))
+                        if(List.class.isAssignableFrom(field.getType())) {
                             field.set(targetObject,collect);
-                        else if(Set.class.isAssignableFrom(field.getType()))
+                        } else if(Set.class.isAssignableFrom(field.getType())) {
                             field.set(targetObject,new HashSet((List)collect));
+                        }
                     }
                 }else{
                     ed=EntityAndDto.getEntityAndDtoByEntityClass(eds,genericClass);
@@ -124,10 +136,11 @@ public abstract class Conversion {
                     if(sourceMap.containsKey(classKey)){
                         Collection coll=(Collection) sourceMap.get(classKey);
                         Object collect = coll.stream().map(a -> conversion.toEntity(a)).collect(Collectors.toList());
-                        if(List.class.isAssignableFrom(field.getType()))
+                        if(List.class.isAssignableFrom(field.getType())) {
                             field.set(targetObject,collect);
-                        else if(Set.class.isAssignableFrom(field.getType()))
+                        } else if(Set.class.isAssignableFrom(field.getType())) {
                             field.set(targetObject,new HashSet((List)collect));
+                        }
                     }
                 }
             }
@@ -144,8 +157,9 @@ public abstract class Conversion {
         Class<?> dtoClass;
         Class<?> entityClass;
         for(Class<? extends LuckyConversion> conversionClass:conversionClasses){
-            if(conversionClass==LuckyConversion.class)
+            if(conversionClass==LuckyConversion.class) {
                 continue;
+            }
             luckyConversion=EDProxy.getProxy(conversionClass);
             conversionGenericTypes=conversionClass.getGenericInterfaces();
             interfaceType=(ParameterizedType) conversionGenericTypes[0];

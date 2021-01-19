@@ -119,7 +119,7 @@ public abstract class FieldUtils {
         try {
             return clzz.getField(name);
         } catch (NoSuchFieldException e) {
-            throw new LuckyReflectionException("在"+clzz+"中找不到属性名为\""+name+"\"的属性",e);
+            throw new LuckyReflectionException("在"+clzz+"中找不到属性名为\""+name+"\"的属性");
         }
     }
 
@@ -127,7 +127,7 @@ public abstract class FieldUtils {
         try {
             return clzz.getDeclaredField(name);
         } catch (NoSuchFieldException e) {
-            throw new LuckyReflectionException("在"+clzz+"中找不到属性名为\""+name+"\"的属性",e);
+            throw new LuckyReflectionException("在"+clzz+"中找不到属性名为\""+name+"\"的属性");
         }
     }
 
@@ -142,7 +142,7 @@ public abstract class FieldUtils {
             field.setAccessible(true);
             return field.get(fieldObject);
         } catch (IllegalAccessException e) {
-            throw new LuckyReflectionException("无法通过反射机制获取属性值！Field: "+field+", Object: "+fieldObject,e);
+            throw new LuckyReflectionException("无法通过反射机制获取属性值！Field: "+field+", Object: "+fieldObject);
         }
     }
 
@@ -156,7 +156,7 @@ public abstract class FieldUtils {
             field.setAccessible(true);
             field.set(fieldObject,fieldValue);
         } catch (IllegalAccessException e) {
-            throw new LuckyReflectionException("无法通过反射机制为属性赋值！Field: "+field+", Object: "+fieldObject+", FieldValue: "+fieldObject,e);
+            throw new LuckyReflectionException("无法通过反射机制为属性赋值！Field: "+field+", Object: "+fieldObject+", FieldValue: "+fieldObject);
         }
     }
 

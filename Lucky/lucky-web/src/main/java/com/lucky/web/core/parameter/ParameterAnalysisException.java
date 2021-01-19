@@ -10,4 +10,8 @@ public class ParameterAnalysisException extends RuntimeException {
     public ParameterAnalysisException(String msg,Throwable e){
         super(msg,e);
     }
+
+    public ParameterAnalysisException(String msg){
+        super(msg);
+    }
 }
