@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
  * @author fk
  * @version 1.0
  * @date 2020/12/17 0017 9:35
+ * @see HikariCPDataSource
+ * @see C3P0DataSource
  */
 public abstract class LuckyDataSource extends MapConfigAnalysis {
 

@@ -45,9 +45,9 @@ public abstract class MethodUtils {
             method.setAccessible(true);
             return method.invoke(targetObject, params);
         } catch (IllegalAccessException e) {
-            throw new LuckyReflectionException("无法通过反射机制执行方法！ Method: " + method + ", Object: " + targetObject + ", Param: " + Arrays.toString(params));
+            throw new LuckyReflectionException("无法通过反射机制执行方法！ Method: " + method + ", Object: " + targetObject + ", Param: " + Arrays.toString(params),e);
         } catch (InvocationTargetException e) {
-            throw new LuckyReflectionException("无法通过反射机制执行方法！ Method: " + method + ", Object: " + targetObject + ", Param: " + Arrays.toString(params));
+            throw new LuckyReflectionException("无法通过反射机制执行方法！ Method: " + method + ", Object: " + targetObject + ", Param: " + Arrays.toString(params),e);
         }
     }
 

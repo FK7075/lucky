@@ -59,13 +59,15 @@ public class MultipartFile implements InputStreamSource {
 	}
 
 	/**
-	 * 设置上传后的文件名
-	 * @param noSuffixFileName
+	 * 设置上传后的文件名<br/>
+	 * 该方法会检测传入的文件名是否符合当前的文件类型，如果符合则直接采用，否则会自动加上文件后缀
+	 * @param fileName 上传后文件在服务器中的文件名
 	 */
-	public void setFileName(String noSuffixFileName){
-		uploadFileName=noSuffixFileName+getFileType();
+	public void setFileName(String fileName){
+		String fileType = getFileType();
+		uploadFileName=fileName.endsWith(fileType)?fileName:fileName+fileType;
 	}
-	
+
 	/**
 	 * 将文件复制到系统的任意位置上文件夹中
 	 * @param filepath 绝对路径
@@ -111,6 +113,17 @@ public class MultipartFile implements InputStreamSource {
 	/** 获取请求的Content-Type*/
 	public String getFileContentType(){
 		return new Model().getRequest().getContentType();
+	}
+
+	@Override
+	public String toString() {
+		int fileSize=0;
+		try {
+			fileSize = getFileSize();
+		} catch (IOException e) {
+		}
+		return String.format("(%sk)%s",fileSize,getOriginalFileName());
+
 	}
 
 }

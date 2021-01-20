@@ -43,7 +43,7 @@ public class DynamicDataSourcePoint extends InjectionAopPoint {
     private static final Method[] objectMethod=Object.class.getDeclaredMethods();
 
     @Override
-    public Object proceed(AopChain chain) throws Throwable {
+    public Object  proceed(AopChain chain) throws Throwable {
         TargetMethodSignature targetMethodSignature = tlTargetMethodSignature.get();
         Map<String, Object> nameMap = targetMethodSignature.getNameMap();
         Method method=targetMethodSignature.getCurrMethod();
@@ -127,7 +127,6 @@ public class DynamicDataSourcePoint extends InjectionAopPoint {
             //数据还原
             recovery(tms);
         }
-
     }
 
     //数据源替换，将所真实对象的所有属性(包含所有属性的嵌套属性)的SqlCore替换为拥有新数据源的SqlCore，并将真实对象的引用指向该对象

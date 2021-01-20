@@ -60,8 +60,6 @@ public class Model {
     private Map<String, File[]> uploadFileMap;
     /*** Rest风格的参数集合Map<String,String>*/
     private Map<String, String> restMap;
-    /** RequestBody中的参数*/
-    private RequestBodyParam requestBodyParam;
     /** Servlet输出流*/
     private ServletOutputStream outputStream;
 
@@ -99,8 +97,7 @@ public class Model {
             this.request.setCharacterEncoding("utf8");
             this.response.setCharacterEncoding("utf8");
             this.response.setHeader("Content-Type", "text/html;charset=utf-8");
-            this.requestBodyParam=new RequestBodyParam(request);
-        } catch (IOException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
         this.uri=request.getRequestURI();
@@ -108,14 +105,6 @@ public class Model {
         this.multipartFileMap = new HashMap<>();
         this.restMap = new HashMap<>();
         this.uploadFileMap = new HashMap<>();
-    }
-
-    /**
-     * 获取RequestBody中的参数
-     * @return
-     */
-    public RequestBodyParam getRequestBodyParam() {
-        return requestBodyParam;
     }
 
     /***

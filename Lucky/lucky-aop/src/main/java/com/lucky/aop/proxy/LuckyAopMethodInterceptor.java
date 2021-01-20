@@ -15,7 +15,6 @@ public class LuckyAopMethodInterceptor implements MethodInterceptor {
 
 
 	private List<PointRun> pointRuns;//关于某一个类的所有增强的执行节点
-	private TargetMethodSignature targetMethodSignature;
 	private static Set<InjectionAopPoint> injectionAopPoints=AopProxyFactory.injectionAopPointSet;
 
 	/**
@@ -39,7 +38,7 @@ public class LuckyAopMethodInterceptor implements MethodInterceptor {
 	}
 
 	@Override
-	public Object intercept(Object target, Method method, Object[] params, MethodProxy methodProxy) throws Throwable {
+	public synchronized Object intercept(Object target, Method method, Object[] params, MethodProxy methodProxy) throws Throwable {
 		//Object方法不执行代理
 		if(MethodUtils.isObjectMethod(method)){
 			return methodProxy.invokeSuper(target,params);
@@ -50,7 +49,8 @@ public class LuckyAopMethodInterceptor implements MethodInterceptor {
 			return methodProxy.invokeSuper(target,params);
 		}
 		final List<AopPoint> points=new ArrayList<>();
-		targetMethodSignature=new TargetMethodSignature(target,method,params);
+		TargetMethodSignature targetMethodSignature
+				=new TargetMethodSignature(target,method,params);
 
 		//得到所有注入式的环绕增强节点(IAOP)
 		injectionAopPoints.stream().forEach((iap)->{

@@ -4,7 +4,6 @@ import com.lucky.utils.conversion.JavaConversion;
 import com.lucky.utils.file.*;
 import com.lucky.web.annotation.RequestBody;
 import com.lucky.web.core.Model;
-import com.lucky.web.core.RequestBodyParam;
 import com.lucky.web.core.parameter.ParameterAnalysisException;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
@@ -35,15 +34,18 @@ public class RequestBodyParameterAnalysis implements ParameterAnalysis{
 
     @Override
     public Object analysis(Model model, Method method, Parameter parameter, Type genericParameterType, String asmParamName) throws Exception{
-        RequestBodyParam requestBodyParam = model.getRequestBodyParam();
-        String requestBody = requestBodyParam.getRequestBody();
-        String contentType = requestBodyParam.getContentType();
+        HttpServletRequest request = model.getRequest();
+        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+        StringWriter sw = new StringWriter();
+        FileUtils.copy(br,sw);
+        String requestBody = sw.toString();
+        String contentType = new ServletRequestContext(request).getContentType().toUpperCase();
         Class<?> parameterType = parameter.getType();
         if(contentType.startsWith("APPLICATION/JSON")){
             try {
                 return model.fromJson(genericParameterType,requestBody);
             }catch (Exception e){
-                throw new ParameterAnalysisException("参数转化异常[`application/json`]! 格式错误的请求参数：`"+requestBody+"`");
+                throw new ParameterAnalysisException("参数转化异常[`application/json`]! 格式错误的请求参数：`"+requestBody+"`",e);
             }
 
         }
@@ -51,14 +53,14 @@ public class RequestBodyParameterAnalysis implements ParameterAnalysis{
             try {
                 return model.fromXml(genericParameterType,requestBody);
             }catch (Exception e){
-                throw new ParameterAnalysisException("参数转化异常[`application/xml`]! 格式错误的请求参数：`"+requestBody+"`");
+                throw new ParameterAnalysisException("参数转化异常[`application/xml`]! 格式错误的请求参数：`"+requestBody+"`",e);
             }
         }
 
         try {
             return JavaConversion.strToBasic(requestBody,parameterType);
         }catch (Exception e){
-            throw new ParameterAnalysisException("参数转化异常[`"+contentType+"`]! 与预定类型`"+parameterType+"`不兼容的参数：`"+requestBody+"`");
+            throw new ParameterAnalysisException("参数转化异常[`"+contentType+"`]! 与预定类型`"+parameterType+"`不兼容的参数：`"+requestBody+"`",e);
         }
     }
 }
