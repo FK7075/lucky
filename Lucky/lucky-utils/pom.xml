@@ -72,6 +72,12 @@
       <version>3.0.2</version>
     </dependency>
 
+    <!-- JEXL3表达式引擎 -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jexl3</artifactId>
+      <version>3.1</version>
+    </dependency>
 
 
     <!-- 文件上传下载 -->

@@ -2,7 +2,7 @@ package com.lucky.web.error;
 
 import com.lucky.framework.exception.LuckyIOException;
 import com.lucky.utils.base.BaseUtils;
-import com.lucky.utils.file.Resources;
+import com.lucky.utils.file.*;
 import com.lucky.web.conf.WebConfig;
 import org.apache.commons.io.IOUtils;
 

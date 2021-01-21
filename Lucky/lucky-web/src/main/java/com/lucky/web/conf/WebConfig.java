@@ -176,6 +176,10 @@ public class WebConfig extends LuckyConfig {
         this.staticHander = staticHander;
     }
 
+    public void addStaticHander(String key,String staticHander){
+        this.staticHander.put(key,staticHander);
+    }
+
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
@@ -200,12 +204,24 @@ public class WebConfig extends LuckyConfig {
         this.globalResourcesIpRestrict = globalResourcesIpRestrict;
     }
 
+    public void addGlobalResourcesIpRestrict(String globalResourcesIpRestrict){
+        this.globalResourcesIpRestrict.add(globalResourcesIpRestrict);
+    }
+
     public void setStaticResourcesIpRestrict(Set<String> staticResourcesIpRestrict) {
         this.staticResourcesIpRestrict = staticResourcesIpRestrict;
     }
 
+    public void addStaticResourcesIpRestrict(String staticResourcesIpRestrict) {
+        this.staticResourcesIpRestrict.add(staticResourcesIpRestrict);
+    }
+
     public void setSpecifiResourcesIpRestrict(Map<String, Set<String>> specifiResourcesIpRestrict) {
         this.specifiResourcesIpRestrict = specifiResourcesIpRestrict;
+    }
+
+    public void addSpecifiResourcesIpRestrict(String key,Set<String> specifiResourcesIpRestrict){
+        this.specifiResourcesIpRestrict.put(key,specifiResourcesIpRestrict);
     }
 
     public void setConnectTimeout(int connectTimeout) {
@@ -258,6 +274,10 @@ public class WebConfig extends LuckyConfig {
                 this.errorPage.put(entry.getKey(),entry.getValue());
             }
         }
+    }
+
+    public void addErrorPage(String key,String errorPage){
+        this.errorPage.put(key,errorPage);
     }
 
     public String getFavicon() {

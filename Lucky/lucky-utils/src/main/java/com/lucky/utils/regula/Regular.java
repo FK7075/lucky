@@ -10,7 +10,7 @@ public abstract class Regular {
     /**
      * ${}
      */
-    public static final String $_$="\\$\\{[\\w|:|\\[|\\]|.|-]+\\}";
+    public static final String $_$="\\$\\{[\\w|:|\\[|\\]|.|(|)|-]+\\}";
 
     public static final String Sharp="\\#\\{[\\w|:|\\[|\\]|.|-]+\\}";
 

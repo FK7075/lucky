@@ -20,4 +20,9 @@ public class XmlConfAnalysis implements ConfAnalysis {
     public Map<String, Object> getMap() {
         return null;
     }
+
+    @Override
+    public Object getObject(String prefix) {
+        return null;
+    }
 }

@@ -2,6 +2,7 @@ package com.lucky.web.interceptor;
 
 import com.lucky.framework.container.Injection;
 import com.lucky.framework.container.Module;
+import com.lucky.utils.base.Assert;
 import com.lucky.web.mapping.UrlMapping;
 
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class InterceptorRegistry {
      * @param pathAndInterceptor 拦截器实例和路径
      */
     public static void addHandlerInterceptor(PathAndInterceptor pathAndInterceptor){
+        Assert.notNull(pathAndInterceptor.getInterceptor(),"HandlerInterceptor is null!");
         interceptors.add(pathAndInterceptor);
     }
 

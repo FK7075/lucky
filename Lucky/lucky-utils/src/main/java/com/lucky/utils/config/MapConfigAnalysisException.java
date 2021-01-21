@@ -10,4 +10,8 @@ public class MapConfigAnalysisException extends RuntimeException {
     public MapConfigAnalysisException(String msg,Throwable e){
         super(msg,e);
     }
+
+    public MapConfigAnalysisException(String msg){
+        super(msg);
+    }
 }

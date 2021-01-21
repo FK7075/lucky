@@ -16,6 +16,7 @@ import java.util.Map;
  * @date 2021/1/11 0011 10:11
  */
 public class LuckyServletContextListener implements ServletContextListener {
+    private static final String CONF_PREFIX="lucky.web.";
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -31,8 +32,8 @@ public class LuckyServletContextListener implements ServletContextListener {
                     if(webNode instanceof Map){
                         Map<String,Object> webMap= (Map<String, Object>) webNode;
                         Object rootClassNode = webMap.get("root-class");
-                        if(rootClassNode!=null){
-                            rootClass= ClassUtils.getClass(rootClassNode.toString());
+                        if(rootClassNode instanceof String){
+                            rootClass=ClassUtils.getClass(yaml.getObject(CONF_PREFIX+rootClassNode).toString());
                         }
                     }
                 }
