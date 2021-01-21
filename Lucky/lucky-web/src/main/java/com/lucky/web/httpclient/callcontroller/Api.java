@@ -20,17 +20,16 @@ public class Api {
      * @return
      */
     public static String getApi(String annApiStr){
-        Object apiObj = yaml.getObject(annApiStr);
-        Assert.notNull(apiObj,annApiStr+" => null");
         if(annApiStr.startsWith("${")&&annApiStr.contains("}")){
             String api;
             try {
                 api=$Expression.translation(annApiStr,callApi);
+                return api;
             }catch (ExpressionParsingException e){
                 Object apiObj = yaml.getObject(annApiStr);
                 Assert.notNull(apiObj,annApiStr+" => null");
+                return apiObj.toString();
             }
-            return $Expression.translation(annApiStr,callApi);
         }
         return annApiStr;
     }

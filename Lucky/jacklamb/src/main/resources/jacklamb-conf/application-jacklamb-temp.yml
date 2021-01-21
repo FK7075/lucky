@@ -1,2 +1,2 @@
 jacklamb:
-  mapper-xml: classpath:/mapper
+  mapper-locations: classpath:mapper/*.xml

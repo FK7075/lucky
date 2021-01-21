@@ -160,6 +160,10 @@ public class WebConfig extends LuckyConfig {
         this.callApi = callApi;
     }
 
+    public void addCallApi(String key,String callApi){
+        this.callApi.put(key,callApi);
+    }
+
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }

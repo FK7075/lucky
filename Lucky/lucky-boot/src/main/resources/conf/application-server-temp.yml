@@ -21,40 +21,46 @@ server:
   ##URL编码
   url-encoding: UTF-8
   ##配置Servlet
-  servlet:
-    ##Servlet名字
-    servletName:
-      ##Servlet的全限定类名
-      class: org.jack.servlet.MyServlet
-      ##监听的路径
+  servlets:
+    - servlet-name: ServletName #Servlet名字
+      servlet-class: org.jack.servlet.MyServlet #Servlet的全限定类名
+      url-patterns: [/,/user/] #监听的路径
+      load-on-startup: -1 #初始化方法执行的优先级，大于0表示在服务器启动时初始化该Servlet
+      async-supported: false #是否支持异步
+      init-params: #配置参数
+        k1: v1
+        k2: v2
+    - servlet-name: ServletName2
+      servlet-class: org.jack.servlet.MyServlet
       url-patterns: [/,/user/]
-      ##初始化方法执行的优先级，大于0表示在服务器启动时初始化该Servlet
       load-on-startup: -1
-      ##是否支持异步
       async-supported: false
-      ##配置参数
       init-params:
         k1: v1
         k2: v2
   ##配置Filter
-  filter:
-    ##Filter名字
-    filterName:
-      ##Filter的全限定类名
-      class: org.jack.servlet.MyFilter
-      ##监听的路径
+  filters:
+    - filter-name: filterName #Filter名字
+      filter-class: org.jack.servlet.MyFilter #Filter的全限定类名
+      url-patterns: [/*,/user/*] #监听的路径
+      servlet-names: [servletName1,servletName2] #监听的Servlet
+      async-supported: false #是否支持异步
+      dispatcher-types: [FORWARD,INCLUDE,REQUEST,ASYNC,ERROR] #调度的类型
+      init-params: #配置参数
+        k1: v1
+        k2: v2
+
+    - filter-name: filterName2
+      filter-class: org.jack.servlet.MyFilter
       url-patterns: [/*,/user/*]
-      ##监听的Servlet
       servlet-names: [servletName1,servletName2]
-      ##是否支持异步
       async-supported: false
-      ##调度的类型
       dispatcher-types: [FORWARD,INCLUDE,REQUEST,ASYNC,ERROR]
-      ##配置参数
       init-params:
         k1: v1
         k2: v2
-  listener:
+
+  listeners:
     listenerName: class
 
 

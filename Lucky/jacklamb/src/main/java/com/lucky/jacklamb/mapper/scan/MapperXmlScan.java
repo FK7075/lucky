@@ -1,16 +1,13 @@
 package com.lucky.jacklamb.mapper.scan;
 
-import com.lucky.jacklamb.mapper.exception.JarScanException;
 import com.lucky.jacklamb.mapper.xml.MapperXMLParsing;
 import com.lucky.utils.config.ConfigUtils;
+import com.lucky.utils.config.YamlConfAnalysis;
+import com.lucky.utils.fileload.Resource;
+import com.lucky.utils.fileload.resourceimpl.PathMatchingResourcePatternResolver;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * @author fk
@@ -19,26 +16,25 @@ import java.util.jar.JarFile;
  */
 public class MapperXmlScan {
 
-    private static String mapperXmlRoot="mapper";
+    private static String mapperXmlRoot="classpath:mapper/*.xml";
+    private static final YamlConfAnalysis yaml=ConfigUtils.getYamlConfAnalysis();
+    private static final PathMatchingResourcePatternResolver patternResolver=new PathMatchingResourcePatternResolver();
 
     static {
-        Map<String, Object> map = ConfigUtils.getYamlConfAnalysis().getMap();
-        if(map.containsKey("jacklamb")){
-            Map<String, Object> jacklamb = (Map<String, Object>) map.get("jacklamb");
-            if(jacklamb.containsKey("mapper-xml")){
-                mapperXmlRoot=jacklamb.get("mapper-xml").toString();
-                mapperXmlRoot=mapperXmlRoot.startsWith("classpath:")?
-                        mapperXmlRoot.substring(10):mapperXmlRoot;
-                mapperXmlRoot=mapperXmlRoot.startsWith("/")?
-                        mapperXmlRoot.substring(1):mapperXmlRoot;
-                mapperXmlRoot=mapperXmlRoot.endsWith("/")?
-                        mapperXmlRoot:mapperXmlRoot+"/";
+        Map<String, Object> map = yaml.getMap();
+        Object jacklambObj = map.get("jacklamb");
+        if(jacklambObj instanceof Map){
+            Map<String, Object> jacklambMap = (Map<String, Object>) jacklambObj;
+            Object mapperLocationObj = jacklambMap.get("mapper-locations");
+            if(mapperLocationObj instanceof String){
+                String mapperLocations= (String) mapperLocationObj;
+                mapperXmlRoot=yaml.getObject(mapperLocations).toString();
             }
         }
     }
 
     public static Map<String,Map<String,String>> getAllMapperSql(){
-        Set<MapperXMLParsing> mapperXmlSet=getAllMapperXml();
+        Set<MapperXMLParsing> mapperXmlSet=getAllMapperLocations();
         Map<String,Map<String,String>> mapperSqls=new HashMap<>();
         for (MapperXMLParsing mapXmlp : mapperXmlSet) {
             Map<String, Map<String, String>> sqlMap = mapXmlp.getXmlMap();
@@ -61,78 +57,17 @@ public class MapperXmlScan {
         }
         return mapperSqls;
     }
-
-
-    private static Set<MapperXMLParsing> getAllMapperXml(){
-        URL resource = MapperXMLParsing.class.getClassLoader().getResource("");
-        if(resource!=null&&!resource.getPath().contains(".jar!/")) {
-            return getAllMapperXmlByPackage();
-        }
-        return getAllMapperXmlByJar();
-    }
-
-    private static Set<MapperXMLParsing> getAllMapperXmlByJar(){
-        JarFile jarFile = null;
-        Set<MapperXMLParsing> xmls=new HashSet<>();
-        String jarpath=getJarFile();
+    private static Set<MapperXMLParsing> getAllMapperLocations(){
         try {
-            jarFile = new JarFile(jarpath);
+            Set<MapperXMLParsing> mapperLocations=new HashSet<>();
+            Resource[] resources = patternResolver.getResources(mapperXmlRoot);
+            for (Resource resource : resources) {
+                mapperLocations.add(new MapperXMLParsing(resource.getInputStream()));
+            }
+            return mapperLocations;
         } catch (IOException e) {
-            throw new JarScanException("找不到jar文件：["+jarpath+"]",e);
-        }
-        Enumeration<JarEntry> entrys = jarFile.entries();
-        while (entrys.hasMoreElements()) {
-            JarEntry entry = entrys.nextElement();
-            String name = entry.getName();
-            if (name.endsWith(".xml") && name.startsWith(mapperXmlRoot)) {
-                try{
-                    if(MapperXMLParsing.isMapperXml(MapperXmlScan.class.getResourceAsStream("/"+name))){
-                        xmls.add(new MapperXMLParsing(MapperXmlScan.class.getResourceAsStream("/"+name)));
-                    }
-                }catch (Exception e){
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return xmls;
-    }
-
-    private static String getJarFile(){
-        String jarpath=MapperXmlScan.class.getResource("").getPath();
-        jarpath=jarpath.substring(5);
-        if(jarpath.contains(".jar!")){
-            if(jarpath.contains(":")){
-                jarpath=jarpath.substring(1, jarpath.indexOf(".jar!")+4);
-            }else{
-                jarpath=jarpath.substring(0, jarpath.indexOf(".jar!")+4);
-            }
-        }
-        return jarpath;
-    }
-
-    private static Set<MapperXMLParsing> getAllMapperXmlByPackage(){
-        Set<MapperXMLParsing> xmls=new HashSet<>();
-        URL url = MapperXmlScan.class.getClassLoader().getResource(mapperXmlRoot);
-        if(url==null) {
-            return xmls;
-        }
-        try {
-            File mapperXml=new File(url.getFile());
-            getMapperXmlByPackage(mapperXml,xmls);
-        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return xmls;
-    }
 
-    private static void getMapperXmlByPackage(File file, Set<MapperXMLParsing> mapXmls) throws Exception {
-        if(file.isFile()&&file.getName().endsWith(".xml")&&MapperXMLParsing.isMapperXml(new FileInputStream(file))){
-            mapXmls.add(new MapperXMLParsing(file));
-        }else if(file.isDirectory()){
-            File[] sonFiles = file.listFiles();
-            for (File sonf : sonFiles) {
-                getMapperXmlByPackage(sonf,mapXmls);
-            }
-        }
     }
 }
