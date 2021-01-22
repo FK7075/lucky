@@ -23,7 +23,7 @@ public class IniConfAnalysis implements ConfAnalysis {
     }
 
     @Override
-    public Object getObject(String prefix) {
+    public Object getObject(Object prefix) {
         return null;
     }
 }

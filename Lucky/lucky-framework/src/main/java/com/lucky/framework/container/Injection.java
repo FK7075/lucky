@@ -5,6 +5,10 @@ import com.lucky.framework.container.factory.Namer;
 import com.lucky.framework.exception.AutowiredException;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.base.BaseUtils;
+import com.lucky.utils.config.ConfigUtils;
+import com.lucky.utils.config.Value;
+import com.lucky.utils.config.YamlConfAnalysis;
+import com.lucky.utils.conversion.JavaConversion;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.utils.reflect.FieldUtils;
@@ -12,8 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -91,13 +96,113 @@ public abstract class Injection implements Namer {
                 }
             }
         }
+        List<Field> valueFields = ClassUtils.getFieldByStrengthenAnnotation(beanClass, Value.class);
+        valueInjection(bean,valueFields);
 
         mod.setInjection(true);
     }
 
+    public static void configurationPropertiesInjection(Object bean,Class<?> beanClass,String prefix){
+        Field[] fields = ClassUtils.getAllFields(beanClass);
+        for (Field field : fields) {
+
+        }
+    }
+
+    public static void valueInjection(Object bean,List<Field> valueFiles){
+        if(Assert.isEmptyCollection(valueFiles)){
+            return;
+        }
+        YamlConfAnalysis yaml= ConfigUtils.getYamlConfAnalysis();
+        String prefix;
+        Class<?> fieldType;
+        for (Field valueFile : valueFiles) {
+            prefix=valueFile.getAnnotation(Value.class).value();
+            Object confValue = yaml.getObject(prefix);
+            if(confValue==null){
+                continue;
+            }
+            fieldType = valueFile.getType();
+            //Class类型
+            if(Class.class==fieldType){
+                FieldUtils.setValue(bean,valueFile,ClassUtils.getClass(confValue.toString()));
+                continue;
+            }
+            //基本类型以及基本类型的包装类型
+            if(ClassUtils.isPrimitive(fieldType)||ClassUtils.isSimple(fieldType)){
+                FieldUtils.setValue(bean,valueFile, JavaConversion.strToBasic(confValue.toString(),fieldType));
+                continue;
+            }
+
+            //基本类型以及其包装类型的数组
+            if(ClassUtils.isSimpleArray(fieldType)){
+                List<String> confList= (List<String>) confValue;
+                FieldUtils.setValue(bean,valueFile,JavaConversion.strArrToBasicArr(listToArrayByStr(confList),fieldType));
+                continue;
+            }
+
+
+            //集合类型
+            if(Collection.class.isAssignableFrom(fieldType)){
+                Class<?> genericType = ClassUtils.getGenericType(valueFile.getGenericType())[0];
+                //泛型为基本类型
+                List<String> confList= (List<String>) confValue;
+                if(ClassUtils.isSimple(genericType)){
+                    String[] confArr=listToArrayByStr(confList);
+                    if(List.class.isAssignableFrom(fieldType)){
+                        FieldUtils.setValue(bean,valueFile, Stream.of(JavaConversion.strArrToBasicArr(confArr,genericType)).collect(Collectors.toList()));
+                        continue;
+                    }
+                    if(Set.class.isAssignableFrom(fieldType)){
+                        FieldUtils.setValue(bean,valueFile, Stream.of(JavaConversion.strArrToBasicArr(confArr,genericType)).collect(Collectors.toSet()));
+                        continue;
+                    }
+                }
+                //泛型为Class
+                if(Class.class==genericType){
+                    Class<?>[] classes=new Class[confList.size()];
+                    for (int i = 0,j=classes.length; i < j; i++) {
+                        classes[i]=ClassUtils.getClass(yaml.getObject(confList.get(i)).toString());
+                    }
+                    if(List.class.isAssignableFrom(fieldType)){
+                        FieldUtils.setValue(bean,valueFile, Stream.of(classes).collect(Collectors.toList()));
+                        continue;
+                    }
+                    if(Set.class.isAssignableFrom(fieldType)){
+                        FieldUtils.setValue(bean,valueFile, Stream.of(classes).collect(Collectors.toSet()));
+                        continue;
+                    }
+                }
+            }
+
+            if(Map.class.isAssignableFrom(fieldType)){
+                Map<String,Object> $confMap= (Map<String, Object>) confValue;
+                Map<String,Object> confMap=new HashMap<>();
+                for(Map.Entry<String,Object> entry:$confMap.entrySet()){
+                    confMap.put(entry.getKey(),yaml.getObject(entry.getValue()));
+                }
+                FieldUtils.setValue(bean,valueFile,confMap);
+                continue;
+            }
+            FieldUtils.setValue(bean,valueFile,ClassUtils.newObject(yaml.getObject(confValue).toString()));
+        }
+    }
+
+    public static void propertySourceInjection(){
+
+    }
+
+
     public static void injection(Object bean,String beanType){
         Module module=new Module(Namer.getBeanName(bean.getClass()),beanType,bean);
         injection(module);
+    }
+
+
+    private static String[] listToArrayByStr(List<String> list){
+        String[] array=new String[list.size()];
+        list.toArray(array);
+        return array;
     }
 
 }

@@ -22,7 +22,7 @@ public class PropertyConfAnalysis implements ConfAnalysis {
     }
 
     @Override
-    public Object getObject(String prefix) {
+    public Object getObject(Object prefix) {
         return null;
     }
 }

@@ -1,9 +1,5 @@
 package com.lucky.utils.config;
 
-import org.apache.commons.jexl3.JexlContext;
-import org.apache.commons.jexl3.MapContext;
-import org.apache.commons.jexl3.internal.Engine;
-
 import java.util.Map;
 
 /**
@@ -13,16 +9,8 @@ import java.util.Map;
  */
 public interface ConfAnalysis {
 
-    String PREFIX="$LUCKY";
-    Engine engine=new Engine();
-    JexlContext context=new MapContext();
-
     Map<String, Object> getMap();
 
-    Object getObject(String prefix);
+    Object getObject(Object prefix);
 
-    default boolean isExpression(String prefix){
-        prefix=prefix.trim();
-        return prefix.startsWith("${")&&prefix.endsWith("}");
-    }
 }

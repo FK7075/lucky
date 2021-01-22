@@ -2,9 +2,7 @@ package com.lucky.web.conf;
 
 import com.lucky.framework.serializable.JSONSerializationScheme;
 import com.lucky.framework.serializable.XMLSerializationScheme;
-import com.lucky.utils.base.ArrayUtils;
 import com.lucky.utils.base.Assert;
-import com.lucky.utils.base.BaseUtils;
 import com.lucky.utils.config.ConfigUtils;
 import com.lucky.utils.config.YamlConfAnalysis;
 import com.lucky.utils.conversion.JavaConversion;
@@ -17,7 +15,6 @@ import com.lucky.web.interceptor.HandlerInterceptor;
 import com.lucky.web.interceptor.InterceptorRegistry;
 import com.lucky.web.interceptor.PathAndInterceptor;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +37,7 @@ public abstract class YamlParsing {
         conf.setFirst(false);
     }
 
-    private static Object get(String suffix){
+    private static Object get(Object suffix){
         return yaml.getObject(suffix);
     }
 
@@ -54,87 +51,81 @@ public abstract class YamlParsing {
                     if(webNode instanceof Map){
                         Map<String,Object> webMap= (Map<String, Object>) webNode;
                         if(webMap.containsKey("encoding")){
-                            String encoding = (String) webMap.get("encoding");
-                            web.setEncoding((String)get(encoding));
+                            web.setEncoding((String)get(webMap.get("encoding")));
                         }
                         if(webMap.containsKey("web-root")){
-                            String webRoot = (String) webMap.get("web-root");
-                            web.setWebRoot((String)get(webRoot));
+                            web.setWebRoot((String)get(webMap.get("web-root")));
                         }
                         if(webMap.containsKey("post-change-method")){
-                            Object pcm = webMap.get("post-change-method");
-                            if(pcm instanceof Boolean){
-                                web.setPostChangeMethod((Boolean) pcm);
+                            Object postChangeMethod = get(webMap.get("post-change-method"));
+                            if(postChangeMethod instanceof Boolean){
+                                web.setPostChangeMethod((Boolean) postChangeMethod);
                             }else{
-                                web.setPostChangeMethod((Boolean)JavaConversion.strToBasic(get(pcm.toString()).toString(),boolean.class));
+                                web.setPostChangeMethod((Boolean)JavaConversion.strToBasic(postChangeMethod.toString(),boolean.class));
                             }
                         }
                         if(webMap.containsKey("static-resource-manage")){
-                            Object srm = webMap.get("static-resource-manage");
+                            Object srm = get(webMap.get("static-resource-manage"));
                             if(srm instanceof Boolean){
                                 web.setOpenStaticResourceManage((boolean)srm);
                             }else{
-                                web.setOpenStaticResourceManage((Boolean)JavaConversion.strToBasic(get(srm.toString()).toString(),boolean.class));
+                                web.setOpenStaticResourceManage((Boolean)JavaConversion.strToBasic(srm.toString(),boolean.class));
                             }
 
                         }
                         if(webMap.containsKey("multipart-max-file-size")){
-                            Object mmfs = webMap.get("multipart-max-file-size");
+                            Object mmfs = get(webMap.get("multipart-max-file-size"));
                             if(mmfs instanceof Integer){
                                 web.setMultipartMaxFileSize((int)mmfs);
                             }else{
-                                web.setMultipartMaxFileSize((int) JavaConversion.strToBasic(get(mmfs.toString()).toString(), int.class, true));
+                                web.setMultipartMaxFileSize((int) JavaConversion.strToBasic(mmfs.toString(), int.class, true));
                             }
                         }
                         if(webMap.containsKey("multipart-max-request-size")){
-                            Object mmrs = webMap.get("multipart-max-request-size");
+                            Object mmrs = get(webMap.get("multipart-max-request-size"));
                             if(mmrs instanceof Integer){
                                 web.setMultipartMaxRequestSize((int)mmrs);
                             }else{
-                                web.setMultipartMaxRequestSize((int) JavaConversion.strToBasic(
-                                        get(mmrs.toString()).toString(),
+                                web.setMultipartMaxRequestSize((int) JavaConversion.strToBasic(mmrs.toString(),
                                         int.class,
                                         true));
                             }
                         }
                         if(webMap.containsKey("prefix")){
-                            String prefix = (String) webMap.get("prefix");
-                            web.setPrefix((String)get(prefix));
+                            web.setPrefix((String)get(webMap.get("prefix")));
                         }
                         if(webMap.containsKey("suffix")){
-                            String suffix = (String) webMap.get("suffix");
-                            web.setSuffix((String)get(suffix));
+                            web.setSuffix((String)get(webMap.get("suffix")));
                         }
                         if(webMap.containsKey("httpclient-connection-timeout")){
-                            Object hct = webMap.get("httpclient-connection-timeout");
+                            Object hct = get(webMap.get("httpclient-connection-timeout"));
                             if(hct instanceof Integer){
                                 web.setConnectTimeout((int)hct);
                             }else{
-                                web.setConnectTimeout((int)JavaConversion.strToBasic(
-                                        get(hct.toString()).toString(),
+                                web.setConnectTimeout((int)JavaConversion.strToBasic(hct.toString(),
                                         int.class,
                                         true));
                             }
 
                         }
                         if(webMap.containsKey("httpclient-request-timeout")){
-                            Object hrt = webMap.get("httpclient-request-timeout");
+                            Object hrt = get(webMap.get("httpclient-request-timeout"));
                             if(hrt instanceof Integer){
                                 web.setRequestTimeout((Integer) hrt);
                             }else{
                                 web.setRequestTimeout((int)JavaConversion.strToBasic(
-                                        get(hrt.toString()).toString(),
+                                        hrt.toString(),
                                         int.class,
                                         true));
                             }
                         }
                         if(webMap.containsKey("httpclient-socket-timeout")){
-                            Object hst = webMap.get("httpclient-socket-timeout");
+                            Object hst = get(webMap.get("httpclient-socket-timeout"));
                             if(hst instanceof Integer){
                                 web.setSocketTimeout((int) hst);
                             }else{
                                 web.setSocketTimeout((int)JavaConversion.strToBasic(
-                                        get(hst.toString()).toString(),
+                                        hst.toString(),
                                         int.class,
                                         true));
                             }
@@ -156,7 +147,7 @@ public abstract class YamlParsing {
                         if(webMap.containsKey("static-handler")){
                             Map<String, String> staticHandlerMap = (Map<String, String>) webMap.get("static-handler");
                             for(Map.Entry<String,String> entry:staticHandlerMap.entrySet()){
-                                web.addStaticHander(entry.getKey(),get(entry.getKey()).toString());
+                                web.addStaticHander(entry.getKey(),get(entry.getValue()).toString());
                             }
                         }
                         if(webMap.containsKey("specifi-resources-restrict-ip")){
@@ -185,12 +176,11 @@ public abstract class YamlParsing {
                             }
                         }
                         if(webMap.containsKey("favicon-ico")){
-                            String ico = (String) webMap.get("favicon-ico");
-                            web.setFavicon(get(ico).toString());
+                            web.setFavicon(get(webMap.get("favicon-ico")).toString());
                         }
                         if(webMap.containsKey("mapping-preprocess")){
-                            String mp = (String) webMap.get("mapping-preprocess");
-                            web.setMappingPreprocess((MappingPreprocess) ClassUtils.newObject(get(mp).toString()));
+                            web.setMappingPreprocess(
+                                    (MappingPreprocess) ClassUtils.newObject(get(webMap.get("mapping-preprocess")).toString()));
                         }
                         if(webMap.containsKey("parameter-analysis-chain-add")){
                             List<String> parameterAnaList=(List<String>)webMap.get("parameter-analysis-chain-add");
@@ -205,8 +195,7 @@ public abstract class YamlParsing {
                             }
                         }
                         if(webMap.containsKey("response")){
-                            String response = (String) webMap.get("response");
-                            web.setResponse((LuckyResponse) ClassUtils.newObject(get(response).toString()));
+                            web.setResponse((LuckyResponse) ClassUtils.newObject(get(webMap.get("response")).toString()));
                         }
                         if(webMap.containsKey("parameter-enhance-chain-add")){
                             List<String> parameterEnhanceList=(List<String>)webMap.get("parameter-enhance-chain-add");
@@ -218,13 +207,13 @@ public abstract class YamlParsing {
                             Object serializationNode = webMap.get("serialization");
                             if(serializationNode instanceof Map){
                                 Map<String,Object> serializationMap= (Map<String, Object>) serializationNode;
-                                Object json = serializationMap.get("json");
-                                Object xml = serializationMap.get("xml");
+                                Object json = get(serializationMap.get("json"));
+                                Object xml = get(serializationMap.get("xml"));
                                 if(json instanceof String){
-                                    web.setJsonSerializationScheme((JSONSerializationScheme)ClassUtils.newObject(get(json.toString()).toString()));
+                                    web.setJsonSerializationScheme((JSONSerializationScheme)ClassUtils.newObject(json.toString()));
                                 }
                                 if(xml instanceof String){
-                                    web.setXmlSerializationScheme((XMLSerializationScheme) ClassUtils.newObject(get(xml.toString()).toString()));
+                                    web.setXmlSerializationScheme((XMLSerializationScheme) ClassUtils.newObject(xml.toString()));
                                 }
                             }
                         }
@@ -236,32 +225,37 @@ public abstract class YamlParsing {
 
     private static void addInterceptor(WebConfig web,Map<String,Object> interceptorMap){
         PathAndInterceptor pi=new PathAndInterceptor();
-        Object interceptorClass = interceptorMap.get("interceptor-class");
-        Object interceptorPriority = interceptorMap.get("priority");
-        Object interceptorPath = interceptorMap.get("path");
-        Object interceptorExcludePath = interceptorMap.get("exclude-path");
+        Object interceptorClass = get(interceptorMap.get("interceptor-class"));
+        Object interceptorPriority =  get(interceptorMap.get("priority"));
+        Object interceptorPath =  get(interceptorMap.get("path"));
+        Object interceptorExcludePath =  get(interceptorMap.get("exclude-path"));
         if(interceptorClass instanceof String){
-            pi.setInterceptor((HandlerInterceptor)ClassUtils.newObject(get(interceptorClass.toString()).toString()));
+            pi.setInterceptor((HandlerInterceptor)ClassUtils.newObject(interceptorClass.toString()));
         }
-        if(interceptorPriority instanceof String){
-            pi.setPriority((Double)JavaConversion.strToBasic(get(interceptorPriority.toString()).toString(),double.class));
+        if((interceptorPriority instanceof Double)||(interceptorPriority instanceof Integer)){
+            pi.setPriority((Double) JavaConversion.strToBasic(interceptorPriority.toString(),double.class,true));
         }
         if(interceptorPath instanceof List){
             List<String> list= (List<String>) interceptorPath;
-            pi.setPath(ArrayUtils.listToArray(to$List(list)));
+            pi.setPath(listToArrayByStr(to$List(list)));
         }else if(interceptorPath instanceof String){
-            pi.setPath(get(interceptorPath.toString()).toString());
+            pi.setPath(interceptorPath.toString());
         }
         if(interceptorExcludePath instanceof List){
             List<String> list= (List<String>) interceptorExcludePath;
-            pi.setExcludePath(ArrayUtils.listToArray(to$List(list)));
+            pi.setExcludePath(listToArrayByStr(to$List(list)));
         }else if(interceptorExcludePath instanceof String){
-            pi.setExcludePath(get(interceptorExcludePath.toString()).toString());
+            pi.setExcludePath(interceptorExcludePath.toString());
         }
         InterceptorRegistry.addHandlerInterceptor(pi);
     }
 
     private static List<String> to$List(List<String> list){
         return list.stream().map($v->get($v).toString()).collect(Collectors.toList());
+    }
+    private static String[] listToArrayByStr(List<String> list){
+        String[] array=new String[list.size()];
+        list.toArray(array);
+        return array;
     }
 }

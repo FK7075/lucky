@@ -25,10 +25,9 @@ public class MapperXmlScan {
         Object jacklambObj = map.get("jacklamb");
         if(jacklambObj instanceof Map){
             Map<String, Object> jacklambMap = (Map<String, Object>) jacklambObj;
-            Object mapperLocationObj = jacklambMap.get("mapper-locations");
+            Object mapperLocationObj = yaml.getObject(jacklambMap.get("mapper-locations"));
             if(mapperLocationObj instanceof String){
-                String mapperLocations= (String) mapperLocationObj;
-                mapperXmlRoot=yaml.getObject(mapperLocations).toString();
+                mapperXmlRoot=mapperLocationObj.toString();
             }
         }
     }

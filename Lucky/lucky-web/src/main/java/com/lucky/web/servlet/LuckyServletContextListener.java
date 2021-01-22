@@ -31,9 +31,9 @@ public class LuckyServletContextListener implements ServletContextListener {
                     Object webNode = luckyMap.get("web");
                     if(webNode instanceof Map){
                         Map<String,Object> webMap= (Map<String, Object>) webNode;
-                        Object rootClassNode = webMap.get("root-class");
+                        Object rootClassNode = yaml.getObject(webMap.get("root-class"));
                         if(rootClassNode instanceof String){
-                            rootClass=ClassUtils.getClass(yaml.getObject(CONF_PREFIX+rootClassNode).toString());
+                            rootClass=ClassUtils.getClass(rootClassNode.toString());
                         }
                     }
                 }
