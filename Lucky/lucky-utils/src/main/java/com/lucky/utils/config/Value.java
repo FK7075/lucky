@@ -3,6 +3,16 @@ package com.lucky.utils.config;
 import java.lang.annotation.*;
 
 /**
+ * 只支持yml格式的文件<br/>
+ *  1.Class类型
+ *  2.基本类型以及基本类型的包装类型
+ *  3.基本类型以及其包装类型的数组
+ *  4.非JDK类型
+ *  5.集合类型(List、Set)
+ *    5.1.泛型为基本类型
+ *    5.2.泛型为非JDK类型
+ *    5.3.泛型为Class
+ *  6.Map类型(String => Object)
  * @author fk
  * @version 1.0
  * @date 2020/12/18 0018 9:47
@@ -12,4 +22,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface Value {
     String value() default "";
+    String humpConversion() default "";
 }

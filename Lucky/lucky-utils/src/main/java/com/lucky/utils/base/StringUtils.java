@@ -19,6 +19,8 @@ package com.lucky.utils.base;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Miscellaneous {@link String} utility methods.
@@ -1342,4 +1344,50 @@ public abstract class StringUtils {
         return arrayToDelimitedString(arr, ",");
     }
 
+    // 自定义正则表达式
+    private static final Pattern HUMP_PATTERN = Pattern.compile("[A-Z0-9]");
+
+    /**
+     * 驼峰转其他
+     * @param str 驼峰字符串
+     * @param delimiter 分隔符
+     * @return
+     */
+    public static String humpToLine(String str,String delimiter) {
+        if("".equals(delimiter)){
+            return str;
+        }
+        Matcher matcher = HUMP_PATTERN.matcher(str);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, delimiter + matcher.group(0).toLowerCase());
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    /**
+     * 其他转驼峰
+     * @param param 其他字符串
+     * @param delimiter 分隔符
+     * @return
+     */
+    private static String underlineToCamel(String param,char delimiter) {
+        if (Assert.isBlankString(param)) {
+            return "";
+        }
+        int len = param.length();
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            char c = Character.toLowerCase(param.charAt(i));
+            if (c == delimiter) {
+                if (++i < len) {
+                    sb.append(Character.toUpperCase(param.charAt(i)));
+                }
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
 }

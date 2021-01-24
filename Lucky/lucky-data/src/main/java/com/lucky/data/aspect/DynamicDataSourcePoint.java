@@ -174,9 +174,15 @@ public class DynamicDataSourcePoint extends InjectionAopPoint {
                 continue;
             }
 
+            //存在IOC容器中，但存在无参构造的组件
             if(AutoScanApplicationContext.create().isIOCClass(fieldClass)){
-                Object fieldValue=FieldUtils.getValue(copyFieldObj,field);
-                FieldUtils.setValue(copyFieldObj,field, dbChange(newSqlCore,fieldValue));
+                try {
+                    Object fieldValue=FieldUtils.getValue(copyFieldObj,field);
+                    FieldUtils.setValue(copyFieldObj,field, dbChange(newSqlCore,fieldValue));
+                }catch (Exception ignored){
+
+                }
+
             }
         }
         return copyFieldObj;

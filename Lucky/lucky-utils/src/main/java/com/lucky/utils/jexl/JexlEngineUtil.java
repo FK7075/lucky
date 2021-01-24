@@ -18,8 +18,8 @@ import java.util.Map;
 public class JexlEngineUtil {
 
     private static final String PREFIX="$LUCKY";
-    private static final Engine engine=new Engine();
-    private static final JexlContext context=new MapContext();
+    private final Engine engine=new Engine();
+    private final JexlContext context=new MapContext();
 
     public JexlEngineUtil(Map<String,Object> confMap){
         Assert.notNull(confMap,"confMap is null!");
@@ -79,7 +79,7 @@ public class JexlEngineUtil {
         return evaluate;
     }
 
-    private boolean isExpression(String prefix){
+    public static boolean isExpression(String prefix){
         prefix=prefix.trim();
         return prefix.startsWith("${")&&prefix.endsWith("}");
     }

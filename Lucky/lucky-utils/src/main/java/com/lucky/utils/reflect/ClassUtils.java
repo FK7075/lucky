@@ -309,6 +309,7 @@ public abstract class ClassUtils {
         return annMethods;
     }
 
+
     /**
      * 判断当前类型是否为Java基本类型
      * @param aClass 当前类型
@@ -360,6 +361,10 @@ public abstract class ClassUtils {
             }
         }
         return false;
+    }
+
+    public static boolean isJdkType(Class<?> aClass){
+        return aClass.getClassLoader()==null;
     }
 
     public static String convertClassNameToResourcePath(String className) {

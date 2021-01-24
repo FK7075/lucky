@@ -13,4 +13,6 @@ import java.lang.annotation.*;
 public @interface PropertySource {
 
     String[] value();
+    String prefix() default "";
+    String humpConversion() default "";
 }

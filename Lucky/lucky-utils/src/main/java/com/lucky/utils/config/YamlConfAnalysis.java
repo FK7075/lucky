@@ -3,9 +3,11 @@ package com.lucky.utils.config;
 import com.lucky.utils.jexl.JexlEngineUtil;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.BufferedReader;
 import java.io.Reader;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,12 +21,27 @@ public class YamlConfAnalysis implements ConfAnalysis{
     private LinkedHashMap<String,Object> map;
     private final JexlEngineUtil jexlEngineUtil;
 
-    YamlConfAnalysis(Reader yamlReader){
+    public YamlConfAnalysis(Reader yamlReader){
         yaml=new Yaml();
         map= new LinkedHashMap<>();
         Iterator<Object> iterator = yaml.loadAll(yamlReader).iterator();
         while (iterator.hasNext()){
              map = (LinkedHashMap) iterator.next();
+        }
+        jexlEngineUtil=new JexlEngineUtil(map);
+    }
+
+    public YamlConfAnalysis(List<BufferedReader> yamlReaders){
+        yaml=new Yaml();
+        map= new LinkedHashMap<>();
+        for (BufferedReader yamlReader : yamlReaders) {
+            Iterator<Object> iterator = yaml.loadAll(yamlReader).iterator();
+            while (iterator.hasNext()){
+                Map<String,Object> currMap = (LinkedHashMap) iterator.next();
+                for(Map.Entry<String,Object> entry:currMap.entrySet()){
+                    map.put(entry.getKey(),entry.getValue());
+                }
+            }
         }
         jexlEngineUtil=new JexlEngineUtil(map);
     }

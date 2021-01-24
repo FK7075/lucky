@@ -13,4 +13,5 @@ import java.lang.annotation.*;
 public @interface ConfigurationProperties {
 
     String prefix() default "";
+    String humpConversion() default "";
 }

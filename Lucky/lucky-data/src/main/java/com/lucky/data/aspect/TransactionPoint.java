@@ -201,7 +201,12 @@ public class TransactionPoint extends InjectionAopPoint {
                 }
                 FieldUtils.setValue(copyFieldObj,field,trCore.getMapper(luckyMapperClass));
             }else if(AutoScanApplicationContext.create().isIOCClass(fieldClass)){
-                FieldUtils.setValue(copyFieldObj,field,getTrObject(dbCores,fieldValue));
+                try{
+                    FieldUtils.setValue(copyFieldObj,field,getTrObject(dbCores,fieldValue));
+                }catch (Exception ignored){
+
+                }
+
             }
         }
         return copyFieldObj;
