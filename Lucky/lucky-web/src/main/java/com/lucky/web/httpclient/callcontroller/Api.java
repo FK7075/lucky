@@ -5,6 +5,7 @@ import com.lucky.utils.config.ConfigUtils;
 import com.lucky.utils.config.YamlConfAnalysis;
 import com.lucky.utils.conversion.$Expression;
 import com.lucky.utils.conversion.ExpressionParsingException;
+import com.lucky.utils.jexl.JexlEngineUtil;
 import com.lucky.web.conf.WebConfig;
 
 import java.util.Map;
@@ -13,14 +14,14 @@ import java.util.Map;
 public class Api {
 
     private static final Map<String,String> callApi= WebConfig.getWebConfig().getCallApi();
-    private static YamlConfAnalysis yaml= ConfigUtils.getYamlConfAnalysis();
+    private static final YamlConfAnalysis yaml= ConfigUtils.getYamlConfAnalysis();
     /**
      * 将注解中配置的CallApi转化为实际的地址
      * @param annApiStr
      * @return
      */
     public static String getApi(String annApiStr){
-        if(annApiStr.startsWith("${")&&annApiStr.contains("}")){
+        if(JexlEngineUtil.isExpression(annApiStr)){
             String api;
             try {
                 api=$Expression.translation(annApiStr,callApi);
@@ -33,7 +34,4 @@ public class Api {
         }
         return annApiStr;
     }
-
-
-
 }

@@ -196,25 +196,39 @@ public class UrlMapping extends Mapping{
     public boolean findingRestUelIsEquals(Model model,String requestUrl){
         String[] thisURLArray = getUrl().split("/");
         String[] requestURLArray = requestUrl.split("/");
-        if(thisURLArray.length!=requestURLArray.length){
-            return false;
+        int thisURLArrayLength = thisURLArray.length;
+        int requestURLArrayLength = requestURLArray.length;
+
+        //URL长度校验
+        if("**".equals(thisURLArray[thisURLArrayLength-1])){
+            //以通配符/**结尾的URL映射，要求请求的URL的元素长度必须不小于映射的元素长度
+            if(thisURLArrayLength<requestURLArrayLength){
+                return false;
+            }
+        }else if(thisURLArray[thisURLArrayLength-1].endsWith("**")){
+
+        }else{
+            if(thisURLArrayLength!=requestURLArrayLength){
+                return false;
+            }
         }
+
         for (int i = 0,j=thisURLArray.length; i < j; i++) {
             if(!findingRestURLElementTest(requestURLArray[i],thisURLArray[i])){
                 return false;
             }
         }
-        Map<String,String> restMap=new HashMap<>();
-        String key;
-        for (int i = 0,j=thisURLArray.length; i < j; i++) {
-            if(isRestElement(thisURLArray[i])){
-                key=thisURLArray[i].startsWith("#{")?thisURLArray[i].substring(2):thisURLArray[i];
-                key=key.startsWith("{")?key.substring(1):key;
-                key=key.endsWith("}")?key.substring(0,key.length()-1):key;
-                restMap.put(key,requestURLArray[i]);
-            }
-        }
-        model.setRestParams(restMap);
+//        Map<String,String> restMap=new HashMap<>();
+//        String key;
+//        for (int i = 0,j=thisURLArray.length; i < j; i++) {
+//            if(isRestElement(thisURLArray[i])){
+//                key=thisURLArray[i].startsWith("#{")?thisURLArray[i].substring(2):thisURLArray[i];
+//                key=key.startsWith("{")?key.substring(1):key;
+//                key=key.endsWith("}")?key.substring(0,key.length()-1):key;
+//                restMap.put(key,requestURLArray[i]);
+//            }
+//        }
+//        model.setRestParams(restMap);
         return true;
     }
 
@@ -227,10 +241,18 @@ public class UrlMapping extends Mapping{
     private boolean findingRestURLElementTest(String urlElement,String testElement){
         boolean isRestElement=isRestElement(testElement);
 
-        //testElement为REST URL元素
-        if(isRestElement){
+        //testElement为REST URL元素或者为通配符*、**、{xx}**、#{xx}**
+        if(isRestElement||"*".equals(testElement)||"**".equals(testElement)||isRestWildcardElement(testElement)==1){
             return true;
         }
+
+        if(testElement.startsWith("*")){
+            return urlElement.endsWith(testElement.substring(1));
+        }
+        if(testElement.endsWith("*")){
+            return urlElement.startsWith(testElement.substring(0,testElement.length()-1));
+        }
+
         return urlElement.equals(testElement);
     }
 
@@ -273,10 +295,32 @@ public class UrlMapping extends Mapping{
         }
         //两个都不是REST元素
         if(!thisIsRest&&!verifiedIsRest){
+            int thisCode = isRestWildcardElement(thisElement);
+            int verifiedCode = isRestWildcardElement(verifiedURLElement);
+            if(thisCode!=verifiedCode){
+                return false;
+            }
+            if (thisCode==1){
+                return true;
+            }
             return thisElement.equals(verifiedURLElement);
         }
         //两个都是REST元素
         return true;
+    }
+
+    /**
+     * 判断一个URL元素是否为Rest通配符元素
+     * -1
+     * 1.{abc}**
+     * @param urlElement
+     * @return
+     */
+    private int isRestWildcardElement(String urlElement){
+        if(urlElement.endsWith("**")){
+            return isRestElement(urlElement.substring(0,urlElement.length()-2))?1:-1;
+        }
+        return -1;
     }
 
     /**

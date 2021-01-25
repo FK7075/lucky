@@ -3,7 +3,7 @@ package com.lucky.web.mapping;
 import com.lucky.framework.scan.JarExpand;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.dm5.MD5Utils;
-import com.lucky.utils.file.Resources;
+import com.lucky.utils.file.*;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.MethodUtils;
 import com.lucky.web.annotation.CloseRun;
@@ -339,11 +339,12 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
         List<UrlMapping> mappings=new ArrayList<>();
         String url=model.getUri();
         for (UrlMapping urlMapping : list) {
-            if(urlMapping.simpleUrlIsEquals(url)
-                    ||urlMapping.findingRestUelIsEquals(model, url)){
+            if((urlMapping.findingRestUelIsEquals(model, url))
+              ||(urlMapping.simpleUrlIsEquals(url))){
                 mappings.add(urlMapping);
             }
         }
+
         return mappings;
     }
 
