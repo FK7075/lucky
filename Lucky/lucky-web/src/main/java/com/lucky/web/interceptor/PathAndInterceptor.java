@@ -3,6 +3,7 @@ package com.lucky.web.interceptor;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.Namer;
 import com.lucky.utils.base.Assert;
+import com.lucky.utils.io.utils.AntPathMatcher;
 
 /**
  * 拦截器和该拦截器的作用范围
@@ -11,6 +12,8 @@ import com.lucky.utils.base.Assert;
  * @date 2021/1/5 0005 14:18
  */
 public class PathAndInterceptor {
+
+    private static final AntPathMatcher antPathMatcher=new AntPathMatcher();
     /*
         path和excludePath同时配置时，两者同时生效，真实的作用为两者取交集
         也即，只有当某个资源存在于path列表中，但又不存在于excludePath列表
@@ -107,22 +110,24 @@ public class PathAndInterceptor {
 
     //判断给定URL是否匹配某个拦截规则
     private boolean pathCheck(String confPath,String currPath){
+        return antPathMatcher.isPattern(confPath)
+                ?antPathMatcher.match(confPath,currPath): confPath.equals(currPath);
         // </**> 表示所有资源
-        if("/**".equals(confPath)){
-            return true;
-        }
-        String name;
-        // </*> 表示以某个字符开头
-        if(confPath.endsWith("/*")){
-            name=confPath.substring(0,confPath.length()-2);
-            return currPath.startsWith(name);
-        }
-        // <*/> 表示以某个字符结尾
-        if(confPath.startsWith("*/")){
-            name=confPath.substring(2);
-            return currPath.endsWith(name);
-        }
-        // 全匹配
-        return currPath.equals(confPath);
+//        if("/**".equals(confPath)){
+//            return true;
+//        }
+//        String name;
+//        // </*> 表示以某个字符开头
+//        if(confPath.endsWith("/*")){
+//            name=confPath.substring(0,confPath.length()-2);
+//            return currPath.startsWith(name);
+//        }
+//        // <*/> 表示以某个字符结尾
+//        if(confPath.startsWith("*/")){
+//            name=confPath.substring(2);
+//            return currPath.endsWith(name);
+//        }
+//        // 全匹配
+//        return currPath.equals(confPath);
     }
 }
