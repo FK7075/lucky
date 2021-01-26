@@ -1,9 +1,11 @@
 package com.lucky.web.mapping;
 
 import com.lucky.framework.scan.JarExpand;
+import com.lucky.utils.annotation.NonNull;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.dm5.MD5Utils;
-import com.lucky.utils.file.*;
+import com.lucky.utils.file.Resources;
+import com.lucky.utils.io.utils.AntPathMatcher;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.MethodUtils;
 import com.lucky.web.annotation.CloseRun;
@@ -20,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author fk7075
@@ -29,6 +30,8 @@ import java.util.stream.Collectors;
  */
 public class UrlMappingCollection implements Iterable<UrlMapping> {
 
+    protected static final AntPathMatcher antPathMatcher=new AntPathMatcher();
+    private static final byte[] LUCKY_PAGE_BYTE=Resources.getByteArray("/lucky-web/LUCKY.html");
     private static final Logger log= LoggerFactory.getLogger("c.l.web.mapping.UrlMappingCollection");
     /** URL映射集合*/
     private List<UrlMapping> list;
@@ -42,12 +45,25 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
     private Map<String, JarExpand> expandInfoMap;
 
 
+    private List<UrlMapping> allMapping;
+
+
     public UrlMappingCollection(){
-        list=new ArrayList<>(10);
-        runList=new ArrayList<>(10);
+        list=new ArrayList<>(50);
+        runList=new ArrayList<>(20);
         expandMap=new HashMap<>();
         deleteExpand=new HashSet<>();
         expandInfoMap=new HashMap<>();
+        allMapping=new ArrayList<>(100);
+    }
+
+    public List<UrlMapping> getAllUrlMapping(){
+        if(allMapping.isEmpty()){
+            allMapping.addAll(list);
+            expandMap.keySet().stream().filter(k -> !deleteExpand.contains(k))
+                    .map(expandMap::get).forEach(coll->allMapping.addAll(coll.list));
+        }
+        return allMapping;
     }
 
     public List<UrlMapping> getRunList() {
@@ -103,13 +119,12 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
      * @param map 待判断的URL映射
      * @return
      */
-    public boolean contains(UrlMapping map) {
+    public void contains(UrlMapping map) {
         for (UrlMapping urlMapping : list) {
             if(urlMapping.isEquals(map)){
-                return true;
+                throw new RepeatUrlMappingException(urlMapping,map);
             }
         }
-        return false;
     }
 
     /**
@@ -119,9 +134,7 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
      * @return
      */
     public boolean add(UrlMapping urlMapping,boolean isLog) {
-        if(contains(urlMapping)){
-            throw new RepeatUrlMappingException(urlMapping);
-        }
+        contains(urlMapping);
         String id= MD5Utils.md5UpperCase((urlMapping.getUrl()+ Arrays.toString(urlMapping.getMethods())),"LUCKY",1);
         urlMapping.setId(id);
         list.add(urlMapping);
@@ -200,26 +213,23 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
         String expandName=jarExpand.getExpandName();
         if(deleteExpand.contains(expandName)){
             deleteExpand.remove(expandName);
+            allMapping.clear();
             return true;
         }
         if(expandMap.containsKey(expandName)){
             log.warn("扩展名为 `{}` 的URL扩展集已经存在,故此次添加将不会生效！",expandName);
             return false;
         }
-        Iterator<UrlMapping> iterator = expand.iterator();
         //添加前的重复映射校验
         for (UrlMapping urlMapping : expand) {
-            if(contains(urlMapping)){
-                throw new RepeatUrlMappingException(urlMapping);
-            }
+            contains(urlMapping);
             expandMap.values().stream().forEach((umc)->{
-                if(umc.contains(urlMapping)){
-                    throw new RepeatUrlMappingException(urlMapping);
-                }
+                umc.contains(urlMapping);
             });
         }
         expandMap.put(expandName,expand);
         expandInfoMap.put(expandName,jarExpand);
+        allMapping.clear();
         log.info("URL扩展集 `{}` 添加成功！URL映射总数为：{}",expandName,expand.size());
         return true;
     }
@@ -238,6 +248,7 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
             return false;
         }
         deleteExpand.add(expandName);
+        allMapping.clear();
         log.info("URL扩展集 `{}` 已被逻辑删除！",expandName);
         return true;
     }
@@ -252,6 +263,7 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
         if(deleteExpand.contains(expandName)){
             deleteExpand.remove(expandName);
         }
+        allMapping.clear();
         log.info("URL扩展集 `{}` 已被物理删除！",expandName);
         return true;
     }
@@ -275,76 +287,120 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
      * @throws IOException
      */
     public UrlMapping getMapping(Model model) throws IOException {
-        List<UrlMapping> urlMappings =getUrlMappingByUrl(model);
-        if(Assert.isEmptyCollection(urlMappings)){
+        List<UrlMapping> urlMappings =getUrlMappingListByUrl(model);
+        RequestMethod requestMethod = model.getRequestMethod();
+
+        //URL验证
+        if(urlMappings.isEmpty()){
             if("".equals(model.getUri())){
-                WebFileUtils.preview(model, Resources.getInputStream("/lucky-web/LUCKY.html"),"LUCKY.html");
+                WebFileUtils.preview(model, LUCKY_PAGE_BYTE,"LUCKY.html");
                 return null;
             }
             model.error("404", "找不与请求相匹配的映射资,请检查您的URL是否正确！","不正确的url："+model.getUri());
             return null;
         }
-        UrlMapping urlMapping=null;
-        RequestMethod method=model.getRequestMethod();
-        for (UrlMapping mapping : urlMappings) {
-            if(mapping.methodIsEquals(method)){
-                urlMapping=mapping;
-                if(urlMapping.isDisable()){
-                    model.error("403","您请求的资源 "+model.getUri()+" 已被禁用！","资源已被禁用！");
-                    return null;
-                }
-                break;
-            }
-        }
-        if(urlMapping ==null){
-            model.error("403","您的请求类型["+method+"] , 当前方法并不支持！","不合法的请求类型["+method+"]!");
+
+        //RequestMethod验证 -> 剔除请求类型不匹配的UrlMapping
+        urlMappings.removeIf(map -> !map.methodIsEquals(requestMethod));
+        if(urlMappings.isEmpty()){
+            model.error("403","您的请求类型["+requestMethod+"] , 当前方法并不支持！","不合法的请求类型["+requestMethod+"]!");
             return null;
         }
-        String currIp=model.getIpAddr();
-        if("0:0:0:0:0:0:0:1".equals(currIp)){
-            currIp="127.0.0.1";
-        }
-        if (!urlMapping.ipExistsInRange(currIp) || !urlMapping.ipISCorrect(currIp)) {
-            model.error("403", "该ip地址没有被注册，服务器拒绝响应！", "不合法的请求ip：" + currIp);
+
+        final String finalCurrIp = model.getIpAddr();
+        //IP验证 -> 剔除不支持该IP地址的UrlMapping
+        urlMappings.removeIf(map->!map.ipExistsInRange(finalCurrIp) || !map.ipISCorrect(finalCurrIp));
+        if(urlMappings.isEmpty()){
+            model.error("403", "ip地址没有被注册，服务器拒绝响应！", "不合法的请求ip：" + finalCurrIp);
             return null;
         }
-        return urlMapping;
-    }
 
-    /**
-     * 根据当前请求的URL找到一个与之对应的URLMapping集合
-     * URL吻合，其他他条件待判断
-     * @param model 当前的Model对象
-     * @return
-     */
-    private List<UrlMapping> getUrlMappingByUrl(Model model){
-        List<UrlMapping> urlMapping = getByUrl(model);
-        Set<UrlMappingCollection> expandCollectSet = expandMap.keySet()
-                .stream()
-                .filter(k -> !deleteExpand.contains(k))
-                .map(expandMap::get).collect(Collectors.toSet());
-        for (UrlMappingCollection expandMappingCollection : expandCollectSet) {
-            urlMapping.addAll(expandMappingCollection.getByUrl(model));
+        //对剩下的UrlMapping进行排序，排序后选取第一个
+        Comparator<UrlMapping> comparator
+                =new UrlMappingComparator(antPathMatcher.getPatternComparator(model.getUri()));
+        urlMappings.sort(comparator);
+        UrlMapping mapping = urlMappings.get(0);
 
+        //禁用验证 -> 判断该UrlMapping是否已被禁用
+        if(mapping.isDisable()){
+            model.error("403","您请求的资源 "+model.getUri()+" 已被禁用！","资源已被禁用！");
+            return null;
         }
-        return urlMapping;
+
+        //设置Rest参数
+        model.setRestParams(antPathMatcher.extractUriTemplateVariables(mapping.getUrl(),model.getUri()));
+        return mapping;
+
+//        UrlMapping urlMapping=null;
+//        RequestMethod method=model.getRequestMethod();
+//        for (UrlMapping mapping : urlMappings) {
+//            if(mapping.methodIsEquals(method)){
+//                urlMapping=mapping;
+//                if(urlMapping.isDisable()){
+//                    model.error("403","您请求的资源 "+model.getUri()+" 已被禁用！","资源已被禁用！");
+//                    return null;
+//                }
+//                break;
+//            }
+//        }
+//        if(urlMapping ==null){
+//            model.error("403","您的请求类型["+method+"] , 当前方法并不支持！","不合法的请求类型["+method+"]!");
+//            return null;
+//        }
+//        String currIp=model.getIpAddr();
+//        if("0:0:0:0:0:0:0:1".equals(currIp)){
+//            currIp="127.0.0.1";
+//        }
+//        if (!urlMapping.ipExistsInRange(currIp) || !urlMapping.ipISCorrect(currIp)) {
+//            model.error("403", "该ip地址没有被注册，服务器拒绝响应！", "不合法的请求ip：" + currIp);
+//            return null;
+//        }
+//        return urlMapping;
     }
+
+//    /**
+//     * 根据当前请求的URL找到一个与之对应的URLMapping集合
+//     * URL吻合，其他他条件待判断
+//     * @param model 当前的Model对象
+//     * @return
+//     */
+//    private List<UrlMapping> getUrlMappingByUrl(Model model){
+//        List<UrlMapping> urlMapping = getUrlMappingListByUrl(model);
+//        Set<UrlMappingCollection> expandCollectSet = expandMap.keySet()
+//                .stream()
+//                .filter(k -> !deleteExpand.contains(k))
+//                .map(expandMap::get).collect(Collectors.toSet());
+//        for (UrlMappingCollection expandMappingCollection : expandCollectSet) {
+//            urlMapping.addAll(expandMappingCollection.getUrlMappingListByUrl(model));
+//        }
+//        Comparator<UrlMapping> comparator
+//                =new UrlMappingComparator(antPathMatcher.getPatternComparator(model.getUri()));
+//        urlMapping.sort(comparator);
+//        return urlMapping;
+//    }
 
     /**
      * 找到可以处理当前URL的映射集合
      * @param model 当前的Model对象
      * @return
      */
-    private List<UrlMapping> getByUrl(Model model){
+    private List<UrlMapping> getUrlMappingListByUrl(Model model) throws IOException {
         List<UrlMapping> mappings=new ArrayList<>();
+        List<UrlMapping> allUrlMapping = getAllUrlMapping();
         String url=model.getUri();
-        for (UrlMapping urlMapping : list) {
-            if((urlMapping.findingRestUelIsEquals(model, url))
-              ||(urlMapping.simpleUrlIsEquals(url))){
+        for (UrlMapping urlMapping : allUrlMapping) {
+            String urlPattern = urlMapping.getUrl();
+            boolean isMatch=antPathMatcher.isPattern(urlPattern)?
+                    antPathMatcher.match(urlPattern,url):
+                    urlPattern.equals(url);
+            if(isMatch){
                 mappings.add(urlMapping);
             }
+//            if((urlMapping.findingRestUelIsEquals(model, url))
+//              ||(urlMapping.simpleUrlIsEquals(url))){
+//                mappings.add(urlMapping);
+//            }
         }
-
         return mappings;
     }
 
@@ -357,6 +413,7 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
         for (UrlMapping urlMapping : collection) {
             add(urlMapping,false);
         }
+        allMapping.clear();
         return true;
     }
 
@@ -377,6 +434,7 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
                 }
             }
         }
+        allMapping.clear();
         return true;
     }
 
@@ -385,19 +443,40 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
      * @param id 唯一ID
      * @return 能找到返回UrlMapping，否则返回NULL
      */
-    public UrlMapping getUrlMappingById(String id){
-        for (UrlMapping urlMapping : list) {
+    public UrlMapping getUrlMappingById(@NonNull String id){
+        Assert.notNull(id,"Incoming ID is null!");
+        List<UrlMapping> allUrlMapping = getAllUrlMapping();
+        for (UrlMapping urlMapping : allUrlMapping) {
             if(id.equals(urlMapping.getId())){
                 return urlMapping;
             }
         }
-        for (UrlMappingCollection urlMappingCollection : expandMap.values()) {
-            for (UrlMapping urlMapping : urlMappingCollection) {
-                if(id.equals(urlMapping.getId())){
-                    return urlMapping;
-                }
-            }
-        }
+//        for (UrlMapping urlMapping : list) {
+//            if(id.equals(urlMapping.getId())){
+//                return urlMapping;
+//            }
+//        }
+//        for (UrlMappingCollection urlMappingCollection : expandMap.values()) {
+//            for (UrlMapping urlMapping : urlMappingCollection) {
+//                if(id.equals(urlMapping.getId())){
+//                    return urlMapping;
+//                }
+//            }
+//        }
         return null;
+    }
+
+    private static class UrlMappingComparator implements  Comparator<UrlMapping>{
+
+        private Comparator<String> comparator;
+
+        public UrlMappingComparator(Comparator<String> comparator){
+            this.comparator=comparator;
+        }
+
+        @Override
+        public int compare(UrlMapping o1, UrlMapping o2) {
+            return comparator.compare(o1.getUrl(),o2.getUrl());
+        }
     }
 }

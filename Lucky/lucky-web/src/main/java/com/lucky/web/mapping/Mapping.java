@@ -1,5 +1,6 @@
 package com.lucky.web.mapping;
 
+import com.lucky.utils.io.utils.AntPathMatcher;
 import com.lucky.web.enums.Rest;
 
 import java.lang.reflect.Method;
@@ -11,6 +12,8 @@ import java.lang.reflect.Parameter;
  * @date 2020/11/26 上午12:27
  */
 public abstract class Mapping {
+
+    protected static final AntPathMatcher antPathMatcher=new AntPathMatcher();
 
     /** 映射的唯一ID*/
     protected String id;

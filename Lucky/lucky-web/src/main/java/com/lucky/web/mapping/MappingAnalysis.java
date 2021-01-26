@@ -1,6 +1,7 @@
 package com.lucky.web.mapping;
 
 import com.lucky.framework.container.Module;
+import com.lucky.utils.io.utils.AntPathMatcher;
 import com.lucky.web.annotation.*;
 import com.lucky.web.enums.Rest;
 
@@ -14,6 +15,8 @@ import java.lang.reflect.Method;
  * @date 2020/11/17 9:51
  */
 public interface MappingAnalysis {
+
+    AntPathMatcher antPathMatcher=new AntPathMatcher();
 
     Class<? extends Annotation>[] MAPPING_ANNOTATIONS=
             new Class[]{RequestMapping.class, GetMapping.class, PostMapping.class,

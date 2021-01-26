@@ -5,7 +5,7 @@ package com.lucky.utils.file;
  * @version 1.0.0
  * @date 2020/11/15 下午10:33
  */
-public abstract class LuckyFile {
+abstract class LuckyFile {
 
     public static final int BUFFER_SIZE = 4096;
 }

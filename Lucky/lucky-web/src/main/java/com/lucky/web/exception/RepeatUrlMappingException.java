@@ -11,11 +11,16 @@ import java.util.Arrays;
  */
 public class RepeatUrlMappingException extends RuntimeException{
 
-    public RepeatUrlMappingException(UrlMapping urlMapping){
-        super(String.format("URL映射重复定义异常！[%s],%s 已经被定义!错误位置：Controller:[%s] Method:[%s]"
-                , urlMapping.getUrl()
-                ,Arrays.toString(urlMapping.getMethods())
-                , urlMapping.getObject().getClass()
-                , urlMapping.getMapping().getName()));
+    public RepeatUrlMappingException(UrlMapping u1,UrlMapping u2){
+        super(String.format("URL映射语义重复异常！\n#\n### `%s%s` `%s%s` 存在语义重复问题!\n### 映射定义位置如下：\n### 1.%s#%s\n### 2.%s#%s\n#"
+                , Arrays.toString(u1.getMethods())
+                , u1.getUrl()
+                , Arrays.toString(u2.getMethods())
+                , u2.getUrl()
+                , u1.getMapping().getDeclaringClass()
+                , u1.getMapping().getName()
+                , u2.getMapping().getDeclaringClass()
+                , u2.getMapping().getName()
+        ));
     }
 }

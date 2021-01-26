@@ -61,7 +61,7 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
         for (Method method : mappingMethods) {
             final Rest rest = getRest(controllerClass, method);
             returnTypeCheck(rest,method);
-            String url=controllerUrl+getMethodUrl(method);
+            String url=antPathMatcher.combine(controllerUrl,getMethodUrl(method));
             urlMappingCollection.add(new UrlMapping(url,module.getId(),
                                 module.getType(),controller,
                                 method,getRequestMethod(method),
@@ -106,7 +106,6 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
             controllerUrl= AnnotationUtils.get(controllerClass,Controller.class).value();
         }
         controllerUrl=controllerUrl.startsWith("/")?controllerUrl:"/"+controllerUrl;
-        controllerUrl=controllerUrl.endsWith("/")?controllerUrl:controllerUrl+"/";
         return controllerUrl;
     }
 
@@ -118,7 +117,6 @@ public class DefaultMappingAnalysis implements MappingAnalysis{
     protected String getMethodUrl(Method method){
         Annotation annotation = AnnotationUtils.getByArray(method,MAPPING_ANNOTATIONS);
         String methodUrl= (String) AnnotationUtils.getValue(annotation,"value");
-        methodUrl=methodUrl.startsWith("/")?methodUrl.substring(1):methodUrl;
         methodUrl=methodUrl.endsWith("/")?methodUrl.substring(0,methodUrl.length()-1):methodUrl;
         return methodUrl;
     }

@@ -47,6 +47,18 @@ public abstract class Resources {
         return new BufferedReader(new InputStreamReader(getInputStream(filePath,charsetName)));
     }
 
+    public static byte[] getByteArray(String filePath,String charsetName){
+        try {
+            return FileUtils.copyToByteArray(getInputStream(filePath,charsetName));
+        } catch (IOException e) {
+            throw new ClasspathFileLoadException(filePath,e);
+        }
+    }
+
+    public static byte[] getByteArray(String filePath){
+        return getByteArray(filePath,"UTF-8");
+    }
+
     /**
      * 获取classpath下的一个Reader
      * @param filePath
@@ -60,6 +72,7 @@ public abstract class Resources {
         }
 
     }
+
 
     /**
      * 获取classpath下的一个Json文件，并将其转化为Java对象

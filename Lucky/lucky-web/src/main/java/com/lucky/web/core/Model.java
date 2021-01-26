@@ -628,7 +628,7 @@ public class Model {
         if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ipAddresses)) {
             ip = getRequest().getRemoteAddr();
         }
-        return ip;
+        return "0:0:0:0:0:0:0:1".equals(ip)?"127.0.0.1":ip;
     }
 
     /**
