@@ -28,6 +28,8 @@
         <module>lucky-web-management</module>
         <module>lucky-mybatis</module>
         <module>lucky-datasource</module>
+        <module>lucky-cloud-client</module>
+        <module>lucky-cloud-server</module>
     </modules>
     <url>https://github.com/FK7075/lucky</url>
 
