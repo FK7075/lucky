@@ -62,6 +62,8 @@ public class Model {
     private Map<String, String> restMap;
     /** Servlet输出流*/
     private ServletOutputStream outputStream;
+    /** RequestBody中的参数*/
+    private RequestBodyParam requestBodyParam;
 
     /**
      * Model构造器
@@ -105,6 +107,14 @@ public class Model {
         this.multipartFileMap = new HashMap<>();
         this.restMap = new HashMap<>();
         this.uploadFileMap = new HashMap<>();
+    }
+
+    public RequestBodyParam getRequestBodyParam() {
+        return requestBodyParam;
+    }
+
+    public void setRequestBodyParam(RequestBodyParam requestBodyParam) {
+        this.requestBodyParam = requestBodyParam;
     }
 
     /***

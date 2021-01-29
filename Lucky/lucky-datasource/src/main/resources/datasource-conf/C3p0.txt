@@ -1,0 +1,22 @@
+[C3p0]
+##连接池无空闲连接可用时，一次性创建的新连接数 默认值：3
+acquireIncrement=3
+##连接池初始化时创建的连接数 默认值：3
+initialPoolSize=3
+##连接池中拥有的最大连接数 默认值：15
+maxPoolSize=15
+##连接池保持的最小连接数
+minPoolSize=3
+##连接的最大空闲时间,如果超过这个时间，某个数据库连接还没有被使用，则会断开掉这个连接，如果为0，则永远不会断开连接。
+maxidleTime=0
+##这个配置主要时为了减轻连接池的负载，配置不为 0 则会将连接池中的连接数量保持到minPoolSize，为 0 则不处理
+maxConnectionAge=0
+##当连接池用完时客户端调用getConnection()后等待获取新连接的时间，超时后将抛出 SQLException,如设为0则无限期等待。单位毫秒。Default: 0
+checkoutTimeout=3000
+##连接池为数据源缓存的PreparedStatement的总数。由于PreparedStatement属于单个Connection
+##所有这个数量应该根据应用中平均连接数乘以每个连接的平均PreparedStatement来计算。为 0 的时候不缓存，同时maxStatementsPerConnection的配置无效
+maxStatements=0
+##连接池为数据源单个Connection缓存的PreparedStatement数，
+##这个配置比maxStatements更有意义，因为它缓存的服务对象是单个数据连接，如果配置的好，肯定是可以提高性能的。为 0 的时候不缓存
+maxStatementsPerConnection=0
+##设置为true时，每一次SQL操作都将会使用不同的Connection对象，默认false##

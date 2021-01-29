@@ -67,6 +67,9 @@ public abstract class Conversion {
         Class<?> fieldClass;
         String fieldName;
         for(Field field:targetFields){
+            if(field.isAnnotationPresent(NoConversion.class)){
+                continue;
+            }
             fieldClass=field.getType();
             field.setAccessible(true);
             fieldName="".equals(initialName)?field.getName():initialName+"."+field.getName();
