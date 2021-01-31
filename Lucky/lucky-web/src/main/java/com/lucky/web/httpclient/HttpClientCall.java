@@ -5,7 +5,7 @@ import com.lucky.web.conf.WebConfig;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.exception.HttpClientRequestException;
 import com.lucky.web.exception.NotFindRequestException;
-import com.lucky.web.httpclient.callcontroller.JSONObject;
+import com.lucky.web.core.BodyObject;
 import com.lucky.web.webfile.MultipartFile;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -376,7 +376,7 @@ public class HttpClientCall {
                 }
                 method=new HttpGet(builder.build());
             }
-            method.addHeader("Content-Type", Type.FROMKV.getContentType());
+            method.addHeader("Content-Type", Type.FROM_KV.getContentType());
             return method;
         } else if (requestMethod == RequestMethod.DELETE) {
             log.debug("HttpClient Request => [-DELETE-] " + url);
@@ -390,26 +390,26 @@ public class HttpClientCall {
                 }
                 method=new HttpDelete(builder.build());
             }
-            method.addHeader("Content-Type", Type.FROMKV.getContentType());
+            method.addHeader("Content-Type", Type.FROM_KV.getContentType());
             return method;
         } else if (requestMethod == RequestMethod.POST) {
             log.debug("HttpClient Request => [-POST-] " + url);
             HttpPost post;
             if (Assert.isEmptyMap(params)) {
                 post=new HttpPost(url);
-                post.addHeader("Content-Type",  Type.FROMKV.getContentType());
+                post.addHeader("Content-Type",  Type.FROM_KV.getContentType());
                 return post;
             }
-            JSONObject jsonObject = getJSONObject(params);
-            if(Assert.isNull(jsonObject)){
+            BodyObject bodyObject = getBodyObject(params);
+            if(Assert.isNull(bodyObject)){
                 post = new HttpPost(url);
                 post.setEntity(getUrlEncodedFormEntity(params));
-                post.addHeader("Content-Type",  Type.FROMKV.getContentType());
+                post.addHeader("Content-Type",  Type.FROM_KV.getContentType());
                 return post;
             }
             post=new HttpPost(getUrl(url,params));
-            post.addHeader("Content-Type",  Type.JSON.getContentType());
-            StringEntity stringEntity = new StringEntity(jsonObject.getJsonObject(),"UTF-8");
+            post.addHeader("Content-Type",  bodyObject.getContentType());
+            StringEntity stringEntity = new StringEntity(bodyObject.getBodyObject(),"UTF-8");
             post.setEntity(stringEntity);
             return post;
 
@@ -418,19 +418,19 @@ public class HttpClientCall {
             HttpPut put;
             if (Assert.isEmptyMap(params)) {
                 put=new HttpPut(url);
-                put.addHeader("Content-Type",  Type.FROMKV.getContentType());
+                put.addHeader("Content-Type",  Type.FROM_KV.getContentType());
                 return put;
             }
-            JSONObject jsonObject = getJSONObject(params);
-            if(Assert.isNull(jsonObject)){
+            BodyObject bodyObject = getBodyObject(params);
+            if(Assert.isNull(bodyObject)){
                 put = new HttpPut(url);
                 put.setEntity(getUrlEncodedFormEntity(params));
-                put.addHeader("Content-Type",  Type.FROMKV.getContentType());
+                put.addHeader("Content-Type",  Type.FROM_KV.getContentType());
                 return put;
             }
             put=new HttpPut(getUrl(url,params));
-            put.addHeader("Content-Type",  Type.JSON.getContentType());
-            StringEntity stringEntity = new StringEntity(jsonObject.getJsonObject(),"UTF-8");
+            put.addHeader("Content-Type",  bodyObject.getContentType());
+            StringEntity stringEntity = new StringEntity(bodyObject.getBodyObject(),"UTF-8");
             put.setEntity(stringEntity);
             return put;
 
@@ -544,11 +544,11 @@ public class HttpClientCall {
      * @param param 本次请求的参数列表
      * @return
      */
-    private static JSONObject getJSONObject(Map<String,Object> param){
+    private static BodyObject getBodyObject(Map<String,Object> param){
         Collection<Object> values = param.values();
         for (Object value : values) {
-            if(JSONObject.class.equals(value.getClass())){
-                return (JSONObject)value;
+            if(BodyObject.class.equals(value.getClass())){
+                return (BodyObject)value;
             }
         }
         return null;
@@ -566,7 +566,7 @@ public class HttpClientCall {
         }
         StringBuilder params=new StringBuilder();
         for(Map.Entry<String,Object> entry:param.entrySet()){
-            if(JSONObject.class.equals(entry.getValue().getClass())){
+            if(BodyObject.class.equals(entry.getValue().getClass())){
                 continue;
             }
             params.append(entry.getKey()).append("=").append(entry.getValue().toString()).append("&");

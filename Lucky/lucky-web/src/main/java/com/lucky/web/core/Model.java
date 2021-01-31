@@ -9,6 +9,7 @@ import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.error.ErrorPage;
 import com.lucky.web.exception.RealPathNotFoundException;
 import com.lucky.web.webfile.MultipartFile;
+import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,8 @@ public class Model {
     /** Servlet输出流*/
     private ServletOutputStream outputStream;
     /** RequestBody中的参数*/
-    private RequestBodyParam requestBodyParam;
+    private BodyObject bodyObject;
+    private String contentType;
 
     /**
      * Model构造器
@@ -95,12 +97,17 @@ public class Model {
     public void init(HttpServletRequest request, HttpServletResponse response){
         this.request = request;
         this.response = response;
+        this.contentType=new ServletRequestContext(request).getContentType();
         try {
             this.request.setCharacterEncoding("utf8");
             this.response.setCharacterEncoding("utf8");
             this.response.setHeader("Content-Type", "text/html;charset=utf-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
+        }
+        if(contentType!=null&&(contentType.toUpperCase().startsWith("APPLICATION/JSON")||
+                contentType.toUpperCase().startsWith("APPLICATION/XML"))){
+            this.bodyObject=new BodyObject(request);
         }
         this.uri=request.getRequestURI();
         this.parameterMap = getRequestParameterMap();
@@ -109,12 +116,16 @@ public class Model {
         this.uploadFileMap = new HashMap<>();
     }
 
-    public RequestBodyParam getRequestBodyParam() {
-        return requestBodyParam;
+    public String getContentType() {
+        return contentType;
     }
 
-    public void setRequestBodyParam(RequestBodyParam requestBodyParam) {
-        this.requestBodyParam = requestBodyParam;
+    public BodyObject getBodyObject() {
+        return bodyObject;
+    }
+
+    public void setBodyObject(BodyObject bodyObject) {
+        this.bodyObject = bodyObject;
     }
 
     /***

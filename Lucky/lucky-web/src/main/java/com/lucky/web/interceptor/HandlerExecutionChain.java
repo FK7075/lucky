@@ -31,6 +31,10 @@ public class HandlerExecutionChain {
         this(handler, (interceptors != null ? Arrays.asList(interceptors) : Collections.emptyList()));
     }
 
+    public boolean isEmpty(){
+        return interceptorList.isEmpty();
+    }
+
     public HandlerExecutionChain(Object handler, List<HandlerInterceptor> interceptorList) {
         if (handler instanceof HandlerExecutionChain) {
             HandlerExecutionChain originalChain = (HandlerExecutionChain) handler;

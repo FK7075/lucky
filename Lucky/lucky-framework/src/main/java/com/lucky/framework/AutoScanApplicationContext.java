@@ -72,13 +72,13 @@ public class AutoScanApplicationContext implements ApplicationContext{
 
     private void init(){
         JackLamb.welcome();
+        log.info("IOC container starts to initialize！ROOT-CLASS => `{}`",applicationBootClass);
         Scan scan= ScanFactory.createScan(applicationBootClass);
         registerMachine=RegisterMachine.getRegisterMachine();
         registerMachine.setScan(scan);
         registerMachine.init();
         singletonPool=registerMachine.getSingletonPool();
         isInit=true;
-        log.info("IOC container initialized successfully！ROOT-CLASS => `{}`",applicationBootClass);
     }
 
     @Override

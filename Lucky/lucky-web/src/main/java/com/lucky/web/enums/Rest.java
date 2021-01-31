@@ -1,32 +1,42 @@
 package com.lucky.web.enums;
 
-public enum Rest {
-	
-	
+import com.lucky.web.httpclient.IContentType;
+
+public enum Rest implements IContentType {
+
 	/**
 	 * 不做转换，执行转发或重定向
 	 */
-	NO,
+	NO(null),
 
 	/**
 	 * 返回TEXT格式数据
 	 */
-	TXT,
+	TXT("text/plain"),
 	
 	/**
 	 * 返回JSON格式数据
 	 */
-	JSON,
+	JSON("application/json"),
 	
 	/**
 	 * 返回XML格式数据
 	 */
-	XML
+	XML("application/xml");
 
 //	/**
 //	 * 返回JDK序列化后的数据
 //	 */
 //	JDK
-	
 
+	Rest(String contentType){
+		this.contentType=contentType;
+	}
+
+	private String contentType;
+
+	@Override
+	public String getContentType() {
+		return contentType;
+	}
 }

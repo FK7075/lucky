@@ -1,10 +1,13 @@
 package com.lucky.web.httpclient.callcontroller;
 
+import com.lucky.utils.base.Assert;
 import com.lucky.utils.proxy.ASMUtil;
 import com.lucky.utils.reflect.*;
 import com.lucky.web.annotation.*;
 import com.lucky.web.conf.WebConfig;
+import com.lucky.web.core.BodyObject;
 import com.lucky.web.enums.RequestMethod;
+import com.lucky.web.enums.Rest;
 import com.lucky.web.exception.JsonConversionException;
 import com.lucky.web.exception.NotMappingMethodException;
 import com.lucky.web.httpclient.HttpClientCall;
@@ -13,6 +16,7 @@ import com.lucky.web.webfile.MultipartFile;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -65,14 +69,21 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
             callapiMap=urlAndParamMap.getParamMap();
         }
 
+
+
         //文件下载的请求，服务将返回byte[]类型的结果
-        if(method.isAnnotationPresent(FileDownload.class)){
+        if(method.getReturnType()==byte[].class){
             return HttpClientCall.callByte(apiUrl,md.method[0],callapiMap);
         }
 
         //调用远程接口
         String callResult=call(apiUrl,method,callapiMap,md.method[0]);
 
+        //封装返回结果
+        return resultProcess(method,callResult,apiUrl);
+    }
+
+    public static Object resultProcess(Method method,String callResult,String apiUrl){
         //封装返回结果
         Type returnClass=method.getGenericReturnType();
         if(returnClass!=void.class){
@@ -102,7 +113,7 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
      * @throws URISyntaxException
      */
     private static String call(String url, Method method, Map<String,Object> params, RequestMethod requestMethod) throws IOException, URISyntaxException {
-        if(!method.isAnnotationPresent(FileUpload.class)) {
+        if(isMultipartFileMap(params)){
             return HttpClientCall.call(url,requestMethod,params);
         }
         return HttpClientCall.uploadFile(url,params);
@@ -116,15 +127,16 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
      * @throws IOException
      * @throws IllegalAccessException
      */
-    private static Map<String,Object> getParamMap(Method method,Object[] params) throws IOException, IllegalAccessException {
+    public static Map<String,Object> getParamMap(Method method,Object[] params) throws IOException, IllegalAccessException {
         Map<String,Object> callapiMap=new HashMap<>();
         Parameter[] parameters=method.getParameters();
         List<String> paramName= ASMUtil.getInterfaceMethodParamNames(method);
         String key=null;
         for(int i=0;i<parameters.length;i++) {
             if(AnnotationUtils.isExist(parameters[i], RequestBody.class)){
+                Rest rest=parameters[i].getAnnotation(RequestBody.class).value();
                 String serialization = webConfig.getJsonSerializationScheme().serialization(params[i]);
-                callapiMap.put(UUID.randomUUID().toString(),new JSONObject(serialization));
+                callapiMap.put(UUID.randomUUID().toString(),new BodyObject(serialization,rest.getContentType()));
                 continue;
             }
             Class<?> paramClass=params[i].getClass();
@@ -157,7 +169,7 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
     }
 
     //处理Rest参数的内部类
-    class UrlAndParamMap{
+    public static class UrlAndParamMap{
         private String url;
         private Map<String,Object> paramMap;
 
@@ -193,6 +205,21 @@ public class CallControllerMethodInterceptor implements MethodInterceptor {
             this.paramMap=paramMap;
             this.url=newUrl.toString();
         }
+    }
 
+    public static boolean isMultipartFileMap(Map<String,Object> params){
+        if(Assert.isEmptyMap(params)){
+            return false;
+        }
+        for(Map.Entry<String,Object> entry:params.entrySet()){
+            Object paramValue = entry.getValue();
+            if(paramValue instanceof File[]){
+                return true;
+            }
+            if(paramValue instanceof MultipartFile[]){
+                return true;
+            }
+        }
+        return false;
     }
 }

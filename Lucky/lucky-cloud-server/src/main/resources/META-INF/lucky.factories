@@ -1,0 +1,5 @@
+# SpareComponents
+com.lucky.framework.scan.SpareComponents=\
+com.lucky.cloud.server.controller.LuckyCloudHttpServerController,\
+com.lucky.cloud.server.controller.ServerWorkCheck
+

@@ -3,6 +3,7 @@ package com.lucky.web.core.parameter.analysis;
 import com.lucky.utils.conversion.JavaConversion;
 import com.lucky.utils.file.*;
 import com.lucky.web.annotation.RequestBody;
+import com.lucky.web.core.BodyObject;
 import com.lucky.web.core.Model;
 import com.lucky.web.core.parameter.ParameterAnalysisException;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
@@ -34,12 +35,15 @@ public class RequestBodyParameterAnalysis implements ParameterAnalysis{
 
     @Override
     public Object analysis(Model model, Method method, Parameter parameter, Type genericParameterType, String asmParamName) throws Exception{
-        HttpServletRequest request = model.getRequest();
-        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
-        StringWriter sw = new StringWriter();
-        FileUtils.copy(br,sw);
-        String requestBody = sw.toString();
-        String contentType = new ServletRequestContext(request).getContentType().toUpperCase();
+//        HttpServletRequest request = model.getRequest();
+//        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+//        StringWriter sw = new StringWriter();
+//        FileUtils.copy(br,sw);
+//        String requestBody = sw.toString();
+//        String contentType = new ServletRequestContext(request).getContentType().toUpperCase();
+        BodyObject bodyObject = model.getBodyObject();
+        String requestBody = bodyObject.getBodyObject();
+        String contentType = bodyObject.getContentType().toUpperCase();
         Class<?> parameterType = parameter.getType();
         if(contentType.startsWith("APPLICATION/JSON")){
             try {

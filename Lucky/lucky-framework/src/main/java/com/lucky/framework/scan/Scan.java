@@ -57,12 +57,10 @@ public abstract class Scan {
 		//从lucky.factories文件中加载组件
 		List<String> spareComponents = LuckyFactoryLoader.loadFactoryNames(SpareComponents.class, loader);
 		 for (String spareComponent : spareComponents) {
-			 Class<?> aClass = ClassUtils.forName(spareComponent, loader);
-			 if(!AnnotationUtils.strengthenIsExist(aClass,Component.class)){
-			 	if(!exclusions.contains(aClass)){
-					componentClass.add(aClass);
-				}
-			 }
+		 	Class<?> aClass = ClassUtils.forName(spareComponent, loader);
+			if(!exclusions.contains(aClass)){
+				componentClass.add(aClass);
+			}
 		 }
 		 //加载Jar包中Bean的Class信息
 		 loadJarExpand(applicationBootClass);

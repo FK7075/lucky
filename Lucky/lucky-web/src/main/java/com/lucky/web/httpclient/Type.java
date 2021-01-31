@@ -7,8 +7,10 @@ package com.lucky.web.httpclient;
  */
 public enum Type implements IContentType {
 
-    JSON("application/json;charset=UTF-8"),
-    FROMKV("application/x-www-form-urlencoded");
+    JSON("application/json"),
+    FROM_KV("application/x-www-form-urlencoded"),
+    TXT("text/plain"),
+    XML("application/xml");
 
 
     private String contentType;

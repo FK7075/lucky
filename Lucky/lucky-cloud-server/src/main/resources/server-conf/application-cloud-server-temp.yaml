@@ -1,0 +1,6 @@
+cloud-server:
+  application-name: APP-NAME #服务名
+  address: 127.0.0.1 #本机地址
+  agreement: HTTP/HTTPS #协议
+  register-yourself: false #是否向注册中心注册自己
+  detection-interval: 1000*5 #心跳检测的时间间隔(单位:ms)

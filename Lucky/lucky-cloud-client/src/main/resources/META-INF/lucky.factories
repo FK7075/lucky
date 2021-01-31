@@ -1,0 +1,8 @@
+# @Configuration
+com.lucky.framework.annotation.Configuration=\
+com.lucky.cloud.client.beanfactory.LuckyCloudHttpClientAutoConfigBean
+
+# SpareComponents
+com.lucky.framework.scan.SpareComponents=\
+com.lucky.cloud.client.controller.LuckyCloudHttpClientController
+

@@ -44,6 +44,16 @@ public interface Server {
     String getAgreement();
 
     /**
+     * 获取服务的域
+     */
+    String getDomain();
+
+    /**
+     * 是否正常工作
+     */
+    boolean isNormalWork();
+
+    /**
      * 资源调用
      * @param resource 资源定位符
      * @param param 参数列表

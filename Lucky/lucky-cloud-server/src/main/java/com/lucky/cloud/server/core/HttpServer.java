@@ -3,10 +3,12 @@ package com.lucky.cloud.server.core;
 import com.lucky.utils.base.Assert;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.httpclient.HttpClientCall;
+import com.lucky.web.httpclient.callcontroller.CallControllerMethodInterceptor;
 import com.lucky.web.webfile.MultipartFile;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -14,13 +16,14 @@ import java.util.Map;
  * @version 1.0
  * @date 2021/1/28 0028 11:31
  */
-public class HttpServer implements Server{
+public class HttpServer implements Server {
 
-    private String name;
-    private String ip;
-    private Integer port;
-    private Date ctime;
-    private String agreement;
+    private final static String IS_NORMAL_WORK_RESOURCE="/lucky/workState";
+    private final String name;
+    private final String ip;
+    private final Integer port;
+    private final Date ctime;
+    private final String agreement;
 
     public HttpServer(String name, String ip, Integer port){
         this(name,ip,port,"HTTP");
@@ -70,11 +73,31 @@ public class HttpServer implements Server{
     }
 
     @Override
+    public String getDomain() {
+        return agreement.toLowerCase()+"://"+ip+":"+port;
+    }
+
+    @Override
+    public boolean isNormalWork() {
+
+        try {
+            Object result = call(IS_NORMAL_WORK_RESOURCE, new HashMap<>(), RequestMethod.GET);
+            if(result instanceof String){
+                String resultStr= (String) result;
+                return "UP".equals(resultStr);
+            }
+            return false;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    @Override
     public Object call(String resource, Map<String, Object> param, Object method) throws Exception {
         Assert.notNull(resource,"未指定请求的资源！resource is null");
         String resourceURL=getResourceURL(resource);
         RequestMethod requestMethod= (RequestMethod) method;
-        if(isMultipartFileMap(param)){
+        if(CallControllerMethodInterceptor.isMultipartFileMap(param)){
             return HttpClientCall.uploadFile(resourceURL, param);
         }
         return HttpClientCall.call(resourceURL, requestMethod, param);
@@ -82,23 +105,7 @@ public class HttpServer implements Server{
 
     private String getResourceURL(String resource){
         resource=resource.startsWith("/")?resource:"/"+resource;
-        return agreement.toLowerCase()+"://"+ip+":"+port+resource;
-    }
-
-    private boolean isMultipartFileMap(Map<String,Object> params){
-        if(Assert.isEmptyMap(params)){
-            return false;
-        }
-        for(Map.Entry<String,Object> entry:params.entrySet()){
-            Object paramValue = entry.getValue();
-            if(paramValue instanceof File[]){
-                return true;
-            }
-            if(paramValue instanceof MultipartFile[]){
-                return true;
-            }
-        }
-        return false;
+        return getDomain()+resource;
     }
 
     @Override

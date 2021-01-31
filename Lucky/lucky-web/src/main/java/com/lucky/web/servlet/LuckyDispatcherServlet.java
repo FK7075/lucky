@@ -81,7 +81,7 @@ public class LuckyDispatcherServlet extends BaseServlet {
             if(exceptionMapping==null){
 
                 //拦截器的afterCompletion()方法执行
-                if(executionChain!=null){
+                if(executionChain!=null&&!executionChain.isEmpty()){
                     executionChain.triggerAfterCompletion(model,(Exception) e);
                     return;
                 }
