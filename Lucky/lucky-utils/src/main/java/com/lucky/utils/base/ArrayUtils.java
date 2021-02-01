@@ -1,6 +1,8 @@
 package com.lucky.utils.base;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,5 +28,9 @@ public abstract class ArrayUtils {
         Object[] array=new Object[list.size()];
         list.toArray(array);
         return (T[]) array;
+    }
+
+    public static InputStream byteArrayToInputStream(byte[] byteData){
+        return new ByteArrayInputStream(byteData);
     }
 }

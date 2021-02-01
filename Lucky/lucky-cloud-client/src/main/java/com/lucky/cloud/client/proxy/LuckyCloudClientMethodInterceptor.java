@@ -5,18 +5,18 @@ import com.lucky.cloud.client.annotation.RegistryRequest;
 import com.lucky.cloud.client.annotation.ServerRequest;
 import com.lucky.cloud.client.core.ServiceCall;
 import com.lucky.utils.proxy.CglibProxy;
-import com.lucky.utils.reflect.*;
+import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.web.annotation.RequestMapping;
 import com.lucky.web.enums.RequestMethod;
-import com.lucky.web.httpclient.callcontroller.CallControllerMethodInterceptor;
 import com.lucky.web.mapping.MappingAnalysis;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
+
+import static com.lucky.web.httpclient.HttpProxyUtils.*;
 
 /**
  * @author fk7075
@@ -38,34 +38,33 @@ public class LuckyCloudClientMethodInterceptor implements MethodInterceptor {
             Class<?> targetClass=CglibProxy.getOriginalType(target.getClass());
             String registry = luckyClient.registry();
             String serverName = luckyClient.value();
-            String resource = getResource(targetClass, method);
+            //处理Rest风格URL中的{xxx}参数
+            UrlAndParamMap urlAndParamMap
+                    = new UrlAndParamMap(getResource(targetClass, method), getParamMap(method, params));
+            String resource = urlAndParamMap.getUrl();
+            Map<String, Object> paramMap = urlAndParamMap.getParamMap();
             RequestMethod requestMethod = getRequestMethod(method);
-            Map<String, Object> paramMap = getParamMap(method, params);
-            //处理Rest风格的参数
-            if(resource.contains("{")&&resource.contains("}")){
-                CallControllerMethodInterceptor.UrlAndParamMap urlAndParamMap
-                        = new CallControllerMethodInterceptor.UrlAndParamMap(resource, paramMap);
-                resource=urlAndParamMap.getUrl();
-                paramMap=urlAndParamMap.getParamMap();
-            }
-            boolean isByte = isReturnByte(method);
-            Object result;
-            if(isRegistryRequest(targetClass, method)){
-                result=ServiceCall.callByRegistry(registry,serverName,resource,paramMap,requestMethod,isByte);
-            }else{
-                result=ServiceCall.callByServer(registry,serverName,resource,paramMap,requestMethod,isByte);
-            }
-            return isByte?result:CallControllerMethodInterceptor.resultProcess(method,(String)result,resource);
+            int callType = getCallType(method,paramMap);
+            Object result=isRegistryRequest(targetClass, method)
+                    ?ServiceCall.callByRegistry(registry,serverName,resource,paramMap,requestMethod,callType)
+                    :ServiceCall.callByServer(registry,serverName,resource,paramMap,requestMethod,callType);
+            return resultProcess(method,result,resource);
         }
         return methodProxy.invokeSuper(target,params);
     }
 
 
-    private RequestMethod getRequestMethod(Method method){
-        return AnnotationUtils.strengthenGet(method, RequestMapping.class).get(0).method()[0];
-    }
-
+    /**
+     * 请求方式是否为 [注册中心转发]
+     * @param targetClass 代理类的Class
+     * @param method 代理方法
+     * @return Y->true; N->false
+     */
     private boolean isRegistryRequest(Class<?> targetClass,Method method){
+        //如果是文件拉取类型的请求，必须要直接请求对应的服务
+        if(isFileRequest(method)){
+            return false;
+        }
         if(method.isAnnotationPresent(ServerRequest.class)){
             return false;
         }
@@ -73,10 +72,6 @@ public class LuckyCloudClientMethodInterceptor implements MethodInterceptor {
             return true;
         }
         return !targetClass.isAnnotationPresent(ServerRequest.class);
-    }
-
-    private boolean isReturnByte(Method method){
-        return method.getReturnType()==byte[].class;
     }
 
     private String getResource(Class<?> targetClass,Method method){
@@ -92,9 +87,5 @@ public class LuckyCloudClientMethodInterceptor implements MethodInterceptor {
             methodUrl=classUrl+methodUrl;
         }
         return methodUrl;
-    }
-
-    private Map<String,Object> getParamMap(Method method, Object[] params) throws IllegalAccessException, IOException {
-        return CallControllerMethodInterceptor.getParamMap(method, params);
     }
 }

@@ -7,12 +7,10 @@ import java.util.regex.Pattern;
 
 public abstract class Regular {
 
-    /**
-     * ${}
-     */
-    public static final String $_$="\\$\\{[\\w|:|\\[|\\]|.|(|)|-]+\\}";
-
-    public static final String Sharp="\\#\\{[\\w|:|\\[|\\]|.|-]+\\}";
+    /** ${}*/
+    public static final String $_$="\\$\\{[\\S\\s]+?\\}";
+    /** #{} */
+    public static final String Sharp="\\#\\{[\\S\\s]+?\\}";
 
     public static final String SQL_PLACEHOLDER="(\\@:[_a-zA-Z][_a-zA-Z0-9]*|\\?\\d+|\\?(c|e|C|D)\\d+|\\?(c|e|C|D)|\\?)";
 

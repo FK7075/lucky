@@ -4,16 +4,15 @@ import com.lucky.cloud.client.conf.LuckyCloudClientConfig;
 import com.lucky.utils.base.Assert;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.httpclient.HttpClientCall;
-import com.lucky.web.httpclient.callcontroller.CallControllerMethodInterceptor;
-import com.lucky.web.webfile.MultipartFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.lucky.web.httpclient.HttpProxyUtils.call;
 
 /**
  * @author fk7075
@@ -24,7 +23,6 @@ public class ServiceCall {
 
     private static final Logger log = LoggerFactory.getLogger("c.l.c.c.c.ServiceCall");
     private static final LuckyCloudClientConfig client=LuckyCloudClientConfig.getLuckyCloudClientConfig();
-
 
     /**
      * 注册一个服务
@@ -37,7 +35,7 @@ public class ServiceCall {
                 HttpClientCall.getCall(zone.getValue(),getParamMap());
                 log.info("Service `{}` has been successfully registered to {}",client.getName(),zone.getValue());
             }catch (Exception e){
-                throw new ServiceRegistrationException(client.getName(),zone.getValue(),e);
+                throw new ServiceRegistrationException(zone.getKey(),zone.getValue(),e);
             }
         }
     }
@@ -100,18 +98,18 @@ public class ServiceCall {
      * @param serverName 服务名
      * @param resource 资源名
      * @param param 参数列表
-     * @param method 请求类型
-     * @param isByte 返回值是否为文件类型
+     * @param method 请求使用的方法[GET/POST/DELETE/PUT/...]
+     * @param callType 请求类型[文件请求/字符串请求/byte[]请求/InputStream请求]
      * @return
      * @throws IOException
      * @throws URISyntaxException
      */
     public static Object callByRegistry(String registry,String serverName,
                                         String resource, Map<String,Object> param,
-                                        RequestMethod method,boolean isByte ) throws IOException, URISyntaxException {
+                                        RequestMethod method,int callType ) throws IOException, URISyntaxException {
         String registryArea = getRegistryArea(registry);
         String apiURL = getApiURL(registryArea+"/"+serverName,resource);
-        return call(apiURL,method,param,isByte);
+        return call(apiURL,method,param,callType);
     }
 
 
@@ -121,26 +119,16 @@ public class ServiceCall {
      * @param serverName 服务名
      * @param resource 资源名
      * @param param 参数列表
-     * @param method 请求类型
-     * @param isByte 返回值是否为文件类型
+     * @param method 请求使用的方法[GET/POST/DELETE/PUT/...]
+     * @param callType 请求类型[文件请求/字符串请求/byte[]请求/InputStream请求]
      * @return
      * @throws IOException
      * @throws URISyntaxException
      */
     public static Object callByServer(String registry,String serverName,
                                String resource, Map<String,Object> param,
-                               RequestMethod method,boolean isByte) throws IOException, URISyntaxException {
+                               RequestMethod method,int callType) throws IOException, URISyntaxException {
         String apiURL = getApiURL(getServerArea(registry, serverName), resource);
-        return call(apiURL,method,param,isByte);
-    }
-
-    private static Object call(String apiURL,RequestMethod method,Map<String,Object> param,boolean isByte) throws IOException, URISyntaxException {
-        if(CallControllerMethodInterceptor.isMultipartFileMap(param)){
-            return HttpClientCall.uploadFile(apiURL, param);
-        }
-        if(isByte){
-            return HttpClientCall.callByte(apiURL,method,param);
-        }
-        return HttpClientCall.call(apiURL, method, param);
+        return call(apiURL,method,param,callType);
     }
 }

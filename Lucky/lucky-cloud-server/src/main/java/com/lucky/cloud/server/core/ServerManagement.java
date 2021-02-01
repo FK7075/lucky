@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +36,7 @@ public class ServerManagement {
         String name=server.getServerName();
         List<Server> servers = serverPool.get(name);
         if(Assert.isEmptyCollection(servers)){
-            servers=new ArrayList<>();
+            servers=new CopyOnWriteArrayList<>();
             servers.add(server);
             serverPool.put(name,servers);
             log.info("Service `{}` registered successfully!",server);

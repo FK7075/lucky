@@ -26,7 +26,6 @@ public class LuckyCloudHttpClientController extends LuckyController {
 
     @InitRun(1)
     public void registered(){
-        LuckyCloudClientConfig clientConfig=LuckyCloudClientConfig.getLuckyCloudClientConfig();
         ServiceCall.registered();
     }
 

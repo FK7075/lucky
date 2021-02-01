@@ -25,6 +25,7 @@ public class LuckyDispatcherServletInitializer implements WebApplicationInitiali
         ServletRegistration.Dynamic luckyDispatcherServlet = servletContext.addServlet("LuckyDispatcherServlet", new LuckyDispatcherServlet());
         luckyDispatcherServlet.setLoadOnStartup(0);
         luckyDispatcherServlet.addMapping("/");
+        luckyDispatcherServlet.setAsyncSupported(true);
         log.info("WebApplicationInitialize Add Servlet `name = LuckyDispatcherServlet mapping = [/] class = com.lucky.web.servlet.LuckyDispatcherServlet`");
     }
 }
