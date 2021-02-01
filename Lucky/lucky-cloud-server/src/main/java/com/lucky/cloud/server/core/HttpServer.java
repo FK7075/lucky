@@ -8,6 +8,7 @@ import com.lucky.web.httpclient.callcontroller.CallControllerMethodInterceptor;
 import com.lucky.web.webfile.MultipartFile;
 
 import java.io.File;
+import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,7 +81,6 @@ public class HttpServer implements Server {
 
     @Override
     public boolean isNormalWork() {
-
         try {
             Object result = call(IS_NORMAL_WORK_RESOURCE, new HashMap<>(), RequestMethod.GET);
             if(result instanceof String){
@@ -89,7 +89,7 @@ public class HttpServer implements Server {
             }
             return false;
         }catch (Exception e){
-            return false;
+            return e instanceof SocketTimeoutException;
         }
     }
 

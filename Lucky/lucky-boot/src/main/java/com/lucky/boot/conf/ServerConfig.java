@@ -43,10 +43,23 @@ public class ServerConfig extends LuckyConfig {
     private Integer closePort;
     /**关机命令*/
     private String shutdown;
-
     private String webapp;
-
     private String URIEncoding;
+
+    /** 排队数*/
+    private Integer acceptCount;
+    /** 最大连接数*/
+    private Integer maxConnections;
+    /** 线程池的最大线程数*/
+    private Integer maxThreads;
+    /** 最小线备用程数*/
+    private Integer minSpareThreads;
+    /** 连接超时时间*/
+    private Integer connectionTimeout;
+    /** 请求头最大长度kb*/
+    private Integer maxHttpHeaderSize;
+    /** #请请求体最大长度kb*/
+    private Integer maxSavePostSize;
 
     /**
      * 设置一个静态文件的储存库
@@ -202,6 +215,62 @@ public class ServerConfig extends LuckyConfig {
         this.filterList = filterList;
     }
 
+
+    public Integer getAcceptCount() {
+        return acceptCount;
+    }
+
+    public void setAcceptCount(Integer acceptCount) {
+        this.acceptCount = acceptCount;
+    }
+
+    public Integer getMaxConnections() {
+        return maxConnections;
+    }
+
+    public void setMaxConnections(Integer maxConnections) {
+        this.maxConnections = maxConnections;
+    }
+
+    public Integer getMaxThreads() {
+        return maxThreads;
+    }
+
+    public void setMaxThreads(Integer maxThreads) {
+        this.maxThreads = maxThreads;
+    }
+
+    public Integer getMinSpareThreads() {
+        return minSpareThreads;
+    }
+
+    public void setMinSpareThreads(Integer minSpareThreads) {
+        this.minSpareThreads = minSpareThreads;
+    }
+
+    public Integer getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public void setConnectionTimeout(Integer connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    public Integer getMaxHttpHeaderSize() {
+        return maxHttpHeaderSize;
+    }
+
+    public void setMaxHttpHeaderSize(Integer maxHttpHeaderSize) {
+        this.maxHttpHeaderSize = maxHttpHeaderSize;
+    }
+
+    public Integer getMaxSavePostSize() {
+        return maxSavePostSize;
+    }
+
+    public void setMaxSavePostSize(Integer maxSavePostSize) {
+        this.maxSavePostSize = maxSavePostSize;
+    }
 
     private ServerConfig(){
         servletList =new ArrayList<>();

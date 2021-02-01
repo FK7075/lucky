@@ -6,12 +6,17 @@ import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.utils.base.Assert;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.coyote.ProtocolHandler;
+import org.apache.coyote.http11.Http11Nio2Protocol;
+import org.apache.coyote.http11.Http11NioProtocol;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author fk
@@ -20,10 +25,11 @@ import java.util.List;
  */
 public class EmbeddedTomcat {
 
-    private Tomcat tomcat;
-    private ApplicationContext applicationContext;
-    private ServerConfig serverConf;
-    private Context context;
+    private final Tomcat tomcat;
+    private final ApplicationContext applicationContext;
+    private final ServerConfig serverConf;
+    private final Context context;
+    private Connector connector;
 
     public EmbeddedTomcat(Class<?> applicationClass,String[] args){
         applicationContext= AutoScanApplicationContext.create(applicationClass);
@@ -58,12 +64,31 @@ public class EmbeddedTomcat {
         tomcat.getHost().addChild(context);
     }
 
+    private void connectorConf() {
+        Http11NioProtocol handler  = (Http11NioProtocol) connector.getProtocolHandler();
+        Integer acceptCount = serverConf.getAcceptCount();
+        Integer maxThreads = serverConf.getMaxThreads();
+        Integer minSpareThreads = serverConf.getMinSpareThreads();
+        Integer maxConnections = serverConf.getMaxConnections();
+        Integer connectionTimeout = serverConf.getConnectionTimeout();
+        Integer maxHttpHeaderSize = serverConf.getMaxHttpHeaderSize();
+        Integer maxSavePostSize = serverConf.getMaxSavePostSize();
+        if(acceptCount!=null)handler.setAcceptCount(acceptCount);//最大等待队列长度
+        if(maxThreads!=null)handler.setMaxThreads(maxThreads);// 线程池的最大线程数
+        if(minSpareThreads!=null)handler.setMinSpareThreads(minSpareThreads);// 最小线程数
+        if(maxConnections!=null) handler.setMaxConnections(maxConnections);//最大链接数
+        if(connectionTimeout!=null) handler.setConnectionTimeout(connectionTimeout);// 超时时间
+        if(maxHttpHeaderSize!=null) handler.setMaxHttpHeaderSize(maxHttpHeaderSize);//请求头最大长度kb
+        if(maxSavePostSize!=null)handler.setMaxSavePostSize(maxSavePostSize);//请请求体最大长度kb
+    }
+
     /**
      * 启动Tomcat服务
      */
     private void start(){
         try {
-            tomcat.getConnector();
+            connector=tomcat.getConnector();
+            connectorConf();
             tomcat.init();
             tomcat.start();
         } catch (LifecycleException e) {

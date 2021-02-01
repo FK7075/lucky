@@ -136,6 +136,60 @@ public abstract class YamlParsing {
                         addFilter(server,filter);
                     }
                 }
+                if(serverMap.containsKey("tomcat")){
+                    Object tomcatNode = serverMap.get("tomcat");
+                    if(tomcatNode instanceof Map){
+                        Map<String,Object> tomcatMap= (Map<String, Object>) tomcatNode;
+                        Object acceptCount = tomcatMap.get("accept-count");
+                        if(acceptCount instanceof Integer){
+                            server.setAcceptCount((Integer) acceptCount);
+                        }else if(acceptCount!=null){
+                            server.setAcceptCount((Integer) JavaConversion.strToBasic(get(acceptCount.toString()).toString(),int.class,true));
+                        }
+
+                        Object connectionTimeout = tomcatMap.get("connection-timeout");
+                        if(connectionTimeout instanceof Integer){
+                            server.setConnectionTimeout((Integer) connectionTimeout);
+                        }else if(connectionTimeout!=null){
+                            server.setConnectionTimeout((Integer) JavaConversion.strToBasic(get(connectionTimeout.toString()).toString(),int.class,true));
+                        }
+
+                        Object minSpareThreads = tomcatMap.get("min-spare-threads");
+                        if(minSpareThreads instanceof Integer){
+                            server.setMinSpareThreads((Integer) minSpareThreads);
+                        }else if(minSpareThreads!=null){
+                            server.setMinSpareThreads((Integer) JavaConversion.strToBasic(get(minSpareThreads.toString()).toString(),int.class,true));
+                        }
+
+                        Object maxThreads = tomcatMap.get("max-threads");
+                        if(maxThreads instanceof Integer){
+                            server.setMaxThreads((Integer) maxThreads);
+                        }else if(maxThreads!=null){
+                            server.setMaxThreads((Integer) JavaConversion.strToBasic(get(maxThreads.toString()).toString(),int.class,true));
+                        }
+
+                        Object maxConnections = tomcatMap.get("max-connections");
+                        if(maxConnections instanceof Integer){
+                            server.setMaxConnections((Integer) maxConnections);
+                        }else if(maxConnections!=null){
+                            server.setMaxConnections((Integer) JavaConversion.strToBasic(get(maxConnections.toString()).toString(),int.class,true));
+                        }
+
+                        Object maxHttpHeaderSize = tomcatMap.get("max-http-header-size");
+                        if(maxHttpHeaderSize instanceof Integer){
+                            server.setMaxHttpHeaderSize((Integer) maxHttpHeaderSize);
+                        }else if(maxHttpHeaderSize!=null){
+                            server.setMaxHttpHeaderSize((Integer) JavaConversion.strToBasic(get(maxHttpHeaderSize.toString()).toString(),int.class,true));
+                        }
+
+                        Object maxSavePostSize = tomcatMap.get("max-save-post-size");
+                        if(maxSavePostSize instanceof Integer){
+                            server.setMaxSavePostSize((Integer) maxSavePostSize);
+                        }else if(maxSavePostSize!=null){
+                            server.setMaxSavePostSize((Integer) JavaConversion.strToBasic(get(maxSavePostSize.toString()).toString(),int.class,true));
+                        }
+                    }
+                }
             }
         }
     }
