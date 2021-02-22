@@ -10,13 +10,10 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.coyote.ProtocolHandler;
-import org.apache.coyote.http11.Http11Nio2Protocol;
 import org.apache.coyote.http11.Http11NioProtocol;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author fk
@@ -104,7 +101,9 @@ public class EmbeddedTomcat {
         tomcat.setPort(serverConf.getPort());
         tomcat.setBaseDir(baseDir);
         File webapps = new File(baseDir + "webapps"+File.separator+"ROOT");
-        if(!webapps.exists())webapps.mkdirs();
+        if(!webapps.exists()){
+            webapps.mkdirs();
+        }
         tomcat.getHost().setAutoDeploy(serverConf.isAutoDeploy());
         if (Assert.isNotNull(serverConf.getClosePort())) {
             tomcat.getServer().setPort(serverConf.getClosePort());

@@ -66,6 +66,8 @@ public class Model {
     /** RequestBody中的参数*/
     private BodyObject bodyObject;
     private String contentType;
+    /**异常是否已经处理*/
+    private boolean exceptionIsHandling;
 
     /**
      * Model构造器
@@ -97,6 +99,7 @@ public class Model {
     public void init(HttpServletRequest request, HttpServletResponse response){
         this.request = request;
         this.response = response;
+        this.exceptionIsHandling=false;
         this.contentType=new ServletRequestContext(request).getContentType();
         try {
             this.request.setCharacterEncoding("utf8");
@@ -114,6 +117,14 @@ public class Model {
         this.multipartFileMap = new HashMap<>();
         this.restMap = new HashMap<>();
         this.uploadFileMap = new HashMap<>();
+    }
+
+    public boolean isExceptionIsHandling() {
+        return exceptionIsHandling;
+    }
+
+    public void setExceptionIsHandling(boolean exceptionIsHandling) {
+        this.exceptionIsHandling = exceptionIsHandling;
     }
 
     public String getContentType() {

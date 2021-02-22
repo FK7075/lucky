@@ -49,7 +49,7 @@ public class DefaultMappingPreprocess implements MappingPreprocess {
     }
 
     @Override
-    public void methodDispose(Model model,WebConfig config) throws UnsupportedEncodingException {
+    public void methodDispose(Model model,WebConfig config) {
         if (config.isPostChangeMethod()&&model.getRequestMethod() == RequestMethod.POST) {
             String hihMeth = model.getParameter("_method");
             if (hihMeth != null) {

@@ -103,8 +103,8 @@ public abstract class Injection implements Namer {
             }
         }
         List<Field> fieldList = ArrayUtils.arrayToList(ClassUtils.getAllFields(beanClass))
-                .stream().filter((c)-> !Modifier.isFinal(c.getModifiers())&&!c.isAnnotationPresent(Autowired.class)
-                ).collect(Collectors.toList());
+                .stream().filter((c)-> !Modifier.isFinal(c.getModifiers())&&!c.isAnnotationPresent(Autowired.class))
+                .collect(Collectors.toList());
         mod.setInjection(true);
         PropertySource psAnn = beanClass.getAnnotation(PropertySource.class);
         if(psAnn!=null){

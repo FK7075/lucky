@@ -38,6 +38,8 @@ public interface HandlerInterceptor {
 
     /**
      * 该方法会在整个请求完成，即视图渲染结束之后执行。可以通过此方法实现一些资源清理、记录日志信息等工作。
+     * 注意：拦截器不能处理被异常处理器标记要处理的异常，如果你想只让本拦截器处理异常，并且让其他拦截器忽略此异常
+     * 可以使用{@link Model#setExceptionIsHandling(boolean)}方法
      * @param model Model对象
      * @param handler 处理当前请求的UrlMapping对象
      * @param ex 如果没有出现异常，此参数为NULL

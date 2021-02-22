@@ -108,6 +108,9 @@ public class HandlerExecutionChain {
         for (int i = this.interceptorIndex; i >= 0; i--) {
             HandlerInterceptor interceptor = this.interceptorList.get(i);
             try {
+                if(model.isExceptionIsHandling()){
+                    ex=null;
+                }
                 interceptor.afterCompletion(model, this.handler, ex);
             }
             catch (Throwable ex2) {
