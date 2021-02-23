@@ -13,32 +13,32 @@ import java.io.*;
 public abstract class ConfigUtils {
 
     public static final String LUCKY_CONFIG_LOCATION="lucky.conf.location";
-    public static final String DEFAULT_CONFIG_A="/application.yaml";
-    public static final String DEFAULT_CONFIG="/application.yml";
+    public static final String DEFAULT_CONFIG_YAML ="/application.yaml";
+    public static final String DEFAULT_CONFIG_YML ="/application.yml";
     private static YamlConfAnalysis yaml;
 
     public static YamlConfAnalysis getYamlConfAnalysis(){
         if(yaml==null){
-            Reader confReader=null;
-            String runYamlPath = System.getProperty(LUCKY_CONFIG_LOCATION);
-            if(Assert.isNotNull(runYamlPath)){
-                try {
-                    confReader=new BufferedReader(new InputStreamReader(new FileInputStream(runYamlPath),"UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }else if(Assert.isNotNull(Resources.getInputStream(DEFAULT_CONFIG_A))){
-                confReader= Resources.getReader(DEFAULT_CONFIG_A);
-            }else if(Assert.isNotNull(Resources.getInputStream(DEFAULT_CONFIG))){
-                confReader=Resources.getReader(DEFAULT_CONFIG);
-            }
-            if(confReader==null){
-                return null;
-            }
-            yaml=new YamlConfAnalysis(confReader);
+            yaml=new YamlConfAnalysis(getReader());
         }
         return yaml;
+    }
+
+    private static Reader getReader(){
+        String runYamlPath = System.getProperty(LUCKY_CONFIG_LOCATION);
+        if(Assert.isNotNull(runYamlPath)){
+            try {
+                return new BufferedReader(new InputStreamReader(new FileInputStream(runYamlPath),"UTF-8"));
+            } catch (UnsupportedEncodingException | FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if(Assert.isNotNull(Resources.getInputStream(DEFAULT_CONFIG_YAML))){
+            return Resources.getReader(DEFAULT_CONFIG_YAML);
+        }
+        if(Assert.isNotNull(Resources.getInputStream(DEFAULT_CONFIG_YML))){
+            return Resources.getReader(DEFAULT_CONFIG_YML);
+        }
+        return null;
     }
 }
