@@ -196,6 +196,12 @@
                 <artifactId>lucky-cloud-client</artifactId>
                 <version>${lucky.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.lucky.jacklamb</groupId>
+                <artifactId>lucky-solr</artifactId>
+                <version>${lucky.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

@@ -30,6 +30,7 @@
         <module>lucky-datasource</module>
         <module>lucky-cloud-client</module>
         <module>lucky-cloud-server</module>
+        <module>lucky-solr</module>
     </modules>
     <url>https://github.com/FK7075/lucky</url>
 
