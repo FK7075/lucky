@@ -8,6 +8,7 @@ import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.container.factory.Namer;
 import com.lucky.mybatis.annotation.Mapper;
 import com.lucky.mybatis.conf.MybatisConfig;
+import com.lucky.mybatis.proxy.SqlSessionTemplate;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.file.*;
 import com.lucky.utils.fileload.Resource;
@@ -86,7 +87,8 @@ public class MybatisBeanFactory extends IOCBeanFactory {
                     }catch (Exception e){}
                     SqlSessionFactory sessionFactory
                             = new SqlSessionFactoryBuilder().build(configuration);
-                    mappers.add(new Module(getBeanId(mapperClass),TYPE,sessionFactory.openSession().getMapper(mapperClass)));
+                    SqlSessionTemplate sqlSessionTemplate=new SqlSessionTemplate(sessionFactory);
+                    mappers.add(new Module(getBeanId(mapperClass),TYPE,sqlSessionTemplate.getMapper(mapperClass)));
                 }
             }
         }

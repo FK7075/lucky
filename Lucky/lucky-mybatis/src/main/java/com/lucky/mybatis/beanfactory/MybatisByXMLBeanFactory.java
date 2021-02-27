@@ -5,6 +5,7 @@ import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.container.factory.Namer;
 import com.lucky.mybatis.annotation.Mapper;
+import com.lucky.mybatis.proxy.SqlSessionTemplate;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.file.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -32,7 +33,8 @@ public class MybatisByXMLBeanFactory extends IOCBeanFactory {
                 =new SqlSessionFactoryBuilder().build(reader);
         List<Class<?>> mapperPlugins = getPluginByAnnotation(Mapper.class);
         for (Class<?> mapperPlugin : mapperPlugins) {
-            Object mapper=sqlSessionFactory.openSession().getMapper(mapperPlugin);
+            SqlSessionTemplate sqlSessionTemplate=new SqlSessionTemplate(sqlSessionFactory);
+            Object mapper=sqlSessionTemplate.getMapper(mapperPlugin);
             mappers.add(new Module(getBeanId(mapperPlugin),TYPE,mapper));
         }
         return mappers;
