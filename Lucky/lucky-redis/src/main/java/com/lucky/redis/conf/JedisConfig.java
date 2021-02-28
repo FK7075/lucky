@@ -157,11 +157,16 @@ public class JedisConfig extends LuckyConfig {
     }
 
     public static JedisConfig getJedisConfig(){
-        JedisConfig jedisConfig = defaultJedisConfig();
-        if(jedisConfig.isFirst()){
-            YamlParsing.loadJedis(jedisConfig);
+        config = defaultJedisConfig();
+        if(config.isFirst()){
+            YamlParsing.loadJedis(config);
         }
-        return jedisConfig;
+        return config;
     }
 
+
+    @Override
+    public void loadYaml() {
+        YamlParsing.loadJedis(config);
+    }
 }

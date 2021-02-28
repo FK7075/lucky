@@ -94,4 +94,9 @@ public class LuckyCloudClientConfig extends LuckyConfig {
             throw new IllegalArgumentException("initialization cloud client failed: `Client port is empty！`");
         }
     }
+
+    @Override
+    public void loadYaml() {
+        YamlParsing.loadClient(clientConfig);
+    }
 }

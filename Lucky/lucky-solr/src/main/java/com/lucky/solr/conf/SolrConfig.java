@@ -69,4 +69,9 @@ public class SolrConfig extends LuckyConfig {
     public static SolrConfig getSolrConfig(){
         return conf;
     }
+
+    @Override
+    public void loadYaml() {
+
+    }
 }

@@ -304,7 +304,7 @@ public class ServerConfig extends LuckyConfig {
     }
 
     public static ServerConfig getServerConfig(){
-        ServerConfig serverConfig = defaultServerConfig();
+        serverConfig = defaultServerConfig();
         if(serverConfig.isFirst()){
             YamlParsing.loadServer(serverConfig);
         }
@@ -412,4 +412,8 @@ public class ServerConfig extends LuckyConfig {
     }
 
 
+    @Override
+    public void loadYaml() {
+        YamlParsing.loadServer(serverConfig);
+    }
 }

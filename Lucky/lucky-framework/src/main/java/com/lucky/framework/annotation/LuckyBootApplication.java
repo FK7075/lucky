@@ -43,13 +43,13 @@ public @interface LuckyBootApplication {
      *    2.注解类型Class<? extends Annotation><br/>
      *    3.{@link Exclusions}接口实现类的子类的Class
      */
-    Class[] exclusions() default {};
+    Class<?>[] exclusions() default {};
 
     /**
      * 配置的这些Class将会参与组件扫描<br/>
      *     1.组件类的Class 如：UserMapper.class<br/>
      *     3.{@link Imports}接口实现类的子类的Class
      */
-    Class[] imports() default {};
+    Class<?>[] imports() default {};
 
 }

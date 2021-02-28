@@ -279,17 +279,11 @@ public class SqlSessionTemplate implements SqlSession {
     private class SqlSessionInterceptor implements InvocationHandler {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            SqlSession sqlSession = sqlSessionFactory.openSession(true);
-            try {
-                Object result = method.invoke(sqlSession, args);
-                return result;
+            try (SqlSession sqlSession = sqlSessionFactory.openSession(true)) {
+                return method.invoke(sqlSession, args);
             } catch (Throwable t) {
-                log.error("",t);
+                log.error("", t);
                 throw new RuntimeException(t);
-            } finally {
-                if (sqlSession != null) {
-                    sqlSession.close();
-                }
             }
         }
     }

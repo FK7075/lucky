@@ -82,12 +82,16 @@ public class LuckyCloudServerConfig extends LuckyConfig {
     }
 
     public static LuckyCloudServerConfig getLuckyCloudServerConfig(){
-        LuckyCloudServerConfig clientConfig = defaultLuckyCloudServerConfig();
-        if(clientConfig.isFirst()){
-            YamlParsing.loadServer(clientConfig);
+        serverConfig = defaultLuckyCloudServerConfig();
+        if(serverConfig.isFirst()){
+            YamlParsing.loadServer(serverConfig);
         }
-        return clientConfig;
+        return serverConfig;
     }
 
 
+    @Override
+    public void loadYaml() {
+        YamlParsing.loadServer(serverConfig);
+    }
 }

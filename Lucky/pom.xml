@@ -31,6 +31,7 @@
         <module>lucky-cloud-client</module>
         <module>lucky-cloud-server</module>
         <module>lucky-solr</module>
+        <module>lucky-mongodb</module>
     </modules>
     <url>https://github.com/FK7075/lucky</url>
 

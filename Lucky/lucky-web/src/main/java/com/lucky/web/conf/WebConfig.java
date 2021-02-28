@@ -351,4 +351,10 @@ public class WebConfig extends LuckyConfig {
         }
         return webConfig;
     }
+
+    @Override
+    public void loadYaml() {
+        YamlParsing.loadWeb(webConfig);
+    }
+
 }

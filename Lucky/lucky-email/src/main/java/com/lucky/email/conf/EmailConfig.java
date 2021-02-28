@@ -114,4 +114,8 @@ public class EmailConfig extends LuckyConfig {
         return emailCfg;
     }
 
+    @Override
+    public void loadYaml() {
+        YamlParsing.loadEmail(emailCfg);
+    }
 }

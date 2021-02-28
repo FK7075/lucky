@@ -16,4 +16,7 @@ public abstract class LuckyConfig {
     public void setFirst(boolean first) {
         isFirst = first;
     }
+
+    public abstract void loadYaml();
+
 }

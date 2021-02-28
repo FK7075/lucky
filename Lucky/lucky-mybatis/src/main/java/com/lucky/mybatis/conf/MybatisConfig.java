@@ -108,12 +108,16 @@ public class MybatisConfig extends LuckyConfig {
     }
 
     public static MybatisConfig getMybatisConfig(){
-        MybatisConfig serverConfig = defaultMybatisConfig();
-        if(serverConfig.isFirst()){
-            YamlParsing.loadMyBatis(serverConfig);
+        mybatisConfig = defaultMybatisConfig();
+        if(mybatisConfig.isFirst()){
+            YamlParsing.loadMyBatis(mybatisConfig);
         }
-        return serverConfig;
+        return mybatisConfig;
     }
 
 
+    @Override
+    public void loadYaml() {
+        YamlParsing.loadMyBatis(mybatisConfig);
+    }
 }

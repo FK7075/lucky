@@ -88,10 +88,15 @@ public class ThymeleafConfig extends LuckyConfig {
     }
 
     public static ThymeleafConfig getThymeleafConfig(){
-        ThymeleafConfig conf = defaultThymeleafConfig();
+        conf = defaultThymeleafConfig();
         if(conf.isFirst()){
             YamlParsing.loadThymeleaf(conf);
         }
         return conf;
+    }
+
+    @Override
+    public void loadYaml() {
+        YamlParsing.loadThymeleaf(conf);
     }
 }
