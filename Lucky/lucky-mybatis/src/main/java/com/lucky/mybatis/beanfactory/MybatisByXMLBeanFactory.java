@@ -1,6 +1,6 @@
 package com.lucky.mybatis.beanfactory;
 
-import com.lucky.framework.annotation.Configuration;
+import com.lucky.framework.annotation.Component;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.container.factory.Namer;
@@ -19,9 +19,8 @@ import java.util.List;
  * @version 1.0
  * @date 2021/1/11 0011 9:43
  */
-@Configuration
+@Component
 public class MybatisByXMLBeanFactory extends IOCBeanFactory {
-
 
     private final static String TYPE="mybatis-mapper";
 

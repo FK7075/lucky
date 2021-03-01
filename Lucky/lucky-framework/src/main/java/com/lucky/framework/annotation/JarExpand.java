@@ -10,8 +10,8 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Imports {
+public @interface JarExpand {
 
-    Class<?>[] value();
+    String value();
 
 }

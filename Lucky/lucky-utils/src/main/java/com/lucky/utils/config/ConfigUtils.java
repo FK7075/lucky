@@ -19,6 +19,10 @@ public abstract class ConfigUtils {
 
     public static YamlConfAnalysis getYamlConfAnalysis(){
         if(yaml==null){
+            Reader reader = getReader();
+            if (reader==null){
+                return null;
+            }
             yaml=new YamlConfAnalysis(getReader());
         }
         return yaml;

@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 @Component
 public class MybatisPlusBeanFactory extends IOCBeanFactory {
 
-
     private final static String TYPE="mybatis-mapper";
     private final static MybatisConfig mybatisConfig=MybatisConfig.getMybatisConfig();
     private final ResourcePatternResolver resourcePatternResolver;
