@@ -117,7 +117,11 @@ public abstract class BaseServlet extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        AutoScanApplicationContext.create().destroy();
+        try {
+            AutoScanApplicationContext.create().close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

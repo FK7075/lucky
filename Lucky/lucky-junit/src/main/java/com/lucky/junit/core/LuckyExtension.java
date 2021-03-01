@@ -31,7 +31,7 @@ public class LuckyExtension implements BeforeAllCallback, AfterAllCallback,
 
     @Override
     public void afterAll(ExtensionContext extensionContext) throws Exception {
-        AutoScanApplicationContext.create().destroy();
+        AutoScanApplicationContext.create().close();
     }
 
     @Override

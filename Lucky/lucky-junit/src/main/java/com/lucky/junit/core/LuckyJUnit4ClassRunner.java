@@ -12,6 +12,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 
@@ -50,6 +51,10 @@ public class LuckyJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 	@Override
 	protected void runChild(FrameworkMethod method, RunNotifier notifier) {
 		super.runChild(method, notifier);
-		AutoScanApplicationContext.create().destroy();
-	}
+        try {
+            AutoScanApplicationContext.create().close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

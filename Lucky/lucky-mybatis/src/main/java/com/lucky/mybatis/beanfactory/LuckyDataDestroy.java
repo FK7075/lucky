@@ -3,6 +3,8 @@ package com.lucky.mybatis.beanfactory;
 import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.framework.container.factory.Destroy;
 
+import java.io.IOException;
+
 /**
  * @author fk7075
  * @version 1.0.0
@@ -11,7 +13,7 @@ import com.lucky.framework.container.factory.Destroy;
 public class LuckyDataDestroy implements Destroy {
 
     @Override
-    public void destroy() {
+    public void close() throws IOException {
         LuckyDataSourceManage.destroy();
     }
 }

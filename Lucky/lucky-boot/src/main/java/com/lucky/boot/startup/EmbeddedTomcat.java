@@ -152,7 +152,13 @@ public class EmbeddedTomcat {
      * Tomcat正常关闭时执行的销毁工作
      */
     private void doShutDownWork() {
-        Runtime.getRuntime().addShutdownHook(new Thread(applicationContext::destroy));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                applicationContext.close();
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
 }

@@ -184,9 +184,13 @@ public class AutoScanApplicationContext implements ApplicationContext{
     }
 
     @Override
-    public void destroy() {
-        getBean(Destroy.class).stream().forEach(d->d.destroy());
+    public void close() throws IOException {
+        getBean(Destroy.class).stream().forEach(d-> {
+            try {
+                d.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
-
-
 }

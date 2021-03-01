@@ -4,6 +4,8 @@ import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.container.factory.Destroy;
 import com.lucky.web.mapping.UrlMappingCollection;
 
+import java.io.IOException;
+
 /**
  * @author fk7075
  * @version 1.0.0
@@ -12,7 +14,7 @@ import com.lucky.web.mapping.UrlMappingCollection;
 public class WebDestroy implements Destroy {
 
     @Override
-    public void destroy() {
+    public void close() throws IOException {
         AutoScanApplicationContext applicationContext = AutoScanApplicationContext.create();
         if(applicationContext.isIOCId("lucky_UrlMappingCollection")){
             UrlMappingCollection urlMappingCollection = (UrlMappingCollection) applicationContext.getBean("lucky_UrlMappingCollection");
