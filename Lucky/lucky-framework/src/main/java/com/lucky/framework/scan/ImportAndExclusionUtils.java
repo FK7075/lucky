@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 public class ImportAndExclusionUtils {
 
     private static final Logger log= LoggerFactory.getLogger("c.l.f.scan.ImportAndExclusionUtils");
-    private ImportAndExclusion ie;
+    private final ImportAndExclusion ie;
 
     public ImportAndExclusionUtils(ClassLoader loader,Class<?> bootClass){
         ie=new ImportAndExclusion();
