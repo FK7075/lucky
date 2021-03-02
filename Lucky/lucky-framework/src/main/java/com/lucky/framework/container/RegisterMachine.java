@@ -89,9 +89,6 @@ public class RegisterMachine {
      */
     public void register(){
         Set<Class<?>> componentClasses=scan.getComponentClass();
-        componentClasses.addAll(
-                LuckyFactoryLoader.loadFactoryClasses(Configuration.class,loader)
-                        .stream().filter(c->!scan.exclusions(c)).collect(Collectors.toSet()));
 
         //实例化所有扫描到的Bean实例，并注入到IOC容器中
         for (Class<?> componentClass : componentClasses) {

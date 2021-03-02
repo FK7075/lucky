@@ -17,10 +17,10 @@ import com.lucky.utils.fileload.Resource;
 import com.lucky.utils.fileload.ResourcePatternResolver;
 import com.lucky.utils.fileload.resourceimpl.PathMatchingResourcePatternResolver;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
+import org.apache.ibatis.io.VFS;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 
@@ -58,17 +58,21 @@ public class MybatisPlusBeanFactory extends IOCBeanFactory {
             throw new BeanFactoryInitializationException("Mybatis BeanFactory initialization failed！ No data source is registered in the data source manager!");
         }
         Map<String, List<Class<?>>> mapperClassesMap = dbnameGroup();
+        Configuration configuration=new MybatisConfiguration();
+        TransactionFactory transactionFactory = new JdbcTransactionFactory();
+        configuration.setLogImpl(mybatisConfig.getLogImpl());
+        configuration.setMapUnderscoreToCamelCase(mybatisConfig.isMapUnderscoreToCamelCase());
+        mybatisConfig.getInterceptors().forEach(configuration::addInterceptor);
+        if(mybatisConfig.getTypeAliasesPackage()!=null){
+            configuration.getTypeAliasRegistry().registerAliases(mybatisConfig.getTypeAliasesPackage());
+        }
+        if(mybatisConfig.getVfsImpl()!=null){
+            configuration.setVfsImpl(mybatisConfig.getVfsImpl());
+        }
         for (LuckyDataSource luckyDataSource : allDataSource) {
             String dbname = luckyDataSource.getDbname();
-            Configuration configuration=new MybatisConfiguration();
-            TransactionFactory transactionFactory = new JdbcTransactionFactory();
             Environment environment = new Environment("development", transactionFactory, luckyDataSource.createDataSource());
             configuration.setEnvironment(environment);
-            configuration.setLogImpl(mybatisConfig.getLogImpl());
-            configuration.setMapUnderscoreToCamelCase(mybatisConfig.isMapUnderscoreToCamelCase());
-            if(mybatisConfig.getTypeAliasesPackage()!=null){
-                configuration.getTypeAliasRegistry().registerAliases(mybatisConfig.getTypeAliasesPackage());
-            }
             List<Class<?>> mapperClasses = mapperClassesMap.get(dbname);
             Resource[] resources;
             String mapperLocations = mybatisConfig.getMapperLocations();

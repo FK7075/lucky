@@ -1,5 +1,6 @@
 package com.lucky.framework.scan;
 
+import com.lucky.framework.annotation.Configuration;
 import com.lucky.framework.annotation.LuckyBootApplication;
 import com.lucky.framework.exception.AddJarExpandException;
 import com.lucky.framework.scan.exclusions.Exclusions;
@@ -24,19 +25,16 @@ import java.util.stream.Stream;
  */
 public class ImportAndExclusionUtils {
 
-    private static final Logger log= LoggerFactory.getLogger(ImportAndExclusionUtils.class);
+    private static final Logger log= LoggerFactory.getLogger("c.l.f.scan.ImportAndExclusionUtils");
     private ImportAndExclusion ie;
 
     public ImportAndExclusionUtils(ClassLoader loader,Class<?> bootClass){
         ie=new ImportAndExclusion();
         ie.addImportClasses(loadClassFromLuckyFactories(loader));
         if(bootClass!=null){
-            List<LuckyBootApplication> luckyBootApplications
-                    = AnnotationUtils.strengthenGet(bootClass, LuckyBootApplication.class);
-            List<com.lucky.framework.annotation.Imports> imports
-                    = AnnotationUtils.strengthenGet(bootClass, com.lucky.framework.annotation.Imports.class);
-            List<com.lucky.framework.annotation.Exclusions> exclusions
-                    = AnnotationUtils.strengthenGet(bootClass, com.lucky.framework.annotation.Exclusions.class);
+            List<LuckyBootApplication> luckyBootApplications = AnnotationUtils.strengthenGet(bootClass, LuckyBootApplication.class);
+            List<com.lucky.framework.annotation.Imports> imports = AnnotationUtils.strengthenGet(bootClass, com.lucky.framework.annotation.Imports.class);
+            List<com.lucky.framework.annotation.Exclusions> exclusions = AnnotationUtils.strengthenGet(bootClass, com.lucky.framework.annotation.Exclusions.class);
             List<com.lucky.framework.annotation.JarExpand> jarExpands = AnnotationUtils.strengthenGet(bootClass, com.lucky.framework.annotation.JarExpand.class);
             ie.merge(loadClassFromLuckyBootApplications(loader,luckyBootApplications));
             ie.merge(loadClassFromImportAndExclusionAnnotation(imports,exclusions));
@@ -49,17 +47,17 @@ public class ImportAndExclusionUtils {
     }
 
     /**
-     * 从lucky.factories文件中加载组件[key=com.lucky.framework.scan.SpareComponents]
+     * 从lucky.factories文件中加载组件
      * @param loader 类加载器
      * @return
      */
     public Set<Class<?>> loadClassFromLuckyFactories(ClassLoader loader){
         Set<Class<?>> fromLuckyFactoriesClasses=new HashSet<>();
-        List<String> spareComponents = LuckyFactoryLoader.loadFactoryNames(SpareComponents.class, loader);
-        for (String spareComponent : spareComponents) {
-            Class<?> aClass = ClassUtils.forName(spareComponent, loader);
-            fromLuckyFactoriesClasses.add(aClass);
-        }
+        Set<Class<?>> spareComponentClasses = LuckyFactoryLoader.loadFactoryNames(SpareComponents.class, loader)
+                .stream().map(cs->ClassUtils.forName(cs,loader)).collect(Collectors.toSet());
+        Set<Class<?>> configurationClasses = LuckyFactoryLoader.loadFactoryClasses(Configuration.class, loader);
+        fromLuckyFactoriesClasses.addAll(spareComponentClasses);
+        fromLuckyFactoriesClasses.addAll(configurationClasses);
         return fromLuckyFactoriesClasses;
     }
 

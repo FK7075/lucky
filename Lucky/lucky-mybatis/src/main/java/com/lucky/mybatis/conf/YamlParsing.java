@@ -4,7 +4,11 @@ import com.lucky.utils.base.Assert;
 import com.lucky.utils.config.ConfigUtils;
 import com.lucky.utils.config.YamlConfAnalysis;
 import com.lucky.utils.conversion.JavaConversion;
+import com.lucky.utils.reflect.ClassUtils;
+import org.apache.ibatis.io.VFS;
+import org.apache.ibatis.plugin.Interceptor;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,6 +60,16 @@ public abstract class YamlParsing {
                 }
                 if(mybatisMap.containsKey("log-impl")){
                     conf.setLogImpl(get(mybatisMap.get("log-impl")).toString());
+                }
+                if (mybatisMap.containsKey("interceptors")){
+                    List<String> interceptorsStr= (List<String>) mybatisMap.get("interceptors");
+                    for (String str : interceptorsStr) {
+                        conf.addInterceptor((Class<? extends Interceptor>) ClassUtils.getClass(get(str).toString()));
+                    }
+                }
+                if(mybatisMap.containsKey("vfs-impl")){
+                    String vfsStr= (String) mybatisMap.get("vfs-impl");
+                    conf.setVfsImpl((Class<? extends VFS>) ClassUtils.getClass(get(vfsStr).toString()));
                 }
             }
         }

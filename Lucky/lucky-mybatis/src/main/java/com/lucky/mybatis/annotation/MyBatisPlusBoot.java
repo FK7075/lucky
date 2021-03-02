@@ -3,8 +3,9 @@ package com.lucky.mybatis.annotation;
 import com.lucky.framework.annotation.Exclusions;
 import com.lucky.framework.annotation.Imports;
 import com.lucky.mybatis.beanfactory.MybatisBeanFactory;
-import com.lucky.mybatis.beanfactory.MybatisByXMLBeanFactory;
+import com.lucky.mybatis.beanfactory.MybatisXmlBeanFactory;
 import com.lucky.mybatis.beanfactory.MybatisPlusBeanFactory;
+import com.lucky.mybatis.beanfactory.MybatisPlusXmlBeanFactory;
 
 import java.lang.annotation.*;
 
@@ -18,6 +19,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Imports(MybatisPlusBeanFactory.class)
-@Exclusions({MybatisBeanFactory.class, MybatisByXMLBeanFactory.class})
+@Exclusions({MybatisBeanFactory.class, MybatisXmlBeanFactory.class, MybatisPlusXmlBeanFactory.class})
 public @interface MyBatisPlusBoot {
 }

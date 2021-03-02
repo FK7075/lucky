@@ -10,7 +10,7 @@ import com.lucky.mybatis.beanfactory.MybatisPlusXmlBeanFactory;
 import java.lang.annotation.*;
 
 /**
- * 使用MyBatis-Xml启动Mybatis
+ * 使用MyBatis-Plus 和mybatis.xml启动Mybatis
  * @author fk7075
  * @version 1.0.0
  * @date 2021/3/2 上午12:34
@@ -18,7 +18,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Imports(MybatisXmlBeanFactory.class)
-@Exclusions({MybatisBeanFactory.class, MybatisPlusBeanFactory.class, MybatisPlusXmlBeanFactory.class})
-public @interface MyBatisXmlBoot {
+@Imports(MybatisPlusXmlBeanFactory.class)
+@Exclusions({MybatisBeanFactory.class, MybatisPlusBeanFactory.class, MybatisXmlBeanFactory.class})
+public @interface MyBatisPlusXmlBoot {
 }

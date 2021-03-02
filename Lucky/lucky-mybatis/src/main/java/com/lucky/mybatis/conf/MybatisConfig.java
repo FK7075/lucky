@@ -4,6 +4,7 @@ import com.lucky.framework.confanalysis.LuckyConfig;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.config.MapConfigAnalysis;
 import com.lucky.utils.reflect.ClassUtils;
+import org.apache.ibatis.io.VFS;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.commons.JakartaCommonsLoggingImpl;
 import org.apache.ibatis.logging.jdk14.Jdk14LoggingImpl;
@@ -14,8 +15,11 @@ import org.apache.ibatis.logging.log4j2.Log4j2LoggerImpl;
 import org.apache.ibatis.logging.nologging.NoLoggingImpl;
 import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 import org.apache.ibatis.logging.stdout.StdOutImpl;
+import org.apache.ibatis.plugin.Interceptor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +35,8 @@ public class MybatisConfig extends LuckyConfig {
     private boolean mapUnderscoreToCamelCase;
     private boolean autoCommit;
     private Class<? extends Log> logImpl;
+    private Class<? extends VFS> vfsImpl;
+    private List<Interceptor> interceptors;
     private final static Map<String,Class<?extends Log>> logImplMap;
 
     static {
@@ -88,13 +94,38 @@ public class MybatisConfig extends LuckyConfig {
         setLogImpl(logImplClass);
     }
 
+    public Class<? extends VFS> getVfsImpl() {
+        return vfsImpl;
+    }
+
+    public void setVfsImpl(Class<? extends VFS> vfsImpl) {
+        this.vfsImpl = vfsImpl;
+        VFS.addImplClass(vfsImpl);
+    }
+
+    public List<Interceptor> getInterceptors() {
+        return interceptors;
+    }
+
+    public void addInterceptor(Interceptor interceptor){
+        this.interceptors.add(interceptor);
+    }
+
+    public void addInterceptor(Class<? extends Interceptor> interceptorClass){
+        addInterceptor(ClassUtils.newObject(interceptorClass));
+    }
+
+    public void setInterceptors(List<Interceptor> interceptors) {
+        this.interceptors = interceptors;
+    }
+
     public void setLogImpl(Class<? extends Log> logImpl) {
         this.logImpl = logImpl;
     }
 
-
-
-    private MybatisConfig(){};
+    private MybatisConfig(){
+        interceptors=new ArrayList<>();
+    }
 
     public static MybatisConfig defaultMybatisConfig(){
         if(mybatisConfig==null){

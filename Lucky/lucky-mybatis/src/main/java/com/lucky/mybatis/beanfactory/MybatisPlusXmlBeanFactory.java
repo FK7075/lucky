@@ -1,5 +1,6 @@
 package com.lucky.mybatis.beanfactory;
 
+import com.baomidou.mybatisplus.core.MybatisSqlSessionFactoryBuilder;
 import com.lucky.framework.annotation.Component;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.IOCBeanFactory;
@@ -9,7 +10,6 @@ import com.lucky.mybatis.proxy.SqlSessionTemplate;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.file.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import java.io.BufferedReader;
 import java.util.List;
@@ -17,10 +17,10 @@ import java.util.List;
 /**
  * @author fk
  * @version 1.0
- * @date 2021/1/11 0011 9:43
+ * @date 2021/3/2 0002 15:44
  */
 @Component
-public class MybatisByXMLBeanFactory extends IOCBeanFactory {
+public class MybatisPlusXmlBeanFactory extends IOCBeanFactory {
 
     private final static String TYPE="mybatis-mapper";
 
@@ -29,7 +29,7 @@ public class MybatisByXMLBeanFactory extends IOCBeanFactory {
         List<Module> mappers = super.createBean();
         BufferedReader reader = Resources.getReader("/mybatis.xml");
         SqlSessionFactory sqlSessionFactory
-                =new SqlSessionFactoryBuilder().build(reader);
+                =new MybatisSqlSessionFactoryBuilder().build(reader);
         List<Class<?>> mapperPlugins = getPluginByAnnotation(Mapper.class);
         for (Class<?> mapperPlugin : mapperPlugins) {
             SqlSessionTemplate sqlSessionTemplate=new SqlSessionTemplate(sqlSessionFactory);
