@@ -69,6 +69,15 @@ public class ImportAndExclusionUtils {
         return ie;
     }
 
+    /**
+     * 从启动类获取组件
+     *  1.jarExpand属性加载外部jar包
+     *  2.imports属性盗取外部组件
+     *  3.exclusions属性设置排除组件
+     * @param loader
+     * @param bootAnn
+     * @return
+     */
     public ImportAndExclusion loadClassFromLuckyBootApplication(ClassLoader loader,LuckyBootApplication bootAnn){
         Set<Class<?>> jarExpandClasses = loadClassFromLuckyBootApplicationJarExpand(loader, bootAnn.jarExpand());
         ImportAndExclusion ie=loadClassFromLuckyBootApplicationIE(bootAnn);
@@ -134,6 +143,13 @@ public class ImportAndExclusionUtils {
         return jarExpandClasses;
     }
 
+    /**
+     * 从@Imports注解获取外部组件
+     * 从@Exclusions注解获取需要排除的组件
+     * @param imports 所有的@Imports注解实例
+     * @param exclusions 所有@Exclusions注解实例
+     * @return
+     */
     public ImportAndExclusion loadClassFromImportAndExclusionAnnotation(List<com.lucky.framework.annotation.Imports> imports,
                                                                         List<com.lucky.framework.annotation.Exclusions> exclusions){
         ImportAndExclusion ie=new ImportAndExclusion();
