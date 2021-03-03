@@ -1,5 +1,7 @@
 package com.lucky.jacklamb.jdbc.core.abstcore;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 
@@ -9,6 +11,8 @@ import java.util.List;
  * @author fk-7075
  */
 public interface GeneralObjectCore {
+
+    void runScript(Reader sqlScript) throws IOException;
 
     /**
      * ID查询

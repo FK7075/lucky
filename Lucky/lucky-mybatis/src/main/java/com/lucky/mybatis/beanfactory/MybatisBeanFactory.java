@@ -93,7 +93,9 @@ public class MybatisBeanFactory extends IOCBeanFactory {
                     SqlSessionFactory sessionFactory
                             = new SqlSessionFactoryBuilder().build(configuration);
                     SqlSessionTemplate sqlSessionTemplate=new SqlSessionTemplate(sessionFactory);
-                    mappers.add(new Module(getBeanId(mapperClass),TYPE,sqlSessionTemplate.getMapper(mapperClass)));
+                    String beanName = getBeanId(mapperClass);
+                    lifecycleMange.beforeCreatingInstance(mapperClass,beanName,TYPE);
+                    mappers.add(new Module(beanName,TYPE,sqlSessionTemplate.getMapper(mapperClass)));
                 }
             }
         }

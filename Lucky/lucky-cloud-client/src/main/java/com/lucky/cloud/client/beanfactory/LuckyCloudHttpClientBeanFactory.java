@@ -26,9 +26,10 @@ public class LuckyCloudHttpClientBeanFactory extends IOCBeanFactory {
         List<Module> beans = super.createBean();
         List<Class<?>> luckyHttpClientClass = getPluginByAnnotation(LuckyClient.class);
         for (Class<?> httpClientClass : luckyHttpClientClass) {
-            Module module = new Module(getBeanName(httpClientClass),
-                    getBeanType(httpClientClass),
-                    LuckyHttpClientProxy.getHttpClientProxy(httpClientClass));
+            String beanName = getBeanName(httpClientClass);
+            String beanType = getBeanType(httpClientClass);
+            lifecycleMange.beforeCreatingInstance(httpClientClass,beanName,beanType);
+            Module module = new Module(beanName,beanType,LuckyHttpClientProxy.getHttpClientProxy(httpClientClass));
             beans.add(module);
             log.info("Create Lucky Http Client Proxy Bean `{}`",module.getComponent());
         }

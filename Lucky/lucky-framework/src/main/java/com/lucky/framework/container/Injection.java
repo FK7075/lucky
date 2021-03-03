@@ -2,6 +2,7 @@ package com.lucky.framework.container;
 
 import com.lucky.framework.annotation.Autowired;
 import com.lucky.framework.container.factory.Namer;
+import com.lucky.framework.container.lifecycle.BeanLifecycle;
 import com.lucky.framework.exception.AutowiredException;
 import com.lucky.utils.annotation.ConfigurationProperties;
 import com.lucky.utils.annotation.PropertySource;
@@ -74,7 +75,7 @@ public abstract class Injection implements Namer {
                     throw lex;
                 }
                 Object component = singletonPool.getBean(value).getComponent();
-                FieldUtils.setValue(bean,field,component);
+                setField(bean,field,component);
                 log.debug("Attribute injection [BY-ID] `"+beanName+"`「"+field.getName()+"」 <= "+component);
            }
             //类型注入
@@ -96,7 +97,7 @@ public abstract class Injection implements Namer {
                     throw lex;
                 }else{
                     Object component = modules.get(0).getComponent();
-                    FieldUtils.setValue(bean,field,component);
+                    setField(bean,field,component);
                     log.debug("Attribute injection [BY-CLASS] `"+beanName+"`「"+field.getName()+"」 <= "+component);
 
                 }
@@ -148,26 +149,26 @@ public abstract class Injection implements Namer {
             fieldType = valueField.getType();
             //Class类型
             if(Class.class==fieldType){
-                FieldUtils.setValue(bean,valueField,ClassUtils.getClass(confValue.toString()));
+                setField(bean,valueField,ClassUtils.getClass(confValue.toString()));
                 continue;
             }
             //基本类型以及基本类型的包装类型
             if(ClassUtils.isPrimitive(fieldType)||ClassUtils.isSimple(fieldType)){
-                FieldUtils.setValue(bean,valueField, JavaConversion.strToBasic(confValue.toString(),fieldType));
+                setField(bean,valueField,JavaConversion.strToBasic(confValue.toString(), fieldType));
                 continue;
             }
 
             //基本类型以及其包装类型的数组
             if(ClassUtils.isSimpleArray(fieldType)){
                 List<String> confList= (List<String>) confValue;
-                FieldUtils.setValue(bean,valueField,JavaConversion.strArrToBasicArr(listToArrayByStr(confList),fieldType));
+                setField(bean,valueField,JavaConversion.strArrToBasicArr(listToArrayByStr(confList), fieldType));
                 continue;
             }
 
             //非JDK类型
             if(!ClassUtils.isJdkType(fieldType)){
                 if(JexlEngineUtil.isExpression(exp)){
-                    FieldUtils.setValue(bean,valueField,getFieldObject(yaml,valueField,fieldType,exp,delimiter));
+                    setField(bean,valueField,getFieldObject(yaml,valueField,fieldType,exp,delimiter));
                 }
                 continue;
             }
@@ -182,11 +183,11 @@ public abstract class Injection implements Namer {
                     List<String> confList= (List<String>) confValue;
                     String[] confArr=listToArrayByStr(confList);
                     if(List.class.isAssignableFrom(fieldType)){
-                        FieldUtils.setValue(bean,valueField, Stream.of(JavaConversion.strArrToBasicArr(confArr,genericType)).collect(Collectors.toList()));
+                        setField(bean,valueField, Stream.of(JavaConversion.strArrToBasicArr(confArr,genericType)).collect(Collectors.toList()));
                         continue;
                     }
                     if(Set.class.isAssignableFrom(fieldType)){
-                        FieldUtils.setValue(bean,valueField, Stream.of(JavaConversion.strArrToBasicArr(confArr,genericType)).collect(Collectors.toSet()));
+                        setField(bean,valueField, Stream.of(JavaConversion.strArrToBasicArr(confArr,genericType)).collect(Collectors.toSet()));
                         continue;
                     }
                     continue;
@@ -204,7 +205,7 @@ public abstract class Injection implements Namer {
                         String pre=listExp+".get("+i+")";
                         confValueList.add(getFieldObject(yaml,valueField,genericType,pre,delimiter));
                     }
-                    FieldUtils.setValue(bean,valueField,confValueList);
+                    setField(bean,valueField,confValueList);
                     continue;
                 }
 
@@ -216,11 +217,11 @@ public abstract class Injection implements Namer {
                         classes[i]=ClassUtils.getClass(yaml.getObject(confList.get(i)).toString());
                     }
                     if(List.class.isAssignableFrom(fieldType)){
-                        FieldUtils.setValue(bean,valueField, Stream.of(classes).collect(Collectors.toList()));
+                        setField(bean,valueField, Stream.of(classes).collect(Collectors.toList()));
                         continue;
                     }
                     if(Set.class.isAssignableFrom(fieldType)){
-                        FieldUtils.setValue(bean,valueField, Stream.of(classes).collect(Collectors.toSet()));
+                        setField(bean,valueField, Stream.of(classes).collect(Collectors.toSet()));
                         continue;
                     }
                     continue;
@@ -233,10 +234,10 @@ public abstract class Injection implements Namer {
                 for(Map.Entry<String,Object> entry:$confMap.entrySet()){
                     confMap.put(entry.getKey(),yaml.getObject(entry.getValue()));
                 }
-                FieldUtils.setValue(bean,valueField,confMap);
+                setField(bean,valueField,confMap);
                 continue;
             }
-            FieldUtils.setValue(bean,valueField,ClassUtils.newObject(yaml.getObject(confValue).toString()));
+            setField(bean,valueField,ClassUtils.newObject(yaml.getObject(confValue).toString()));
         }
     }
 
@@ -283,4 +284,18 @@ public abstract class Injection implements Namer {
         return array;
     }
 
+    private static void setField(Object bean,Field field,Object value){
+        BeanLifecycle lifecycle=null;
+        if(bean instanceof BeanLifecycle){
+            lifecycle= (BeanLifecycle) bean;
+        }
+        boolean isLifecycle=lifecycle!=null;
+        if(isLifecycle){
+            lifecycle.beforeSetField(field);
+        }
+        FieldUtils.setValue(bean, field, value);
+        if(isLifecycle){
+            lifecycle.afterSetField(field,value);
+        }
+    }
 }

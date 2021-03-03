@@ -47,14 +47,13 @@ public class LuckyWebBeanFactory extends IOCBeanFactory {
         List<Module> modules=new ArrayList<>();
         List<Class<?>> controllerClasses = getPluginByAnnotation(CONTROLLER_ANNOTATION);
         for (Class<?> controllerClass : controllerClasses) {
+            String beanName = getBeanName(controllerClass);
+            String beanType = getBeanType(controllerClass);
+            lifecycleMange.beforeCreatingInstance(controllerClass,beanName,beanType);
             if(AnnotationUtils.strengthenIsExist(controllerClass,Controller.class)){
-                modules.add(new Module(getBeanName(controllerClass),
-                                   getBeanType(controllerClass),
-                                   ClassUtils.newObject(controllerClass)));
+                modules.add(new Module(beanName,beanType,ClassUtils.newObject(controllerClass)));
             }else{
-                modules.add(new Module(getBeanName(controllerClass),
-                                getBeanType(controllerClass),
-                                CallControllerProxy.getCallControllerProxyObject(controllerClass)));
+                modules.add(new Module(beanName,beanType,CallControllerProxy.getCallControllerProxyObject(controllerClass)));
             }
         }
         List<Class<?>> interceptors = getPluginByAnnotation(Interceptor.class);

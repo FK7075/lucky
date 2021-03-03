@@ -4,6 +4,8 @@ import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.RegisterMachine;
 import com.lucky.framework.container.SingletonContainer;
+import com.lucky.framework.container.lifecycle.ContainerLifecycle;
+import com.lucky.framework.container.lifecycle.ContainerLifecycleMange;
 import com.lucky.utils.base.BaseUtils;
 import com.lucky.utils.reflect.AnnotationUtils;
 
@@ -21,11 +23,14 @@ public abstract class IOCBeanFactory implements BeanFactory,Namer {
     private FusionStrategy fusionStrategy;
     private SingletonContainer singletonPool= RegisterMachine.getRegisterMachine().getSingletonPool();
     private Set<Class<?>> plugins=RegisterMachine.getRegisterMachine().getPlugins();
+    protected ContainerLifecycleMange lifecycleMange;
 
     public IOCBeanFactory() {
+        lifecycleMange=RegisterMachine.getLifecycleMange();
     }
 
     public IOCBeanFactory(FusionStrategy fusionStrategy) {
+        lifecycleMange=RegisterMachine.getLifecycleMange();
         this.fusionStrategy = fusionStrategy;
     }
 

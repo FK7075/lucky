@@ -9,6 +9,7 @@ import com.lucky.framework.container.factory.IOCBeanFactory;
 import com.lucky.framework.container.factory.Namer;
 import com.lucky.jacklamb.annotation.table.Table;
 import com.lucky.jacklamb.annotation.table.Tables;
+import com.lucky.jacklamb.jdbc.core.abstcore.SqlCore;
 import com.lucky.jacklamb.jdbc.core.abstcore.SqlCoreFactory;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.reflect.AnnotationUtils;
@@ -48,6 +49,7 @@ public class LuckyDataJacklambBeanFactory extends IOCBeanFactory {
         for (LuckyDataSource luckyDataSource : allDataSource) {
             luckyDataSource.setCreateTable(createTables);
             String dbname = luckyDataSource.getDbname();
+            lifecycleMange.beforeCreatingInstance(SqlCore.class,"SqlCore-" + dbname,"SqlCore");
             Module sqlCore = new Module("SqlCore-" + dbname, "SqlCore", SqlCoreFactory.createSqlCore(dbname));
             mappers.add(sqlCore);
             log.info("Create SqlCore `{}`",sqlCore);
@@ -56,9 +58,10 @@ public class LuckyDataJacklambBeanFactory extends IOCBeanFactory {
         //创建Mapper的代理
         for (Class<?> mapperClass : mapperClasses) {
             String dbname=AnnotationUtils.get(mapperClass,Mapper.class).dbname();
-            Module mapper = new Module(getBeanName(mapperClass)
-                    , getBeanType(mapperClass),
-                    SqlCoreFactory.createSqlCore(dbname).getMapper(mapperClass));
+            String beanName = getBeanName(mapperClass);
+            String beanType = getBeanType(mapperClass);
+            lifecycleMange.beforeCreatingInstance(mapperClass,beanName,beanType);
+            Module mapper = new Module(beanName,beanType,SqlCoreFactory.createSqlCore(dbname).getMapper(mapperClass));
             mappers.add(mapper);
             log.info("Create Mapper `{}`",mapper);
         }

@@ -4,6 +4,7 @@ import com.lucky.framework.annotation.Bean;
 import com.lucky.framework.annotation.Configuration;
 import com.lucky.framework.container.Injection;
 import com.lucky.framework.container.Module;
+import com.lucky.framework.container.lifecycle.ContainerLifecycleMange;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.base.BaseUtils;
 import com.lucky.utils.proxy.ASMUtil;
@@ -31,7 +32,7 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
     private static final Logger log= LoggerFactory.getLogger(ConfigurationBeanFactory.class);
     private List<Module> configurationBeans;
 
-    public ConfigurationBeanFactory(List<Module> configurationBeans) {
+    public ConfigurationBeanFactory(List<Module> configurationBeans,ContainerLifecycleMange lifecycle) {
         this.configurationBeans = configurationBeans
                 .stream()
                 .sorted(Comparator.comparing(m->AnnotationUtils.strengthenGet(m.getOriginalType(), Configuration.class).get(0).priority()))
@@ -53,9 +54,15 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
                     .stream().filter((m)-> MethodUtils.getParameter(m).length == 0)
                     .sorted(Comparator.comparing(m->AnnotationUtils.strengthenGet(m,Bean.class).get(0).priority()))
                     .forEach((method)-> {
+                        Class<?> returnType = method.getReturnType();
+                        String beanName = getBeanId(confClass, method);
+                        String beanType = getBeanType(method);
+                        if(returnType!=void.class){
+                            lifecycleMange.beforeCreatingInstance(returnType,beanName,beanType);
+                        }
                         Object invoke = MethodUtils.invoke(conf, method);
                         if(Assert.isNotNull(invoke)){
-                            Module mod=new Module(getBeanId(confClass,method),getBeanType(method),invoke);
+                            Module mod=new Module(beanName,beanType,invoke);
                             list.add(mod);
                         }
                     });
@@ -69,6 +76,7 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
                     .sorted(Comparator.comparing(m->AnnotationUtils.strengthenGet(m,Bean.class).get(0).priority()))
                     .collect(Collectors.toList());
             for (Method beanMethod : haveParamBeanMethods) {
+                Class<?> returnType = beanMethod.getReturnType();
                 String beanId=getBeanId(confClass,beanMethod);
                 String beanType=getBeanType(beanMethod);
                 Parameter[] parameter = MethodUtils.getParameter(beanMethod);
@@ -91,8 +99,13 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
                         }
                     }
                 }
+                if(returnType!=void.class){
+                    lifecycleMange.beforeCreatingInstance(returnType,beanId,beanType);
+                }
                 Object invoke=MethodUtils.invoke(conf,beanMethod,params);
-                list.add(new Module(beanId,beanType,invoke));
+                if(Assert.isNotNull(invoke)){
+                    list.add(new Module(beanId,beanType,invoke));
+                }
             }
         }
 

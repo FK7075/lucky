@@ -38,7 +38,10 @@ public class LuckyQuartzBeanFactory extends IOCBeanFactory {
         List<Module> quartz=new ArrayList<>();
         List<Class<?>> quartzJobClasses = getPluginByAnnotation(QuartzJobs.class);
         for (Class<?> quartzJobClass : quartzJobClasses) {
-            quartz.add(new Module(getBeanName(quartzJobClass),"quartz_job",QuartzProxy.getProxy(quartzJobClass)));
+            String beanName = getBeanName(quartzJobClass);
+            String beanType="quartz_job";
+            lifecycleMange.beforeCreatingInstance(quartzJobClass,beanName,beanType);
+            quartz.add(new Module(beanName,beanType,QuartzProxy.getProxy(quartzJobClass)));
         }
         return quartz;
     }

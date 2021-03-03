@@ -1,6 +1,7 @@
  package com.lucky.framework.scan;
 
  import com.lucky.framework.annotation.Component;
+ import com.lucky.framework.container.lifecycle.ContainerLifecycle;
  import com.lucky.utils.reflect.AnnotationUtils;
 
  import java.lang.annotation.Annotation;
@@ -27,6 +28,7 @@ public abstract class Scan {
 	public Set<Class<?>> getComponentClass() {
 		 return getAllClasses().stream()
 				 .filter(c-> AnnotationUtils.strengthenIsExist(c,Component.class))
+				 .filter(c->!ContainerLifecycle.class.isAssignableFrom(c))
 				 .collect(Collectors.toSet());
 	}
 
@@ -67,6 +69,14 @@ public abstract class Scan {
 	  */
 	 public Set<Class<?>> getAllClasses(){
 	 	return ie.subtraction();
+	 }
+
+	 /**
+	  * 获取所有{@link ContainerLifecycle}组件的Class
+	  * @return
+	  */
+	 public Set<Class<?>> getAllContainerLifecycleClass(){
+	 	return getAllClasses().stream().filter(ContainerLifecycle.class::isAssignableFrom).collect(Collectors.toSet());
 	 }
 
 	 public Scan(Class<?> applicationBootClass) {

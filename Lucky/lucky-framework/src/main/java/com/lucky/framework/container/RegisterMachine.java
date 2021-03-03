@@ -1,12 +1,14 @@
 package com.lucky.framework.container;
 
-import com.lucky.framework.annotation.Configuration;
 import com.lucky.framework.annotation.Plugin;
-import com.lucky.framework.container.factory.*;
+import com.lucky.framework.container.factory.BeanFactory;
+import com.lucky.framework.container.factory.BeanNamer;
+import com.lucky.framework.container.factory.ConfigurationBeanFactory;
+import com.lucky.framework.container.factory.IOCBeanFactory;
+import com.lucky.framework.container.lifecycle.ContainerLifecycleMange;
 import com.lucky.framework.exception.LuckyConversionTypeErrorException;
 import com.lucky.framework.scan.JarExpandChecklist;
 import com.lucky.framework.scan.Scan;
-import com.lucky.framework.spi.LuckyFactoryLoader;
 import com.lucky.utils.conversion.LuckyConversion;
 import com.lucky.utils.conversion.annotation.Conversion;
 import com.lucky.utils.conversion.proxy.ConversionProxy;
@@ -28,12 +30,12 @@ import java.util.stream.Collectors;
 public class RegisterMachine {
 
     private static final Logger log= LoggerFactory.getLogger("c.l.framework.container.RegisterMachine");
-    private static final ClassLoader loader=Thread.currentThread().getContextClassLoader();
+    private static ContainerLifecycleMange lifecycleMange;
     private static RegisterMachine registerMachine;
-    private SingletonContainer singletonPool;
-    private Set<Class<?>> plugins;
+    private final SingletonContainer singletonPool;
+    private final Set<Class<?>> plugins;
     private Set<Class<?>> allClasses;
-    private static BeanNamer namer=new BeanNamer();
+    private static final BeanNamer namer=new BeanNamer();
     private Scan scan;
     private RegisterMachine(){
         singletonPool=new SingletonContainer();
@@ -43,6 +45,7 @@ public class RegisterMachine {
     public void setScan(Scan scan) {
         this.scan = scan;
         this.allClasses=scan.getAllClasses();
+        lifecycleMange=new ContainerLifecycleMange(scan.getAllContainerLifecycleClass());
     }
 
     public void init() {
@@ -59,6 +62,10 @@ public class RegisterMachine {
 
     public SingletonContainer getSingletonPool(){
         return this.singletonPool;
+    }
+
+    public static ContainerLifecycleMange getLifecycleMange() {
+        return lifecycleMange;
     }
 
     public Set<Class<?>> getPlugins() {
@@ -90,6 +97,7 @@ public class RegisterMachine {
     public void register(){
         Set<Class<?>> componentClasses=scan.getComponentClass();
 
+        lifecycleMange.beforeContainerInitialized(componentClasses);
         //实例化所有扫描到的Bean实例，并注入到IOC容器中
         for (Class<?> componentClass : componentClasses) {
             //将所有插件Class过滤到插件集合中
@@ -99,30 +107,29 @@ public class RegisterMachine {
                 continue;
             }
 
+            String beanName = namer.getBeanName(componentClass);
+            String beanType = namer.getBeanType(componentClass);
+            lifecycleMange.beforeCreatingInstance(componentClass,beanName,beanType);
             //类型转换工具的代理实现
             if(AnnotationUtils.isExist(componentClass, Conversion.class)){
                 if(!LuckyConversion.class.isAssignableFrom(componentClass)){
                     throw new LuckyConversionTypeErrorException(componentClass);
                 }
-                Module module=new Module(namer.getBeanName(componentClass)
-                        ,namer.getBeanType(componentClass)
-                        , ConversionProxy.getLuckyConversion((Class<? extends LuckyConversion>)componentClass));
+                Module module=new Module(beanName,beanType,ConversionProxy.getLuckyConversion((Class<? extends LuckyConversion>)componentClass));
                 singletonPool.put(module);
                 log.debug("Conversion `{}`",module);
                 continue;
             }
 
             //实例化所有的Bean，并注入到IOC容器
-            Module module=new Module(namer.getBeanName(componentClass)
-                                    ,namer.getBeanType(componentClass)
-                                    , ClassUtils.newObject(componentClass));
+            Module module=new Module(beanName,beanType,ClassUtils.newObject(componentClass));
             singletonPool.put(module);
             log.debug("Component `{}`",module);
         }
 
         //找到IOC容器中所有的配置类，初始化所有配置类生产的Bean实例，并注入IOC容器
         ConfigurationBeanFactory configurationBeanFactory=
-                new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"));
+                new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"),lifecycleMange);
         List<Module> configurationFactoryCreateBeans = configurationBeanFactory.createBean();
         for (Module configurationBean : configurationFactoryCreateBeans) {
             if(!scan.exclusions(configurationBean.getOriginalType())){
@@ -157,6 +164,19 @@ public class RegisterMachine {
                 log.info("Replace Bean To `{}`",newModule);
             }
         }
+    }
+
+
+
+    /**
+     * 依赖注入
+     */
+    public void injection(){
+        lifecycleMange.instanceCreatedButNoAttributesInjected(singletonPool);
+        singletonPool.values().stream().forEach(module -> {
+            Injection.injection(module);
+        });
+        lifecycleMange.afterContainerInitialized(singletonPool);
     }
 
     /**
@@ -205,7 +225,7 @@ public class RegisterMachine {
 
         //找到IOC容器中所有的配置类，初始化所有配置类生产的Bean实例，并注入IOC容器
         ConfigurationBeanFactory configurationBeanFactory=
-                new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"));
+                new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"),lifecycleMange);
         List<Module> configurationFactoryCreateBeans = configurationBeanFactory.createBean();
         for (Module configurationBean : configurationFactoryCreateBeans) {
             singletonPool.put(configurationBean);
@@ -234,12 +254,5 @@ public class RegisterMachine {
         });
        return singletonPool;
     }
-
-    public void injection(){
-        singletonPool.values().stream().forEach(module -> {
-            Injection.injection(module);
-        });
-    }
-
 
 }

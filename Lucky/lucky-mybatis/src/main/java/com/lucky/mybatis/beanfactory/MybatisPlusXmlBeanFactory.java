@@ -33,8 +33,9 @@ public class MybatisPlusXmlBeanFactory extends IOCBeanFactory {
         List<Class<?>> mapperPlugins = getPluginByAnnotation(Mapper.class);
         for (Class<?> mapperPlugin : mapperPlugins) {
             SqlSessionTemplate sqlSessionTemplate=new SqlSessionTemplate(sqlSessionFactory);
-            Object mapper=sqlSessionTemplate.getMapper(mapperPlugin);
-            mappers.add(new Module(getBeanId(mapperPlugin),TYPE,mapper));
+            String beanId = getBeanId(mapperPlugin);
+            lifecycleMange.beforeCreatingInstance(mapperPlugin,beanId,TYPE);
+            mappers.add(new Module(getBeanId(mapperPlugin),TYPE,sqlSessionTemplate.getMapper(mapperPlugin)));
         }
         return mappers;
     }

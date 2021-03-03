@@ -10,9 +10,12 @@ import com.lucky.jacklamb.jdbc.core.sql.CreateSql;
 import com.lucky.jacklamb.jdbc.core.sql.GeneralSqlGenerator;
 import com.lucky.jacklamb.jdbc.core.sql.PrecompileSqlAndObject;
 import com.lucky.jacklamb.jdbc.potable.PojoManage;
+import com.lucky.jacklamb.jdbc.scriptrunner.ScriptRunner;
 import com.lucky.jacklamb.jdbc.transaction.Transaction;
 import com.lucky.utils.reflect.FieldUtils;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -45,7 +48,6 @@ public abstract class GeneralObjectCoreBase implements GeneralObjectCore, Unique
 		this.createTableSqlExecute=new CreateTableSqlExecute(dbname);
 	}
 
-
 	protected Transaction openTransaction(){
 		return statementCore.openTransaction();
 	}
@@ -53,6 +55,20 @@ public abstract class GeneralObjectCoreBase implements GeneralObjectCore, Unique
 	protected Transaction openTransaction(int isolationLevel){
 		return statementCore.openTransaction(isolationLevel);
 	}
+
+	/**
+	 * 运行SQL脚本文件
+	 * @param sqlScript sql脚本文件
+	 */
+	@Override
+	public void runScript(Reader sqlScript) throws IOException {
+		ScriptRunner scriptRunner = new ScriptRunner(dataSource.getConnection());
+		scriptRunner.runScript(sqlScript);
+		scriptRunner.closeConnection();
+		sqlScript.close();
+
+	}
+
 
 	@Override
 	public <T> T getOne(Class<T> c, Object id) {

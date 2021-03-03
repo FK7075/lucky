@@ -1,5 +1,7 @@
 package com.lucky.framework.container;
 
+import com.lucky.framework.container.lifecycle.BeanLifecycle;
+
 /**
  * IOC模型
  * @author fk7075
