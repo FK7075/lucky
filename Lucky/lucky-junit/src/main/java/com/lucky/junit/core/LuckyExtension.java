@@ -80,11 +80,9 @@ public class LuckyExtension implements BeforeAllCallback, AfterAllCallback,
     @Override
     public Object createTestInstance(TestInstanceFactoryContext testInstanceFactoryContext, ExtensionContext extensionContext) throws TestInstantiationException {
         Class<?> testClass = extensionContext.getTestClass().get();
-        Object testInstance;
+        Object  testInstance= ClassUtils.newObject(testClass);
         if(AopProxyFactory.isAgent(testClass)){
-            testInstance= PointRunFactory.createProxyFactory().getProxy(testClass);
-        }else{
-            testInstance= ClassUtils.newObject(testClass);
+            testInstance= PointRunFactory.createProxyFactory().getProxy(testInstance);
         }
         Injection.injection(testInstance,"test");
         return testInstance;

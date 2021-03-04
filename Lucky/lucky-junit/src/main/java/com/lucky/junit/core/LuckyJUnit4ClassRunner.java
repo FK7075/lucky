@@ -42,7 +42,7 @@ public class LuckyJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 		Object createTest = super.createTest();
 		Class<?> aClass = createTest.getClass();
 		if(AopProxyFactory.isAgent(aClass)){
-			createTest= PointRunFactory.createProxyFactory().getProxy(aClass);
+			createTest= PointRunFactory.createProxyFactory().getProxy(createTest);
 		}
 		Injection.injection(createTest,"test");
 		return createTest;

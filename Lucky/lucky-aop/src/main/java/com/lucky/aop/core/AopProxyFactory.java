@@ -56,7 +56,7 @@ public class AopProxyFactory {
         List<PointRun> findPointByBean = findPointbyBean(pointRunCollection, module);
         Class<?> beanClass=module.getOriginalType();
         if (!findPointByBean.isEmpty()||isAgent(beanClass)) {
-            return PointRunFactory.createProxyFactory().getProxy(beanClass, findPointByBean);
+            return PointRunFactory.createProxyFactory().getProxy(module.getComponent(), findPointByBean);
         } else {
             return module.getComponent();
         }

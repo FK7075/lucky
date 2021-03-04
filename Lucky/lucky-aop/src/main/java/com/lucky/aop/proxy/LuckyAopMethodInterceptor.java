@@ -66,7 +66,7 @@ public class LuckyAopMethodInterceptor implements MethodInterceptor {
 			points.add(p);
 		});
 		//将所的环绕增强节点根据优先级排序后组成一个执行链
-		AopChain chain=new AopChain(points.stream()
+		AopChain chain=new CglibAopChain(points.stream()
 				.sorted(Comparator.comparing(AopPoint::getPriority))
 				.collect(Collectors.toList()),target,params,methodProxy,method);
 		Object resule;

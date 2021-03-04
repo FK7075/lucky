@@ -1,8 +1,12 @@
 package com.lucky.aop.core;
 
+import com.lucky.aop.proxy.LuckyAopInvocationHandler;
 import com.lucky.aop.proxy.LuckyAopMethodInterceptor;
+import com.lucky.utils.base.Assert;
 import com.lucky.utils.proxy.CglibProxy;
+import com.lucky.utils.proxy.JDKProxy;
 
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 public class PointRunFactory {
@@ -19,22 +23,46 @@ public class PointRunFactory {
 	
 	/**
 	 * 得到一个代理对象
-	 * @param targetClass 真实类的Class
+	 * @param target 真实类的对象
 	 * @param pointRuns 增强Points(可变参形式)
 	 * @return
 	 */
-	public Object getProxy(Class<?> targetClass, PointRun...pointRuns) {
-		return CglibProxy.getCglibProxyObject(targetClass,new LuckyAopMethodInterceptor(pointRuns));
+	public Object getProxy(Object target, PointRun...pointRuns) {
+		Class<?> targetClass = target.getClass();
+		if(Assert.isEmptyArray(targetClass.getInterfaces())){
+			return getCglibProxy(targetClass,pointRuns);
+		}
+		return getJDKProxy(target,pointRuns);
 	}
 	
 	/**
 	 * 得到一个代理对象
-	 * @param targetClass 真实类的Class
+	 * @param target 真实类的对象
 	 * @param pointRuns 增强Points(集合参形式)
 	 * @return
 	 */
-	public Object getProxy(Class<?> targetClass,List<PointRun> pointRuns) {
+	public Object getProxy(Object target,List<PointRun> pointRuns) {
+		Class<?> targetClass = target.getClass();
+		if(Assert.isEmptyArray(targetClass.getInterfaces())){
+			return getCglibProxy(targetClass,pointRuns);
+		}
+		return getJDKProxy(target,pointRuns);
+	}
+
+	public Object getCglibProxy(Class<?> targetClass,List<PointRun> pointRuns){
 		return CglibProxy.getCglibProxyObject(targetClass,new LuckyAopMethodInterceptor(pointRuns));
+	}
+
+	public Object getJDKProxy(Object target,List<PointRun> pointRuns){
+		return JDKProxy.getJDKProxyObject(target.getClass(),new LuckyAopInvocationHandler(target,pointRuns));
+	}
+
+	public Object getCglibProxy(Class<?> targetClass,PointRun...pointRuns){
+		return CglibProxy.getCglibProxyObject(targetClass,new LuckyAopMethodInterceptor(pointRuns));
+	}
+
+	public Object getJDKProxy(Object target,PointRun...pointRuns){
+		return JDKProxy.getJDKProxyObject(target.getClass(),new LuckyAopInvocationHandler(target,pointRuns));
 	}
 
 }

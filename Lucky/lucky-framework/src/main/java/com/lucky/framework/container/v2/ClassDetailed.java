@@ -2,6 +2,8 @@ package com.lucky.framework.container.v2;
 
 import com.lucky.framework.annotation.Autowired;
 import com.lucky.framework.container.factory.BeanNamer;
+import com.lucky.framework.container.v2.factory.ObjectFactory;
+import com.lucky.framework.container.v2.factory.ObjectFactoryManage;
 import com.lucky.utils.config.Value;
 import com.lucky.utils.reflect.ClassUtils;
 
@@ -20,6 +22,8 @@ public class ClassDetailed {
 
     private final String beanId;
 
+    private final String beanType;
+
     private final Class<?> beanClass;
 
     private final List<Field> autowiredFields;
@@ -31,12 +35,21 @@ public class ClassDetailed {
     public ClassDetailed(Class<?> beanClass){
         this.beanClass=beanClass;
         this.beanId=namer.getBeanName(beanClass);
+        this.beanType=namer.getBeanType(beanClass);
         this.valueField=ClassUtils.getFieldByAnnotation(beanClass, Value.class);
         this.autowiredFields = ClassUtils.getFieldByAnnotation(beanClass, Autowired.class);
     }
 
     public String getBeanId() {
         return beanId;
+    }
+
+    public String getBeanType() {
+        return beanType;
+    }
+
+    public String getScope() {
+        return scope;
     }
 
     public Class<?> getBeanClass() {
@@ -49,5 +62,9 @@ public class ClassDetailed {
 
     public List<Field> getValueField() {
         return valueField;
+    }
+
+    public Object newInstance(){
+        return ObjectFactoryManage.getObjectFactory(beanType).getBean(beanClass);
     }
 }

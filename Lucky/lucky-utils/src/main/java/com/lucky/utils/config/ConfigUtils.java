@@ -2,6 +2,7 @@ package com.lucky.utils.config;
 
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.file.*;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 
@@ -26,6 +27,17 @@ public abstract class ConfigUtils {
             yaml=new YamlConfAnalysis(getReader());
         }
         return yaml;
+    }
+
+    public static void printYaml() throws IOException {
+        Reader reader = getReader();
+        if(reader!=null){
+            StringWriter sw=new StringWriter();
+            IOUtils.copy(reader,sw);
+            System.out.println(sw.toString());
+            return;
+        }
+        System.out.println("没有找到默认配置文件...");
     }
 
     private static Reader getReader(){

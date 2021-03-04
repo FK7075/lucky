@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class LuckyAopBeanFactory extends AopBeanFactory {
 
     private static final Logger log= LoggerFactory.getLogger("c.l.f.beanfactory.LuckyAopBeanFactory");
-    private Set<PointRun> pointRunSet;
+    private final Set<PointRun> pointRunSet;
     public LuckyAopBeanFactory(){
         super();
         pointRunSet=new HashSet<>(30);
