@@ -61,7 +61,7 @@ public class LuckyAopInvocationHandler implements InvocationHandler {
                 =new TargetMethodSignature(target,method,params);
 
         //得到所有注入式的环绕增强节点(IAOP)
-        injectionAopPoints.stream().forEach((iap)->{
+        injectionAopPoints.forEach((iap)->{
             if(iap.pointCutMethod(target.getClass().getSuperclass(),method)){
                 iap.init(targetMethodSignature);
                 points.add(iap);
