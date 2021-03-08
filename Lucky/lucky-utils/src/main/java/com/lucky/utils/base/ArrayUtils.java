@@ -3,6 +3,9 @@ package com.lucky.utils.base;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,5 +35,15 @@ public abstract class ArrayUtils {
 
     public static InputStream byteArrayToInputStream(byte[] byteData){
         return new ByteArrayInputStream(byteData);
+    }
+
+    public static  Object[] merge(Object[]... arrays){
+        List<Object> list=new ArrayList<>();
+        for (Object[] array : arrays) {
+            list.addAll(Arrays.asList(array));
+        }
+        Object[] result=new Class[list.size()];
+        list.toArray(result);
+        return result;
     }
 }

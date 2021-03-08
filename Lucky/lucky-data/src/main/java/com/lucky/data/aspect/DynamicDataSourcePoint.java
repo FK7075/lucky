@@ -1,12 +1,12 @@
 package com.lucky.data.aspect;
 
-import com.lucky.aop.annotation.Transaction;
 import com.lucky.aop.core.AopChain;
 import com.lucky.aop.core.InjectionAopPoint;
 import com.lucky.aop.core.TargetMethodSignature;
 import com.lucky.data.annotation.DS;
 import com.lucky.data.annotation.Mapper;
 import com.lucky.framework.AutoScanApplicationContext;
+import com.lucky.framework.annotation.Component;
 import com.lucky.jacklamb.jdbc.core.abstcore.SqlCore;
 import com.lucky.jacklamb.jdbc.core.abstcore.SqlCoreFactory;
 import com.lucky.jacklamb.mapper.LuckyMapper;
@@ -30,6 +30,7 @@ import java.util.Map;
  * @version 1.0
  * @date 2021/1/12 0012 9:12
  */
+@Component
 public class DynamicDataSourcePoint extends InjectionAopPoint {
 
     public DynamicDataSourcePoint(){

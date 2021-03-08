@@ -20,5 +20,5 @@ import java.lang.annotation.*;
 @Documented
 @Imports(MybatisPlusXmlBeanFactory.class)
 @Exclusions({MybatisBeanFactory.class, MybatisPlusBeanFactory.class, MybatisXmlBeanFactory.class})
-public @interface MyBatisPlusXmlBoot {
+public @interface EnableMyBatisPlusXmlLauncher {
 }

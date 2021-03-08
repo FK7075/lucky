@@ -29,7 +29,7 @@ public @interface After {
 	 * P:{*}C:{N[HelloController,MyService]}M:{AC[*],N[show,query(int,String)]}
 	 * @return
 	 */
-	String expres() default "";
+	String expression() default "";
 
 	/**
 	 * 优先级，优先级高的增强将会被优先执行

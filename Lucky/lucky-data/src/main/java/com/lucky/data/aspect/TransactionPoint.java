@@ -8,6 +8,7 @@ import com.lucky.aop.core.TargetMethodSignature;
 import com.lucky.aop.exception.TransactionPerformException;
 import com.lucky.data.annotation.Mapper;
 import com.lucky.framework.AutoScanApplicationContext;
+import com.lucky.framework.annotation.Component;
 import com.lucky.jacklamb.jdbc.core.abstcore.SqlCore;
 import com.lucky.jacklamb.jdbc.core.abstcore.SqlCoreFactory;
 import com.lucky.jacklamb.mapper.LuckyMapper;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
  * @author fk7075
  * @version 1.0.0
  */
+@Component
 public class TransactionPoint extends InjectionAopPoint {
 
     /*
@@ -76,8 +78,8 @@ public class TransactionPoint extends InjectionAopPoint {
         Class<?> targetClass=targetMethodSignature.getTargetClass();
         //当前方法上存在@Transaction，执行事务代理
         if(AnnotationUtils.strengthenIsExist(method,Transaction.class)){
-            int isolationLevel = AnnotationUtils.strengthenGet(method,Transaction.class).get(0).isolationLevel();
-            return transactionResult(chain,targetMethodSignature,isolationLevel);
+            Transaction transaction = AnnotationUtils.strengthenGet(method, Transaction.class).get(0);
+            return transactionResult(chain,targetMethodSignature,transaction);
         }
 
         //没有被@Transaction注解标注的继承自Object的方法不执行代理
@@ -89,18 +91,21 @@ public class TransactionPoint extends InjectionAopPoint {
 
         //当前方法上不存在@Transaction，但是当前方法的类上存在@Transaction，同样执行事务代理
         if(AnnotationUtils.strengthenIsExist(targetClass,Transaction.class)){
-            int isolationLevel =  AnnotationUtils.strengthenGet(targetClass,Transaction.class).get(0).isolationLevel();
-            return transactionResult(chain,targetMethodSignature,isolationLevel);
+            Transaction transaction = AnnotationUtils.strengthenGet(method, Transaction.class).get(0);
+            return transactionResult(chain,targetMethodSignature,transaction);
         }
         //当前方法和类上都不存在@Transaction，执行原始逻辑(不进行事务代理)
         return chain.proceed();
     }
 
     //事务的执行流程
-    public Object transactionResult(AopChain chain, TargetMethodSignature tms, int isolationLevel){
+    public Object transactionResult(AopChain chain, TargetMethodSignature tms, Transaction transaction){
         //数据备份
         backup(tms);
         //替换核心，并开启事务
+        int isolationLevel = transaction.isolationLevel();
+        Class<? extends Throwable>[] rollbackFor = transaction.rollbackFor();
+        Class<? extends Throwable>[] noRollbackFor = transaction.noRollbackFor();
         List<com.lucky.jacklamb.jdbc.transaction.Transaction > transactions = replaceCoreAndOpenTransaction(tms,isolationLevel);
         try{
             //执行真实方法
@@ -109,15 +114,43 @@ public class TransactionPoint extends InjectionAopPoint {
             transactions.stream().forEach(tr->tr.commit());
             return result;
         }catch (Throwable e){
-            //回滚
-            transactions.stream().forEach(tr->tr.rollback());
-            String ERR="事务方法执行异常，已触发事务的回滚机制。错误位置：\""+tms.getCurrMethod()+"\"";
-            log.error(ERR,e);
-            throw new TransactionPerformException(e,ERR);
+            Class<? extends Throwable> eClass = e.getClass();
+
+            if(belongArray(noRollbackFor,eClass)){
+                throw new RuntimeException(e);
+            }
+            //对默认的RuntimeException和Error类型的异常进行回滚，已经指定的异常类型进行回滚
+            if((e instanceof RuntimeException)||(e instanceof Error)||belongArray(rollbackFor,eClass)){
+                return rollback(e,tms.getCurrMethod(),transactions);
+            }
+            throw new RuntimeException(e);
         }finally {
             //数据还原
             recovery(tms);
         }
+    }
+
+    private boolean belongArray(Class<? extends Throwable>[] array,Class<? extends Throwable> eClass){
+        for (Class<? extends Throwable> aClass : array) {
+            //是抽象的
+            if(Modifier.isAbstract(aClass.getModifiers())){
+                if(aClass.isAssignableFrom(eClass)){
+                    return true;
+                }
+            }else{
+                if(aClass.equals(eClass)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private Object rollback(Throwable e,Method method, List<com.lucky.jacklamb.jdbc.transaction.Transaction > transactions){
+        transactions.stream().forEach(tr->tr.rollback());
+        String ERR="事务方法执行异常，已触发事务的回滚机制。错误位置：\""+method+"\"";
+        log.error(ERR,e);
+        throw new TransactionPerformException(e,ERR);
     }
 
     //替换，将所真实对象的所有属性(包含所有属性的嵌套属性)的SqlCore替换为支持事务操作的SqlCore，并将真实对象的引用指向该对象

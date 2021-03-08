@@ -2,10 +2,13 @@ package com.lucky.aop.beanfactory;
 
 import com.lucky.aop.annotation.Aspect;
 import com.lucky.aop.annotation.Expand;
+import com.lucky.aop.annotation.Pointcut;
+import com.lucky.aop.aspectj.constant.AspectJ;
 import com.lucky.aop.core.AopPoint;
 import com.lucky.aop.core.AopProxyFactory;
 import com.lucky.aop.core.InjectionAopPoint;
 import com.lucky.aop.core.PointRun;
+import com.lucky.aop.utils.PointRunUtils;
 import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.AopBeanFactory;
@@ -56,9 +59,28 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
             if(!isIOCId(getBeanName(aspectPluginClass))){
                 pointModules.add(new Module(getBeanName(aspectPluginClass),"aspect",aspectObject));
             }
+            List<Method> pointcutMethod = ClassUtils.getMethodByAnnotation(aspectPluginClass, Pointcut.class);
+            for (Method method : pointcutMethod) {
+                PointRunUtils.addPointcutExecution(aspectPluginClass.getName()+"."+method.getName()+"()",
+                        method.getAnnotation(Pointcut.class).value());
+            }
             List<Method> expandMethods = ClassUtils.getMethodByStrengthenAnnotation(aspectPluginClass, Expand.class);
             for (Method expandMethod : expandMethods) {
                 pointRunSet.add(new PointRun(aspectObject,expandMethod));
+            }
+        }
+
+        List<Module> aspectJBeans = getBeanByAnnotation(org.aspectj.lang.annotation.Aspect.class);
+        for (Module aspectJBean : aspectJBeans) {
+            Class<?> aspectJBeanClass = aspectJBean.getOriginalType();
+            List<Method> pointcutMethod = ClassUtils.getMethodByAnnotation(aspectJBeanClass, org.aspectj.lang.annotation.Pointcut.class);
+            for (Method method : pointcutMethod) {
+                PointRunUtils.addPointcutExecution(aspectJBeanClass.getName()+"."+method.getName()+"()",
+                        method.getAnnotation(org.aspectj.lang.annotation.Pointcut.class).value());
+            }
+            List<Method> expandMethods = ClassUtils.getMethodByAnnotationArrayOR(aspectJBeanClass, AspectJ.ASPECTJ_EXPANDS_ANNOTATION);
+            for (Method expandMethod : expandMethods) {
+                pointRunSet.add(new PointRun(aspectJBean.getComponent(),expandMethod));
             }
         }
         List<Module> aopPointModuleList = getBeanByClass(AopPoint.class);

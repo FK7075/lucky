@@ -1,5 +1,6 @@
 package com.lucky.aop.conf;
 
+import com.lucky.aop.aspectj.AspectJAopExecutionChecker;
 import com.lucky.aop.core.AopExecutionChecker;
 import com.lucky.aop.core.DefaultAopExecutionChecker;
 
@@ -29,7 +30,7 @@ public class AopConfig {
     public static AopConfig defaultAopConfig(){
         if(aopConfig==null){
             aopConfig=new AopConfig();
-            aopConfig.setAopExecutionChecker(new DefaultAopExecutionChecker());
+            aopConfig.setAopExecutionChecker(new AspectJAopExecutionChecker());
         }
         return aopConfig;
     }
