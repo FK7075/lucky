@@ -228,10 +228,11 @@ public class DefaultAopExecutionChecker extends AopExecutionChecker{
 
     /**
      * 方法检验
+     * @param targetClass 真实类的CLass
      * @param method 待检验的Method
      * @return
      */
-    public boolean methodExamine(Method method){
+    public boolean methodExamine(Class<?> targetClass,Method method){
         if(!methodAccessExamine(method)){
             return false;
         }

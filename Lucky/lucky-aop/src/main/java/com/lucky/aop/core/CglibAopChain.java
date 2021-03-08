@@ -66,7 +66,6 @@ public class CglibAopChain implements AopChain{
     public Object proceed() throws Throwable {
         Object result;
         if(++index==points.size()) {
-//			result=MethodUtils.invoke(target,currMethod,params);
             result=methodProxy.invokeSuper(target, params);
         }else {
             AopPoint point=points.get(index);

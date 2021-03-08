@@ -4,6 +4,8 @@ import com.lucky.utils.reflect.ClassUtils;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 
+import java.lang.reflect.Proxy;
+
 public abstract class CglibProxy {
 
     private static final String PROXY_NAME="$$LUCKY_PROXY$$";

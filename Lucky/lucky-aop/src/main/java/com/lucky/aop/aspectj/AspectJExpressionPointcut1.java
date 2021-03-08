@@ -12,7 +12,7 @@ import java.util.Set;
  * @version 1.0
  * @date 2021/3/5 0005 18:15
  */
-public class AspectJExpressionPointcut {
+public class AspectJExpressionPointcut1 {
 
     private static final Set<PointcutPrimitive> SUPPORTED_PRIMITIVES = new HashSet<>();
 

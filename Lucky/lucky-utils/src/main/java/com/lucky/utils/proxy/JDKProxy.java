@@ -10,14 +10,12 @@ import java.lang.reflect.Proxy;
  * @date 2020/8/24 14:39
  */
 public abstract class JDKProxy {
+    
+    public static Object getProxy(LuckyInvocationHandler luckyInvocationHandler){
+        return Proxy.newProxyInstance(luckyInvocationHandler.getClassLoader(),luckyInvocationHandler.getInterfaces(),luckyInvocationHandler);
+    }
 
-    public static <T> T getJDKProxyObject(Class<T> clazz, InvocationHandler invocationHandler){
-        Class<?>[] interfaces;
-        if(Modifier.isInterface(clazz.getModifiers())){
-            interfaces=new Class[]{clazz};
-        }else{
-            interfaces=clazz.getInterfaces();
-        }
-        return (T) Proxy.newProxyInstance(clazz.getClassLoader(),interfaces,invocationHandler);
+    public static boolean isAgent(Class<?> aClass){
+        return Proxy.isProxyClass(aClass);
     }
 }

@@ -5,6 +5,8 @@ import com.lucky.utils.config.ConfigUtils;
 import com.lucky.utils.config.YamlConfAnalysis;
 import com.lucky.utils.fileload.Resource;
 import com.lucky.utils.fileload.resourceimpl.PathMatchingResourcePatternResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -16,18 +18,22 @@ import java.util.*;
  */
 public class MapperXmlScan {
 
+    private final static Logger log= LoggerFactory.getLogger(MapperXmlScan.class);
+
     private static String mapperXmlRoot="classpath:mapper/*.xml";
     private static final YamlConfAnalysis yaml=ConfigUtils.getYamlConfAnalysis();
     private static final PathMatchingResourcePatternResolver patternResolver=new PathMatchingResourcePatternResolver();
 
     static {
-        Map<String, Object> map = yaml.getMap();
-        Object jacklambObj = map.get("jacklamb");
-        if(jacklambObj instanceof Map){
-            Map<String, Object> jacklambMap = (Map<String, Object>) jacklambObj;
-            Object mapperLocationObj = yaml.getObject(jacklambMap.get("mapper-locations"));
-            if(mapperLocationObj instanceof String){
-                mapperXmlRoot=mapperLocationObj.toString();
+        if(yaml!=null){
+            Map<String, Object> map = yaml.getMap();
+            Object jacklambObj = map.get("jacklamb");
+            if(jacklambObj instanceof Map){
+                Map<String, Object> jacklambMap = (Map<String, Object>) jacklambObj;
+                Object mapperLocationObj = yaml.getObject(jacklambMap.get("mapper-locations"));
+                if(mapperLocationObj instanceof String){
+                    mapperXmlRoot=mapperLocationObj.toString();
+                }
             }
         }
     }
@@ -57,16 +63,15 @@ public class MapperXmlScan {
         return mapperSqls;
     }
     private static Set<MapperXMLParsing> getAllMapperLocations(){
+        Set<MapperXMLParsing> mapperLocations=new HashSet<>();
         try {
-            Set<MapperXMLParsing> mapperLocations=new HashSet<>();
             Resource[] resources = patternResolver.getResources(mapperXmlRoot);
             for (Resource resource : resources) {
                 mapperLocations.add(new MapperXMLParsing(resource.getInputStream()));
             }
-            return mapperLocations;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ignored) {
+            log.warn("[{}] is not found ！",mapperXmlRoot);
         }
-
+        return mapperLocations;
     }
 }

@@ -24,7 +24,7 @@ public class MapperXMLParsing {
     private static final String NAME="name";
     private static final String METHOD="method";
 
-    private Map<String, Map<String,String>> xmlMap=new HashMap<>();
+    private final Map<String, Map<String,String>> xmlMap=new HashMap<>();
 
     public Map<String, Map<String, String>> getXmlMap() {
         return xmlMap;
@@ -38,7 +38,7 @@ public class MapperXMLParsing {
         return xmlMap.get(mapperClass.getName());
     }
 
-    private BufferedReader xmlReader;
+    private final BufferedReader xmlReader;
 
     public static boolean isMapperXml(InputStream inputStream) throws Exception {
        BufferedReader xmlReader=new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));

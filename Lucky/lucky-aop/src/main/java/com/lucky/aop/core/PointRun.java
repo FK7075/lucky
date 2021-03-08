@@ -87,11 +87,12 @@ public class PointRun {
 	
 	/**
 	 * 检验当前方法是否符合该Point的执行标准
+	 * @param targetClass 真实类的CLass
 	 * @param method
 	 * @return
 	 */
-	public boolean methodExamine(Method method) {
-		return aopExecutionChecker.methodExamine(method);
+	public boolean methodExamine(Class<?> targetClass,Method method) {
+		return aopExecutionChecker.methodExamine(targetClass,method);
 	}
 
 	public boolean classExamine(Module module){

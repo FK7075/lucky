@@ -1,9 +1,9 @@
 package com.lucky.aop.proxy;
 
 import com.lucky.aop.core.*;
+import com.lucky.utils.proxy.LuckyInvocationHandler;
 import com.lucky.utils.reflect.MethodUtils;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * @version 1.0
  * @date 2021/3/4 0004 15:57
  */
-public class LuckyAopInvocationHandler implements InvocationHandler {
+public class LuckyAopInvocationHandler extends LuckyInvocationHandler {
 
     private List<PointRun> pointRuns;//关于某一个类的所有增强的执行节点
     private static Set<InjectionAopPoint> injectionAopPoints= AopProxyFactory.injectionAopPointSet;
@@ -30,6 +30,7 @@ public class LuckyAopInvocationHandler implements InvocationHandler {
      * @param pointRuns 环绕执行节点集合(可变参形式传入)
      */
     public LuckyAopInvocationHandler(Object target,PointRun...pointRuns) {
+        super(target);
         this.pointRuns=new ArrayList<>();
         this.target=target;
         Stream.of(pointRuns).forEach(this.pointRuns::add);
@@ -41,12 +42,13 @@ public class LuckyAopInvocationHandler implements InvocationHandler {
      * @param pointRuns 环绕执行节点集合(集合参形式传入)
      */
     public LuckyAopInvocationHandler(Object target,List<PointRun> pointRuns) {
+        super(target);
         this.pointRuns=new ArrayList<>();
         this.target=target;
         this.pointRuns.addAll(pointRuns);
     }
     @Override
-    public synchronized Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
         //Object方法不执行代理
         if(MethodUtils.isObjectMethod(method)){
             return MethodUtils.invoke(target,method,params);
@@ -68,7 +70,7 @@ public class LuckyAopInvocationHandler implements InvocationHandler {
             }
         });
         //得到所有自定义的的环绕增强节点
-        pointRuns.stream().filter(a->a.methodExamine(method)).forEach((a)->{
+        pointRuns.stream().filter(a->a.methodExamine(target.getClass(),method)).forEach((a)->{
             AopPoint p=a.getPoint();
             p.init(targetMethodSignature);
             points.add(p);

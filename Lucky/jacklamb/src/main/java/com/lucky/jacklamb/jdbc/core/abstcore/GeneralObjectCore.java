@@ -14,6 +14,8 @@ public interface GeneralObjectCore {
 
     void runScript(Reader sqlScript) throws IOException;
 
+    void runScriptFullLine(Reader sqlScript) throws IOException;
+
     /**
      * ID查询
      *

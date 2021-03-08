@@ -135,6 +135,9 @@ public abstract class Injection implements Namer {
     }
 
     public static void valueInjection(Object bean,YamlConfAnalysis yaml,List<Field> valueFields,String prefix,String delimiter){
+        if(yaml==null){
+            return;
+        }
         if(Assert.isEmptyCollection(valueFields)){
             return;
         }

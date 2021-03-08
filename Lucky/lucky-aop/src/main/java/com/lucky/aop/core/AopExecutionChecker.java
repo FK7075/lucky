@@ -41,7 +41,7 @@ public abstract class AopExecutionChecker {
      * @param method 带检验的方法
      * @return
      */
-    protected abstract boolean methodExamine(Method method);
+    protected abstract boolean methodExamine(Class<?> targetClass,Method method);
 
     /**
      * 类检验，检验类是否要执行代理

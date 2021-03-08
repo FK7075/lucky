@@ -25,6 +25,7 @@ import net.sf.cglib.proxy.MethodProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Reader;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -559,6 +560,14 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
         }
         if (isExtendLM && "selectByIdIn".equals(method.getName()) && params.length == 1) {
             return sqlCore.getByIdIn(LuckyMapperGeneric, (List<?>) params[0]);
+        }
+        if(isExtendLM && "runScript".equals(method.getName()) && params.length == 1){
+            sqlCore.runScript((Reader) params[0]);
+            return void.class;
+        }
+        if(isExtendLM && "runScriptFullLine".equals(method.getName()) && params.length == 1){
+            sqlCore.runScriptFullLine((Reader) params[0]);
+            return void.class;
         }
         if(isExtendLM && "limit".equals(method.getName())&& params.length==2){
             Object nullObj = ClassUtils.newObject(LuckyMapperGeneric);

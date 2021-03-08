@@ -5,6 +5,7 @@ import com.lucky.jacklamb.querybuilder.Page;
 import com.lucky.jacklamb.querybuilder.QueryBuilder;
 import com.lucky.jacklamb.querybuilder.Translator;
 
+import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 
@@ -67,6 +68,18 @@ public interface LuckyMapper<Entity> {
      * @return
      */
     public List<Entity> selectList();
+
+    /**
+     * 执行sql脚本(逐行执行)
+     * @param sqlScriptReader sql脚本
+     */
+    public void runScript(Reader sqlScriptReader);
+
+    /**
+     *  执行sql脚本(全行执行)
+     * @param sqlScript sql脚本
+     */
+    public void runScriptFullLine(Reader sqlScript);
 
     /**
      * 更新操作

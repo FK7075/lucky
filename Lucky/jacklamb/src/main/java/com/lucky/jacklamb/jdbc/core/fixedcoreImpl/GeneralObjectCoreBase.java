@@ -66,7 +66,15 @@ public abstract class GeneralObjectCoreBase implements GeneralObjectCore, Unique
 		scriptRunner.runScript(sqlScript);
 		scriptRunner.closeConnection();
 		sqlScript.close();
+	}
 
+	@Override
+	public void runScriptFullLine(Reader sqlScript) throws IOException {
+		ScriptRunner scriptRunner = new ScriptRunner(dataSource.getConnection());
+		scriptRunner.setFullLineDelimiter(true);
+		scriptRunner.runScript(sqlScript);
+		scriptRunner.closeConnection();
+		sqlScript.close();
 	}
 
 

@@ -13,6 +13,7 @@ import com.lucky.framework.container.factory.Namer;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.base.BaseUtils;
 import com.lucky.utils.proxy.CglibProxy;
+import com.lucky.utils.proxy.JDKProxy;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
 import org.slf4j.Logger;
@@ -77,8 +78,11 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
             if(CglibProxy.isAgent(bean.getComponent().getClass())){
                 continue;
             }
+            if(JDKProxy.isAgent(bean.getComponent().getClass())){
+                continue;
+            }
             Object aspect = AopProxyFactory.aspect(pointRunSet, bean);
-            if(CglibProxy.isAgent(aspect.getClass())){
+            if(CglibProxy.isAgent(aspect.getClass())||JDKProxy.isAgent(aspect.getClass())){
                 bean.setComponent(aspect);
                 log.info("Create Aop Proxy Bean `{}`",bean.getComponent());
             }
