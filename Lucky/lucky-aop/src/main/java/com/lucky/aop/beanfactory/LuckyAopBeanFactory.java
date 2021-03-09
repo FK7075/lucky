@@ -50,6 +50,8 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
     @Override
     public List<Module> createBean() {
         List<Module> pointModules=new ArrayList<>(30);
+
+        //扫描得到使用Lucky定义的@Aspect组件定义的切面
         List<Class<?>> aspectPluginClasses = getPluginByAnnotation(Aspect.class)
                 .stream()
                 .filter(c->!AopPoint.class.isAssignableFrom(c))
@@ -59,30 +61,41 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
             if(!isIOCId(getBeanName(aspectPluginClass))){
                 pointModules.add(new Module(getBeanName(aspectPluginClass),"aspect",aspectObject));
             }
+
+            //解析切面中所有的@Pointcut
             List<Method> pointcutMethod = ClassUtils.getMethodByAnnotation(aspectPluginClass, Pointcut.class);
             for (Method method : pointcutMethod) {
                 PointRunUtils.addPointcutExecution(aspectPluginClass.getName()+"."+method.getName()+"()",
                         method.getAnnotation(Pointcut.class).value());
             }
+
+            //解析切面中的通知
             List<Method> expandMethods = ClassUtils.getMethodByStrengthenAnnotation(aspectPluginClass, Expand.class);
             for (Method expandMethod : expandMethods) {
                 pointRunSet.add(new PointRun(aspectObject,expandMethod));
             }
         }
 
+        //扫描得到使用AspectJ定义的@Aspect组件
         List<Module> aspectJBeans = getBeanByAnnotation(org.aspectj.lang.annotation.Aspect.class);
         for (Module aspectJBean : aspectJBeans) {
             Class<?> aspectJBeanClass = aspectJBean.getOriginalType();
+
+            //解析切面中所有的@Pointcut
             List<Method> pointcutMethod = ClassUtils.getMethodByAnnotation(aspectJBeanClass, org.aspectj.lang.annotation.Pointcut.class);
             for (Method method : pointcutMethod) {
                 PointRunUtils.addPointcutExecution(aspectJBeanClass.getName()+"."+method.getName()+"()",
                         method.getAnnotation(org.aspectj.lang.annotation.Pointcut.class).value());
             }
+
+            //解析切面中的通知
             List<Method> expandMethods = ClassUtils.getMethodByAnnotationArrayOR(aspectJBeanClass, AspectJ.ASPECTJ_EXPANDS_ANNOTATION);
             for (Method expandMethod : expandMethods) {
                 pointRunSet.add(new PointRun(aspectJBean.getComponent(),expandMethod));
             }
         }
+
+        //得到IOC容器中定义的切面组件AopPoint
         List<Module> aopPointModuleList = getBeanByClass(AopPoint.class);
         Set<InjectionAopPoint> injectionAopPoints=new HashSet<>(10);
         for (Module aopPointModule : aopPointModuleList) {
@@ -96,6 +109,9 @@ public class LuckyAopBeanFactory extends AopBeanFactory {
 
         AopProxyFactory.injectionAopPointSet=injectionAopPoints;
         Collection<Module> beans = getBeans();
+
+        //便利IOC容器中所有的组件，找到那些需要代理的组件，找到后将对应的切面织入
+        //织入原理为Cglib的动态代理，最后将代理对象替换掉IOC容器中的源对象
         for (Module bean : beans) {
             if(CglibProxy.isAgent(bean.getComponent().getClass())){
                 continue;

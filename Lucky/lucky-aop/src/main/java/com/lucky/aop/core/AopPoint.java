@@ -5,7 +5,7 @@ package com.lucky.aop.core;
  * @author fk-7075
  *
  */
-public abstract class AopPoint {
+public abstract class AopPoint implements Cloneable {
 
 	/** 优先级*/
 	private double priority=5;
@@ -21,19 +21,35 @@ public abstract class AopPoint {
 	/**
 	 * 当前方法的签名信息b
 	 */
-	protected ThreadLocal<TargetMethodSignature> tlTargetMethodSignature=new ThreadLocal();
+	protected ThreadLocal<TargetMethodSignature> tlTargetMethodSignature;
 
 	public void init(TargetMethodSignature targetMethodSignature) {
+		tlTargetMethodSignature=new ThreadLocal<>();
 		tlTargetMethodSignature.set(targetMethodSignature);
 	}
+
+	public AopPoint cloneObject(TargetMethodSignature targetMethodSignature){
+		AopPoint clone = (AopPoint) clone();
+		clone.init(targetMethodSignature);
+		return clone;
+	}
+
 	
 	
 	/**
-	 * 抽象方法，用于产生一个环绕增强方法，该方法必须使用@Around注解标注，并且必须配置aspect(切面信息)和pointcut(切入点信息)<br>
+	 * 抽象方法，用于产生一个环绕增强方法
 	 * @param chain
 	 * @return
 	 */
 	public abstract Object proceed(AopChain chain) throws Throwable;
 
+
+	public Object clone(){
+		try {
+			return super.clone();
+		}catch (CloneNotSupportedException  e){
+			throw new RuntimeException(e);
+		}
+	}
 
 }

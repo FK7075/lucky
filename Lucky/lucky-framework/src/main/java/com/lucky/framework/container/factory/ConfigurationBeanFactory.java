@@ -30,9 +30,10 @@ import java.util.stream.Collectors;
 public class ConfigurationBeanFactory extends IOCBeanFactory{
 
     private static final Logger log= LoggerFactory.getLogger(ConfigurationBeanFactory.class);
-    private List<Module> configurationBeans;
+    private final List<Module> configurationBeans;
 
-    public ConfigurationBeanFactory(List<Module> configurationBeans,ContainerLifecycleMange lifecycle) {
+    public ConfigurationBeanFactory(List<Module> configurationBeans) {
+        super();
         this.configurationBeans = configurationBeans
                 .stream()
                 .sorted(Comparator.comparing(m->AnnotationUtils.strengthenGet(m.getOriginalType(), Configuration.class).get(0).priority()))

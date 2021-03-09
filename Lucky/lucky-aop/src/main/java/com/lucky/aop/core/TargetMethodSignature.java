@@ -16,15 +16,15 @@ import java.util.Map;
 public class TargetMethodSignature implements Serializable {
 	
 	/** 当前真实类的代理对象*/
-	private Object aspectObject;
+	private final  Object aspectObject;
 	/** 当前真实类对应的Class*/
-	private Class<?> targetClass;
+	private final Class<?> targetClass;
 	/** 当前真实方法的Method*/
-	private Method currMethod;
+	private final Method currMethod;
 	/**当前真实方法的参数列表*/
-	private Object[] params;
+	private final Object[] params;
 	/** 由当前真实方法的参数列表值和其对应的位置组成的Map<index,value>*/
-	private Map<Integer,Object> indexMap;
+	private final Map<Integer,Object> indexMap;
 	/** 由当前真实方法的参数列表值和其对应参数名组成的Map<paramName,value>*/
 	private Map<String,Object> nameMap;
 	

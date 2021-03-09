@@ -53,18 +53,18 @@ public class LuckyAopMethodInterceptor implements MethodInterceptor {
 				=new TargetMethodSignature(target,method,params);
 
 		//得到所有注入式的环绕增强节点(IAOP)
-		injectionAopPoints.stream().forEach((iap)->{
+		injectionAopPoints.forEach((iap)->{
 			if(iap.pointCutMethod(target.getClass().getSuperclass(),method)){
-				iap.init(targetMethodSignature);
-				points.add(iap);
+				points.add(iap.cloneObject(new TargetMethodSignature(target,method,params)));
 			}
 		});
 		//得到所有自定义的的环绕增强节点
 		pointRuns.stream().filter(a->a.methodExamine(target.getClass(),method)).forEach((a)->{
 			AopPoint p=a.getPoint();
-			p.init(targetMethodSignature);
-			points.add(p);
+			points.add(p.cloneObject(new TargetMethodSignature(target,method,params)));
 		});
+
+
 		//将所的环绕增强节点根据优先级排序后组成一个执行链
 		AopChain chain=new CglibAopChain(points.stream()
 				.sorted(Comparator.comparing(AopPoint::getPriority))
@@ -73,7 +73,6 @@ public class LuckyAopMethodInterceptor implements MethodInterceptor {
 
 		//执行增强策略
 		resule= chain.proceed();
-//		points.forEach(p->p.regress());
 		return resule;
 	}
 

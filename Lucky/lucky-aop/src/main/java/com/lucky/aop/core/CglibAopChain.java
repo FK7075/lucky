@@ -3,6 +3,7 @@ package com.lucky.aop.core;
 import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,6 +12,7 @@ import java.util.List;
  * @date 2021/3/4 0004 16:02
  */
 public class CglibAopChain implements AopChain{
+
     private List<AopPoint> points;
 
     private int index=-1;
@@ -24,7 +26,7 @@ public class CglibAopChain implements AopChain{
     private MethodProxy methodProxy;
 
     public CglibAopChain(List<AopPoint> points, Object target, Object[] params, MethodProxy methodProxy,Method currMethod) {
-        this.points = points;
+        this.points =points;
         this.target = target;
         this.params = params;
         this.methodProxy = methodProxy;
@@ -72,6 +74,15 @@ public class CglibAopChain implements AopChain{
             result=point.proceed(this);
         }
         return result;
+    }
+
+    public Object clone(){
+
+        try {
+            return super.clone();
+        }catch (CloneNotSupportedException  e){
+            throw new RuntimeException(e);
+        }
     }
 
 }

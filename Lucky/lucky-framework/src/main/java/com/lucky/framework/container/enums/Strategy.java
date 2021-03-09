@@ -59,8 +59,8 @@ public enum Strategy implements FusionStrategy {
     SUPPLEMENT(3,3);
 
 
-    private int pool_strategy;
-    private int plugin_strategy;
+    private final int pool_strategy;
+    private final int plugin_strategy;
 
     Strategy(int pool_strategy, int plugin_strategy) {
         this.pool_strategy = pool_strategy;

@@ -8,6 +8,7 @@ import com.lucky.jacklamb.querybuilder.Translator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 
@@ -80,6 +81,22 @@ public class BaseService<M extends LuckyMapper<E>,E> {
      */
     public List<E> selectList(){
         return mapper.selectList();
+    }
+
+    /**
+     * 执行sql脚本(逐行执行)
+     * @param sqlScriptReader sql脚本
+     */
+    public void runScript(Reader sqlScriptReader){
+        mapper.runScript(sqlScriptReader);
+    }
+
+    /**
+     *  执行sql脚本(全行执行)
+     * @param sqlScript sql脚本
+     */
+    public void runScriptFullLine(Reader sqlScript){
+        mapper.runScriptFullLine(sqlScript);
     }
 
     /**

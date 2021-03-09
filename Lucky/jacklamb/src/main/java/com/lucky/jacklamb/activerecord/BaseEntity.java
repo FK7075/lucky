@@ -11,6 +11,8 @@ import com.lucky.jacklamb.querybuilder.Translator;
 import com.lucky.utils.conversion.annotation.NoConversion;
 import com.lucky.utils.reflect.FieldUtils;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
@@ -246,6 +248,22 @@ public abstract class BaseEntity<Entity> {
      */
     public List<Entity> select(){
         return (List<Entity>) sqlCore.getList(this);
+    }
+
+    /**
+     * 执行sql脚本(逐行执行)
+     * @param sqlScriptReader sql脚本
+     */
+    public void runScript(Reader sqlScriptReader) throws IOException {
+        sqlCore.runScript(sqlScriptReader);
+    }
+
+    /**
+     *  执行sql脚本(全行执行)
+     * @param sqlScript sql脚本
+     */
+    public void runScriptFullLine(Reader sqlScript) throws IOException {
+        sqlCore.runScriptFullLine(sqlScript);
     }
 
     /**

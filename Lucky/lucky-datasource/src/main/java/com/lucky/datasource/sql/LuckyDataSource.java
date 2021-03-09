@@ -5,12 +5,11 @@ import com.lucky.utils.config.Value;
 import com.lucky.utils.reflect.ClassUtils;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.PrintWriter;
+import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
  * @see HikariCPDataSource
  * @see C3P0DataSource
  */
-public abstract class LuckyDataSource extends MapConfigAnalysis {
+public abstract class LuckyDataSource extends MapConfigAnalysis implements DataSource {
 
     //数据源的唯一标识
     @Value
@@ -208,6 +207,46 @@ public abstract class LuckyDataSource extends MapConfigAnalysis {
     public abstract DataSource createDataSource();
 
     public abstract void destroy();
+
+    @Override
+    public Connection getConnection(String username, String password) throws SQLException {
+        return createDataSource().getConnection(username, password);
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return createDataSource().unwrap(iface);
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return createDataSource().isWrapperFor(iface);
+    }
+
+    @Override
+    public PrintWriter getLogWriter() throws SQLException {
+        return createDataSource().getLogWriter();
+    }
+
+    @Override
+    public void setLogWriter(PrintWriter out) throws SQLException {
+        createDataSource().setLogWriter(out);
+    }
+
+    @Override
+    public void setLoginTimeout(int seconds) throws SQLException {
+        createDataSource().setLoginTimeout(seconds);
+    }
+
+    @Override
+    public int getLoginTimeout() throws SQLException {
+        return createDataSource().getLoginTimeout();
+    }
+
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return createDataSource().getParentLogger();
+    }
 
     /**
      * 关闭数据库资源

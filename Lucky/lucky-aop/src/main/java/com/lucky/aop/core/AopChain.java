@@ -1,7 +1,7 @@
 package com.lucky.aop.core;
 
-@FunctionalInterface
-public interface AopChain {
+public interface AopChain extends Cloneable{
 
 	Object proceed() throws Throwable;
+
 }

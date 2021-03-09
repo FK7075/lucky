@@ -68,18 +68,18 @@ public class PointRun {
 
 	/**
 	 * 使用增强类的实例对象+增强方法Method来构造PointRun
-	 * @param aspect 增强类实例
-	 * @param method 增强(方法)
+	 * @param aspectObject 增强类实例
+	 * @param aspectMethod 增强(方法)
 	 */
-	public PointRun(Object aspect, Method method) {
-		this.method=method;
-		Class<?> aspectClass = aspect.getClass();
-		Annotation annotation=AnnotationUtils.getByArray(method, (Class<? extends Annotation>[]) ArrayUtils.merge(EXPAND_ANNOTATIONS,AspectJ.ASPECTJ_EXPANDS_ANNOTATION));
+	public PointRun(Object aspectObject, Method aspectMethod) {
+		this.method=aspectMethod;
+		Class<?> aspectClass = aspectObject.getClass();
+		Annotation annotation=AnnotationUtils.getByArray(aspectMethod, (Class<? extends Annotation>[]) ArrayUtils.merge(EXPAND_ANNOTATIONS,AspectJ.ASPECTJ_EXPANDS_ANNOTATION));
 		Location location = PointRunUtils.getLocation(annotation);
-		this.point=conversion(aspect,method,location);
-		this.point.setPriority(PointRunUtils.getPriority(aspectClass, method));
-		this.aopExecutionChecker.setAspectMethod(method);
-		this.aopExecutionChecker.setPositionExpression(PointRunUtils.getPointcutExecution(aspectClass,method,annotation));
+		this.point=new MethodAopPoint(aspectObject,location,aspectMethod);
+		this.point.setPriority(PointRunUtils.getPriority(aspectClass, aspectMethod));
+		this.aopExecutionChecker.setAspectMethod(aspectMethod);
+		this.aopExecutionChecker.setPositionExpression(PointRunUtils.getPointcutExecution(aspectClass,aspectMethod,annotation));
 	}
 
 	public AopPoint getPoint() {
@@ -104,174 +104,175 @@ public class PointRun {
 		return aopExecutionChecker.classExamine(module);
 	}
 
+	public static class MethodAopPoint extends AopPoint{
+		private final Object aspectObject;
+		private final Location location;
+		private final Method aspectMethod;
+		private boolean isFirst;
 
-	/**
-	 * 使用增强类的执行参数构造Point
-	 * @param expand 增强类实例
-	 * @param expandMethod 增强类方法
-	 * @param location 增强位置
-	 * @return
-	 */
-	private AopPoint conversion(Object expand, Method expandMethod, final Location location) {
-
-		if(location==Location.AROUND){
-			Parameter[] parameters = expandMethod.getParameters();
-			int cursor=0;
-			for(int i=0;i<parameters.length;i++) {
-				if(AopChain.class.isAssignableFrom(parameters[i].getType())){
-					cursor++;
-				}
-			}
-			if(cursor==0){
-				throw new AopParamsConfigurationException("环绕增强方法中必须要带有一个`com.lucky.framework.core.AopChain`类型的参数，该方法中没有AopChain参数，错误位置："+method);
-			}
-			if(cursor>1){
-				throw new AopParamsConfigurationException("环绕增强方法中有且只能有一个`com.lucky.framework.core.AopChain`类型的参数，该方法中包含"+cursor+"个AopChain参数，错误位置："+method);
-			}
-
+		public MethodAopPoint(Object aspectObject, Location location, Method aspectMethod) {
+			this.aspectObject = aspectObject;
+			this.location = location;
+			this.aspectMethod = aspectMethod;
+			isFirst=true;
+			aroundMethodParamCheck();
 		}
-		AopPoint cpoint=new AopPoint() {
 
-			private boolean isFirst=true;
-
-			@Override
-			public Object proceed(AopChain chain) throws Throwable {
-				if(isFirst){
-					Injection.injection(expand,"aspect");
-					isFirst=false;
+		private void aroundMethodParamCheck(){
+			if(location==Location.AROUND){
+				Parameter[] parameters = aspectMethod.getParameters();
+				int cursor=0;
+				for (Parameter parameter : parameters) {
+					if (AopChain.class.isAssignableFrom(parameter.getType())) {
+						cursor++;
+					}
 				}
-				if(location==Location.BEFORE) {
-					perform(expand,expandMethod,chain,null,null,-1);
-					return chain.proceed();
-				}else if(location==Location.AFTER) {
-					long start = System.currentTimeMillis();
-					Object result=null;
-					try {
-						result=chain.proceed();
-						return result;
-					}catch (Throwable e){
-						throw e;
-					}finally {
-						long end = System.currentTimeMillis();
-						perform(expand,expandMethod,chain,null,result,end-start);
-					}
-				}else if(location==Location.AROUND){
-					return perform(expand,expandMethod,chain,null,null,-1);
-				}else if(location==Location.AFTER_RETURNING){
-					Object result=null;
-					try {
-						long start = System.currentTimeMillis();
-						result=chain.proceed();
-						long end = System.currentTimeMillis();
-						perform(expand,expandMethod,chain,null,result,end-start);
-						return result;
-					}catch (Throwable e){
-						throw e;
-					}
-				}else if(location==Location.AFTER_THROWING){
-					long start = System.currentTimeMillis();
-					Object result=null;
-					try {
-						result=chain.proceed();
-						return result;
-					}catch (Throwable e){
-						long end = System.currentTimeMillis();
-						perform(expand,expandMethod,chain,e,null,end-start);
-					}
-
+				if(cursor==0){
+					throw new AopParamsConfigurationException("环绕增强方法中必须要带有一个`com.lucky.aop.core.AopChain`类型的参数，该方法中没有AopChain参数，错误位置："+aspectMethod);
 				}
-				return null;
-			}
+				if(cursor>1){
+					throw new AopParamsConfigurationException("环绕增强方法中有且只能有一个`com.lucky.aop.core.AopChain`类型的参数，该方法中包含"+cursor+"个AopChain参数，错误位置："+aspectMethod);
+				}
 
-			//执行增强方法
-			private Object perform(Object expand, Method expandMethod,AopChain chain,Throwable e,Object r,long t) {
-				return MethodUtils.invoke(expand,expandMethod,setParams(expandMethod,chain,e,r,t));
 			}
+		}
 
-			//设置增强方法的执行参数-@AopParam配置
-			private Object[] setParams(Method expandMethod,AopChain chain,Throwable ex,Object result,long runtime) {
-				int index;
-				String aopParamValue,indexStr;
-				Parameter[] parameters = expandMethod.getParameters();
-				Object[] expandParams=new Object[parameters.length];
-				TargetMethodSignature targetMethodSignature = tlTargetMethodSignature.get();
-				ApplicationContext applicationContext= AutoScanApplicationContext.create();
-				for(int i=0;i<parameters.length;i++) {
-					Class<?> paramClass = parameters[i].getType();
-					if(parameters[i].isAnnotationPresent(Param.class)){
-						aopParamValue=parameters[i].getAnnotation(Param.class).value();
-						if(aopParamValue.startsWith("ref:")) {//取IOC容器中的值
-							if("ref:".equals(aopParamValue.trim())) {
-								expandParams[i]=applicationContext.getBean(parameters[i].getType());
-							} else {
-								expandParams[i]=applicationContext.getBean(aopParamValue.substring(4));
-							}
-						}else if(aopParamValue.startsWith("ind:")) {//目标方法中的参数列表值中指定位置的参数值
-							indexStr=aopParamValue.substring(4).trim();
-							try {
-								index=Integer.parseInt(indexStr);
-							}catch(NumberFormatException e) {
-								throw new AopParamsConfigurationException("错误的表达式，参数表达式中的索引不合法，索引只能为整数！错误位置："+expandMethod+"@Param("+aopParamValue+")=>err");
-							}
-							if(!targetMethodSignature.containsIndex(index)) {
-								throw new AopParamsConfigurationException("错误的表达式，参数表达式中的索引超出参数列表索引范围！错误位置："+expandMethod+"@Param("+aopParamValue+")=>err");
-							}
-							expandParams[i]=targetMethodSignature.getParamByIndex(index);
-						}else {//根据参数名得到具体参数
-							if("return".equals(aopParamValue)){
-								expandParams[i]=result;
-								continue;
-							}
-							if("runtime".equals(aopParamValue)&&paramClass==long.class){
-								expandParams[i]=runtime;
-								continue;
-							}
-							if(!targetMethodSignature.containsParamName(aopParamValue)) {
-								expandParams[i]=null;
-							}else{
-								expandParams[i]=targetMethodSignature.getParamByName(aopParamValue);
-							}
+		@Override
+		public Object proceed(AopChain chain) throws Throwable {
+			if(isFirst){
+				Injection.injection(aspectObject,"aspect");
+				isFirst=false;
+			}
+			if(location==Location.BEFORE) {
+				perform(aspectObject, aspectMethod,chain,null,null,-1);
+				return chain.proceed();
+			}else if(location==Location.AFTER) {
+				long start = System.currentTimeMillis();
+				Object result=null;
+				try {
+					result=chain.proceed();
+					return result;
+				}catch (Throwable e){
+					throw e;
+				}finally {
+					long end = System.currentTimeMillis();
+					perform(aspectObject, aspectMethod,chain,null,result,end-start);
+				}
+			}else if(location==Location.AROUND){
+				return perform(aspectObject, aspectMethod,chain,null,null,-1);
+			}else if(location==Location.AFTER_RETURNING){
+				Object result=null;
+				try {
+					long start = System.currentTimeMillis();
+					result=chain.proceed();
+					long end = System.currentTimeMillis();
+					perform(aspectObject, aspectMethod,chain,null,result,end-start);
+					return result;
+				}catch (Throwable e){
+					throw e;
+				}
+			}else if(location==Location.AFTER_THROWING){
+				long start = System.currentTimeMillis();
+				Object result=null;
+				try {
+					result=chain.proceed();
+					return result;
+				}catch (Throwable e){
+					long end = System.currentTimeMillis();
+					perform(aspectObject, aspectMethod,chain,e,null,end-start);
+				}
+
+			}
+			return null;
+		}
+
+		//执行增强方法
+		private Object perform(Object expand, Method expandMethod,AopChain chain,Throwable e,Object r,long t) {
+			return MethodUtils.invoke(expand,expandMethod,setParams(expandMethod,chain,e,r,t));
+		}
+
+		//设置增强方法的执行参数-@AopParam配置
+		private Object[] setParams(Method expandMethod,AopChain chain,Throwable ex,Object result,long runtime) {
+			int index;
+			String aopParamValue,indexStr;
+			Parameter[] parameters = expandMethod.getParameters();
+			Object[] expandParams=new Object[parameters.length];
+			TargetMethodSignature targetMethodSignature = tlTargetMethodSignature.get();
+			ApplicationContext applicationContext= AutoScanApplicationContext.create();
+			for(int i=0;i<parameters.length;i++) {
+				Class<?> paramClass = parameters[i].getType();
+				if(parameters[i].isAnnotationPresent(Param.class)){
+					aopParamValue=parameters[i].getAnnotation(Param.class).value();
+					if(aopParamValue.startsWith("ref:")) {//取IOC容器中的值
+						if("ref:".equals(aopParamValue.trim())) {
+							expandParams[i]=applicationContext.getBean(parameters[i].getType());
+						} else {
+							expandParams[i]=applicationContext.getBean(aopParamValue.substring(4));
 						}
-					}else{
-						if(TargetMethodSignature.class.isAssignableFrom(paramClass)) {
-							expandParams[i]=targetMethodSignature;
-						}else if(AopChain.class.isAssignableFrom(paramClass)){
-							expandParams[i]=chain;
-						}else if(Class.class.isAssignableFrom(paramClass)){
-							expandParams[i]=targetMethodSignature.getTargetClass();
-						}else if(Method.class.isAssignableFrom(paramClass)){
-							expandParams[i]=targetMethodSignature.getCurrMethod();
-						}else if(applicationContext.getBean(paramClass).size()==1){
-							expandParams[i]=applicationContext.getBean(paramClass).get(0);
-						}else if(Object[].class==paramClass){
-							expandParams[i]=targetMethodSignature.getParams();
-						}else if(Parameter[].class==paramClass){
-							expandParams[i]=targetMethodSignature.getParameters();
-						}else if(Map.class.isAssignableFrom(paramClass)){
-							Class<?>[] genericType = ClassUtils.getGenericType(parameters[i].getParameterizedType());
-							if(genericType[0]==Integer.class&&genericType[1]==Object.class){
-								expandParams[i]=targetMethodSignature.getIndexMap();
-							}
-							if(genericType[0]==String.class&&genericType[1]==Object.class){
-								expandParams[i]=targetMethodSignature.getNameMap();
-							}
-						}else if(Annotation.class.isAssignableFrom(paramClass)){
-							Class<? extends Annotation> ann= (Class<? extends Annotation>) paramClass;
-							if(targetMethodSignature.getCurrMethod().isAnnotationPresent(ann)){
-								expandParams[i]=targetMethodSignature.getCurrMethod().getAnnotation(ann);
-							}
-						}else if(Throwable.class.isAssignableFrom(paramClass)){
-							expandParams[i]=ex;
-						}else if(AopChain.class==paramClass){
+					}else if(aopParamValue.startsWith("ind:")) {//目标方法中的参数列表值中指定位置的参数值
+						indexStr=aopParamValue.substring(4).trim();
+						try {
+							index=Integer.parseInt(indexStr);
+						}catch(NumberFormatException e) {
+							throw new AopParamsConfigurationException("错误的表达式，参数表达式中的索引不合法，索引只能为整数！错误位置："+expandMethod+"@Param("+aopParamValue+")=>err");
+						}
+						if(!targetMethodSignature.containsIndex(index)) {
+							throw new AopParamsConfigurationException("错误的表达式，参数表达式中的索引超出参数列表索引范围！错误位置："+expandMethod+"@Param("+aopParamValue+")=>err");
+						}
+						expandParams[i]=targetMethodSignature.getParamByIndex(index);
+					}else {//根据参数名得到具体参数
+						if("return".equals(aopParamValue)){
+							expandParams[i]=result;
 							continue;
-						}else{
+						}
+						if("runtime".equals(aopParamValue)&&paramClass==long.class){
+							expandParams[i]=runtime;
+							continue;
+						}
+						if(!targetMethodSignature.containsParamName(aopParamValue)) {
 							expandParams[i]=null;
+						}else{
+							expandParams[i]=targetMethodSignature.getParamByName(aopParamValue);
 						}
 					}
+				}else{
+					if(TargetMethodSignature.class.isAssignableFrom(paramClass)) {
+						expandParams[i]=targetMethodSignature;
+					}else if(AopChain.class.isAssignableFrom(paramClass)){
+						expandParams[i]=chain;
+					}else if(Class.class.isAssignableFrom(paramClass)){
+						expandParams[i]=targetMethodSignature.getTargetClass();
+					}else if(Method.class.isAssignableFrom(paramClass)){
+						expandParams[i]=targetMethodSignature.getCurrMethod();
+					}else if(applicationContext.getBean(paramClass).size()==1){
+						expandParams[i]=applicationContext.getBean(paramClass).get(0);
+					}else if(Object[].class==paramClass){
+						expandParams[i]=targetMethodSignature.getParams();
+					}else if(Parameter[].class==paramClass){
+						expandParams[i]=targetMethodSignature.getParameters();
+					}else if(Map.class.isAssignableFrom(paramClass)){
+						Class<?>[] genericType = ClassUtils.getGenericType(parameters[i].getParameterizedType());
+						if(genericType[0]==Integer.class&&genericType[1]==Object.class){
+							expandParams[i]=targetMethodSignature.getIndexMap();
+						}
+						if(genericType[0]==String.class&&genericType[1]==Object.class){
+							expandParams[i]=targetMethodSignature.getNameMap();
+						}
+					}else if(Annotation.class.isAssignableFrom(paramClass)){
+						Class<? extends Annotation> ann= (Class<? extends Annotation>) paramClass;
+						if(targetMethodSignature.getCurrMethod().isAnnotationPresent(ann)){
+							expandParams[i]=targetMethodSignature.getCurrMethod().getAnnotation(ann);
+						}
+					}else if(Throwable.class.isAssignableFrom(paramClass)){
+						expandParams[i]=ex;
+					}else if(AopChain.class==paramClass){
+						continue;
+					}else{
+						expandParams[i]=null;
+					}
 				}
-				return expandParams;
 			}
-		};
-		return cpoint;
+			return expandParams;
+		}
 	}
 }

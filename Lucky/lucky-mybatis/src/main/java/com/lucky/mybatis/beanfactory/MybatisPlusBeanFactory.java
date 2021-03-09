@@ -35,43 +35,19 @@ import java.util.stream.Collectors;
  * @date 2021/1/10 下午4:14
  */
 @Component
-public class MybatisPlusBeanFactory extends IOCBeanFactory {
+public class MybatisPlusBeanFactory extends BaseMybatisFactory {
 
-    private final static String TYPE="mybatis-mapper";
-    private final static MybatisConfig mybatisConfig=MybatisConfig.getMybatisConfig();
-    private final ResourcePatternResolver resourcePatternResolver;
-    public MybatisPlusBeanFactory(){
-        resourcePatternResolver=new PathMatchingResourcePatternResolver();
-    }
 
     @Override
     public List<Module> createBean() {
         List<Module> mappers = super.createBean();
-        //将用户配置在IOC容器中的数据源注册到数据源管理器中
-        getBeanByClass(LuckyDataSource.class)
-                .stream()
-                .map(m->(LuckyDataSource)m.getComponent())
-                .forEach(LuckyDataSourceManage::addLuckyDataSource);
-
-        List<LuckyDataSource> allDataSource = LuckyDataSourceManage.getAllDataSource();
-        if(Assert.isEmptyCollection(allDataSource)){
-            throw new BeanFactoryInitializationException("Mybatis BeanFactory initialization failed！ No data source is registered in the data source manager!");
-        }
+        List<LuckyDataSource> allDataSource = getAllDataSource();
         Map<String, List<Class<?>>> mapperClassesMap = dbnameGroup();
         Configuration configuration=new MybatisConfiguration();
-        TransactionFactory transactionFactory = new JdbcTransactionFactory();
-        configuration.setLogImpl(mybatisConfig.getLogImpl());
-        configuration.setMapUnderscoreToCamelCase(mybatisConfig.isMapUnderscoreToCamelCase());
-        mybatisConfig.getInterceptors().forEach(configuration::addInterceptor);
-        if(mybatisConfig.getTypeAliasesPackage()!=null){
-            configuration.getTypeAliasRegistry().registerAliases(mybatisConfig.getTypeAliasesPackage());
-        }
-        if(mybatisConfig.getVfsImpl()!=null){
-            configuration.setVfsImpl(mybatisConfig.getVfsImpl());
-        }
+        configurationSetting(configuration);
         for (LuckyDataSource luckyDataSource : allDataSource) {
             String dbname = luckyDataSource.getDbname();
-            Environment environment = new Environment("development", transactionFactory, luckyDataSource.createDataSource());
+            Environment environment = new Environment("development", getJdbcTransactionFactory(), luckyDataSource.createDataSource());
             configuration.setEnvironment(environment);
             List<Class<?>> mapperClasses = mapperClassesMap.get(dbname);
             Resource[] resources;
@@ -104,10 +80,6 @@ public class MybatisPlusBeanFactory extends IOCBeanFactory {
         return mappers;
     }
 
-    private Map<String, List<Class<?>>> dbnameGroup(){
-        return getPluginByAnnotation(Mapper.class).stream()
-                .collect(Collectors.groupingBy(c->c.getAnnotation(Mapper.class).dbname()));
-    }
 
     private String getBeanId(Class<?> mapperClass){
         String id = mapperClass.getAnnotation(Mapper.class).id();

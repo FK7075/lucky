@@ -28,6 +28,7 @@ public abstract class JackLamb {
         InputStream logoStream = Resources.getInputStream(USER_LOGO_FILE);
         if (logoStream != null) {
             print(USER_LOGO_FILE);
+            return;
         }
         print(DEFAULT_LOGO_FILE);
     }
@@ -38,7 +39,7 @@ public abstract class JackLamb {
      */
     private static void print(String filePath){
         try {
-            BufferedReader reader = Resources.getReader(DEFAULT_LOGO_FILE);
+            BufferedReader reader = Resources.getReader(filePath);
             Console.white(IOUtils.toString(reader));
             versionInfo();
             first = false;
@@ -78,7 +79,6 @@ public abstract class JackLamb {
         String lucky = ":: Lucky";
         String luckyversion = "           :: ("+Version.version()+")";
         int maxLength = getMaxLength(os, java, lucky);
-        String d = "";
         Console.print("\n\n    ");Console.white( getSameStr(java, maxLength));Console.white(javaversioin);
         Console.print("\n    ");Console.white( getSameStr(lucky, maxLength));Console.white(luckyversion);
         Console.green("\n    ");Console.white( getSameStr(os, maxLength));Console.white(osvsersion+"\n\n");

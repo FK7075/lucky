@@ -129,7 +129,7 @@ public class RegisterMachine {
 
         //找到IOC容器中所有的配置类，初始化所有配置类生产的Bean实例，并注入IOC容器
         ConfigurationBeanFactory configurationBeanFactory=
-                new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"),lifecycleMange);
+                new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"));
         List<Module> configurationFactoryCreateBeans = configurationBeanFactory.createBean();
         for (Module configurationBean : configurationFactoryCreateBeans) {
             if(!scan.exclusions(configurationBean.getOriginalType())){
@@ -225,7 +225,7 @@ public class RegisterMachine {
 
         //找到IOC容器中所有的配置类，初始化所有配置类生产的Bean实例，并注入IOC容器
         ConfigurationBeanFactory configurationBeanFactory=
-                new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"),lifecycleMange);
+                new ConfigurationBeanFactory(singletonPool.getBeanByType("configuration"));
         List<Module> configurationFactoryCreateBeans = configurationBeanFactory.createBean();
         for (Module configurationBean : configurationFactoryCreateBeans) {
             singletonPool.put(configurationBean);

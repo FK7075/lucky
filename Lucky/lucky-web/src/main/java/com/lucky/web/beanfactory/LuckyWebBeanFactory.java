@@ -46,16 +46,21 @@ public class LuckyWebBeanFactory extends IOCBeanFactory {
     public List<Module> createBean() {
         List<Module> modules=new ArrayList<>();
         List<Class<?>> controllerClasses = getPluginByAnnotation(CONTROLLER_ANNOTATION);
+        //注册Controller组件
         for (Class<?> controllerClass : controllerClasses) {
             String beanName = getBeanName(controllerClass);
             String beanType = getBeanType(controllerClass);
             lifecycleMange.beforeCreatingInstance(controllerClass,beanName,beanType);
             if(AnnotationUtils.strengthenIsExist(controllerClass,Controller.class)){
+                //注册@Controller、@ControllerAdvice、@RestController组件
                 modules.add(new Module(beanName,beanType,ClassUtils.newObject(controllerClass)));
             }else{
+                //注册@CallController组件(该组件一般情况下为接口，所以需要进行代理)
                 modules.add(new Module(beanName,beanType,CallControllerProxy.getCallControllerProxyObject(controllerClass)));
             }
         }
+
+        //注册拦截器组件
         List<Class<?>> interceptors = getPluginByAnnotation(Interceptor.class);
         for (Class<?> interceptorClass : interceptors) {
             if(!HandlerInterceptor.class.isAssignableFrom(interceptorClass)){

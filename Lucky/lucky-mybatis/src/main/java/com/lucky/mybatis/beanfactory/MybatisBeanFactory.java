@@ -34,81 +34,24 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @date 2021/1/7 0007 15:45
  */
-public class MybatisBeanFactory extends IOCBeanFactory {
-
-    private final static String TYPE="mybatis-mapper";
-    private final static MybatisConfig mybatisConfig=MybatisConfig.getMybatisConfig();
-    private final ResourcePatternResolver resourcePatternResolver;
-    public MybatisBeanFactory(){
-        resourcePatternResolver=new PathMatchingResourcePatternResolver();
-    }
+public class MybatisBeanFactory extends BaseMybatisFactory {
 
     @Override
     public List<Module> createBean() {
         List<Module> mappers = super.createBean();
-        //将用户配置在IOC容器中的数据源注册到数据源管理器中
-        getBeanByClass(LuckyDataSource.class)
-                .stream()
-                .map(m->(LuckyDataSource)m.getComponent())
-                .forEach(LuckyDataSourceManage::addLuckyDataSource);
-
-        List<LuckyDataSource> allDataSource = LuckyDataSourceManage.getAllDataSource();
-        if(Assert.isEmptyCollection(allDataSource)){
-            throw new BeanFactoryInitializationException("Mybatis BeanFactory initialization failed！ No data source is registered in the data source manager!");
-        }
-        Map<String, List<Class<?>>> mapperClassesMap = dbnameGroup();
+        List<LuckyDataSource> allDataSource =getAllDataSource();
         Configuration configuration=new Configuration();
-        TransactionFactory transactionFactory = new JdbcTransactionFactory();
-        configuration.setLogImpl(mybatisConfig.getLogImpl());
-        configuration.setMapUnderscoreToCamelCase(mybatisConfig.isMapUnderscoreToCamelCase());
-        mybatisConfig.getInterceptors().forEach(configuration::addInterceptor);
-        if(mybatisConfig.getTypeAliasesPackage()!=null){
-            configuration.getTypeAliasRegistry().registerAliases(mybatisConfig.getTypeAliasesPackage());
-        }
-        if(mybatisConfig.getVfsImpl()!=null){
-            configuration.setVfsImpl(mybatisConfig.getVfsImpl());
-        }
+        configurationSetting(configuration);
         for (LuckyDataSource luckyDataSource : allDataSource) {
-            String dbname = luckyDataSource.getDbname();
-            List<Class<?>> mapperClasses = mapperClassesMap.get(dbname);
-            Environment environment = new Environment("development", transactionFactory, luckyDataSource.createDataSource());
+            Environment environment = new Environment("development", getJdbcTransactionFactory(), luckyDataSource.createDataSource());
             configuration.setEnvironment(environment);
-            Resource[] resources;
-            String mapperLocations = mybatisConfig.getMapperLocations();
-            if(mapperLocations!=null){
-                try {
-                    resources = resourcePatternResolver.getResources(mybatisConfig.getMapperLocations());
-                    for (Resource resource : resources) {
-                        new XMLMapperBuilder(resource.getInputStream(),configuration,resource.getDescription(),configuration.getSqlFragments()).parse();
-                    }
-                }catch (IOException e){
-                    throw new BeanFactoryInitializationException(e,"Mybatis BeanFactory initialization failed！Error loading mapper resource file!");
-                }
+            List<MapperSource> mapperSources = getMapperLocations();
+            if(mapperSources!=null){
+                mapperSources.forEach(in->new XMLMapperBuilder(in.getIn(),configuration,in.getDescription(),configuration.getSqlFragments()).parse());
             }
-            if(mapperClasses!=null){
-                for (Class<?> mapperClass : mapperClasses) {
-                    try {
-                        configuration.addMapper(mapperClass);
-                    }catch (Exception ignored){}
-                    SqlSessionFactory sessionFactory
-                            = new SqlSessionFactoryBuilder().build(configuration);
-                    SqlSessionTemplate sqlSessionTemplate=new SqlSessionTemplate(sessionFactory);
-                    String beanName = getBeanId(mapperClass);
-                    lifecycleMange.beforeCreatingInstance(mapperClass,beanName,TYPE);
-                    mappers.add(new Module(beanName,TYPE,sqlSessionTemplate.getMapper(mapperClass)));
-                }
-            }
+            mappers.addAll(getMappers(configuration,luckyDataSource.getDbname()));
         }
         return mappers;
     }
 
-    private Map<String, List<Class<?>>> dbnameGroup(){
-        return getPluginByAnnotation(Mapper.class).stream()
-                .collect(Collectors.groupingBy(c->c.getAnnotation(Mapper.class).dbname()));
-    }
-
-    private String getBeanId(Class<?> mapperClass){
-        String id = mapperClass.getAnnotation(Mapper.class).id();
-        return Assert.isBlankString(id)? Namer.getBeanName(mapperClass):id;
-    }
 }

@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class JDKAopChain implements AopChain{
 
-    private List<AopPoint> points;
+    private final List<AopPoint> points;
 
     private int index=-1;
 
@@ -21,7 +21,7 @@ public class JDKAopChain implements AopChain{
 
     private Object[] params;
 
-    private Method currMethod;
+    private final Method currMethod;
 
 
     public JDKAopChain(List<AopPoint> points, Object target, Object[] params,Method currMethod) {
@@ -65,5 +65,14 @@ public class JDKAopChain implements AopChain{
             result=point.proceed(this);
         }
         return result;
+    }
+
+    public Object clone(){
+
+        try {
+            return super.clone();
+        }catch (CloneNotSupportedException  e){
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -13,7 +13,7 @@ import java.lang.reflect.Type;
  */
 public class GsonSerializationScheme implements JSONSerializationScheme {
 
-    private static LSON lson=new LSON();
+    private static final LSON lson=new LSON();
 
     @Override
     public String serialization(Object object) throws IOException {

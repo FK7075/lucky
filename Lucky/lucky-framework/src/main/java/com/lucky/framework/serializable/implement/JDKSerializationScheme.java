@@ -1,7 +1,5 @@
 package com.lucky.framework.serializable.implement;
 
-import com.lucky.framework.annotation.Autowired;
-import com.lucky.framework.annotation.Service;
 import com.lucky.framework.serializable.SerializationScheme;
 
 import java.io.*;
