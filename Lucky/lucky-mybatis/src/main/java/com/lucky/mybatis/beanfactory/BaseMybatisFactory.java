@@ -89,7 +89,7 @@ public abstract class BaseMybatisFactory extends IOCBeanFactory {
         }
     }
 
-    protected List<Module> getMappers(Configuration configuration,String dbname){
+    protected List<Module> getMappers( SqlSessionFactory sessionFactory,Configuration configuration,String dbname){
         List<Module> mappers=new ArrayList<>();
         List<Class<?>> mapperClasses = dbnameGroup().get(dbname);
         if (mapperClasses!=null){
@@ -97,8 +97,6 @@ public abstract class BaseMybatisFactory extends IOCBeanFactory {
                 try {
                     configuration.addMapper(mapperClass);
                 }catch (Exception ignored){}
-                SqlSessionFactory sessionFactory
-                        = new SqlSessionFactoryBuilder().build(configuration);
                 SqlSessionTemplate sqlSessionTemplate=new SqlSessionTemplate(sessionFactory);
                 String beanName = getBeanId(mapperClass);
                 lifecycleMange.beforeCreatingInstance(mapperClass,beanName,TYPE);
@@ -113,7 +111,7 @@ public abstract class BaseMybatisFactory extends IOCBeanFactory {
                 .collect(Collectors.groupingBy(c->c.getAnnotation(Mapper.class).dbname()));
     }
 
-    private String getBeanId(Class<?> mapperClass){
+    protected String getBeanId(Class<?> mapperClass){
         String id = mapperClass.getAnnotation(Mapper.class).id();
         return Assert.isBlankString(id)? Namer.getBeanName(mapperClass):id;
     }

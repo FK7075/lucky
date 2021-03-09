@@ -43,13 +43,13 @@ public class MybatisBeanFactory extends BaseMybatisFactory {
         Configuration configuration=new Configuration();
         configurationSetting(configuration);
         for (LuckyDataSource luckyDataSource : allDataSource) {
-            Environment environment = new Environment("development", getJdbcTransactionFactory(), luckyDataSource.createDataSource());
-            configuration.setEnvironment(environment);
+            configuration.setEnvironment(new Environment("development", getJdbcTransactionFactory(), luckyDataSource.createDataSource()));
             List<MapperSource> mapperSources = getMapperLocations();
             if(mapperSources!=null){
                 mapperSources.forEach(in->new XMLMapperBuilder(in.getIn(),configuration,in.getDescription(),configuration.getSqlFragments()).parse());
             }
-            mappers.addAll(getMappers(configuration,luckyDataSource.getDbname()));
+            SqlSessionFactory sqlSessionFactory=new SqlSessionFactoryBuilder().build(configuration);
+            mappers.addAll(getMappers(sqlSessionFactory,configuration,luckyDataSource.getDbname()));
         }
         return mappers;
     }

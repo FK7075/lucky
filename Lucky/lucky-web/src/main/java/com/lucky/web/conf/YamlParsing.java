@@ -77,18 +77,20 @@ public abstract class YamlParsing {
                             Object mmfs = get(webMap.get("multipart-max-file-size"));
                             if(mmfs instanceof Integer){
                                 web.setMultipartMaxFileSize((int)mmfs);
+                            }else if(mmfs instanceof Long){
+                                web.setMultipartMaxFileSize((long)mmfs);
                             }else{
-                                web.setMultipartMaxFileSize((int) JavaConversion.strToBasic(mmfs.toString(), int.class, true));
+                                web.setMultipartMaxFileSize(mmfs.toString());
                             }
                         }
                         if(webMap.containsKey("multipart-max-request-size")){
                             Object mmrs = get(webMap.get("multipart-max-request-size"));
                             if(mmrs instanceof Integer){
                                 web.setMultipartMaxRequestSize((int)mmrs);
+                            }else if(mmrs instanceof Long){
+                                web.setMultipartMaxRequestSize((long)mmrs);
                             }else{
-                                web.setMultipartMaxRequestSize((int) JavaConversion.strToBasic(mmrs.toString(),
-                                        int.class,
-                                        true));
+                                web.setMultipartMaxRequestSize(mmrs.toString());
                             }
                         }
                         if(webMap.containsKey("prefix")){

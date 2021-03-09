@@ -20,9 +20,7 @@ import java.util.List;
  * @date 2021/1/11 0011 9:43
  */
 @Component
-public class MybatisXmlBeanFactory extends IOCBeanFactory {
-
-    private final static String TYPE="mybatis-mapper";
+public class MybatisXmlBeanFactory extends BaseMybatisFactory {
 
     @Override
     public List<Module> createBean() {
@@ -38,10 +36,5 @@ public class MybatisXmlBeanFactory extends IOCBeanFactory {
             mappers.add(new Module(getBeanId(mapperPlugin),TYPE,sqlSessionTemplate.getMapper(mapperPlugin)));
         }
         return mappers;
-    }
-
-    private String getBeanId(Class<?> mapperClass){
-        String id = mapperClass.getAnnotation(Mapper.class).id();
-        return Assert.isBlankString(id)? Namer.getBeanName(mapperClass):id;
     }
 }

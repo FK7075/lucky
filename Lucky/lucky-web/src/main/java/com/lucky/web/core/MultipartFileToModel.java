@@ -75,8 +75,9 @@ public abstract class MultipartFileToModel {
                     String filename = item.getName();
                     isFile = true;
                     InputStream in = item.getInputStream();
+                    item.getFieldName();
                     if(in.available()/1024>webCfg.getMultipartMaxFileSize()) {
-                        throw new FileSizeCrossingException("单个文件超过最大上传限制："+webCfg.getMultipartMaxFileSize()+"kb");
+                        throw new FileSizeCrossingException("单个文件["+item.getFieldName()+" = `"+item.getName()+"`("+in.available()/1024+"kb)]超过最大上传限制："+webCfg.getMultipartMaxFileSize()+"kb");
                     }
                     MultipartFile mfp = new MultipartFile(in,filename);
                     multipartFiles[fileIndex] = mfp;

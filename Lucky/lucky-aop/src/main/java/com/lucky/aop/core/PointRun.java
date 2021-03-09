@@ -133,7 +133,6 @@ public class PointRun {
 				if(cursor>1){
 					throw new AopParamsConfigurationException("环绕增强方法中有且只能有一个`com.lucky.aop.core.AopChain`类型的参数，该方法中包含"+cursor+"个AopChain参数，错误位置："+aspectMethod);
 				}
-
 			}
 		}
 

@@ -42,47 +42,17 @@ public class MybatisPlusBeanFactory extends BaseMybatisFactory {
     public List<Module> createBean() {
         List<Module> mappers = super.createBean();
         List<LuckyDataSource> allDataSource = getAllDataSource();
-        Map<String, List<Class<?>>> mapperClassesMap = dbnameGroup();
         Configuration configuration=new MybatisConfiguration();
         configurationSetting(configuration);
         for (LuckyDataSource luckyDataSource : allDataSource) {
-            String dbname = luckyDataSource.getDbname();
-            Environment environment = new Environment("development", getJdbcTransactionFactory(), luckyDataSource.createDataSource());
-            configuration.setEnvironment(environment);
-            List<Class<?>> mapperClasses = mapperClassesMap.get(dbname);
-            Resource[] resources;
-            String mapperLocations = mybatisConfig.getMapperLocations();
-            if(mapperLocations!=null){
-                try {
-                    resources = resourcePatternResolver.getResources(mybatisConfig.getMapperLocations());
-                    for (Resource resource : resources) {
-                        new XMLMapperBuilder(resource.getInputStream(),configuration,resource.getDescription(),configuration.getSqlFragments()).parse();
-                    }
-                }catch (IOException e){
-                    throw new BeanFactoryInitializationException(e,"Mybatis BeanFactory initialization failed！Error loading mapper resource file!");
-                }
+            configuration.setEnvironment(new Environment("development", getJdbcTransactionFactory(), luckyDataSource.createDataSource()));
+            List<MapperSource> mapperSources = getMapperLocations();
+            if(mapperSources!=null){
+                mapperSources.forEach(in->new XMLMapperBuilder(in.getIn(),configuration,in.getDescription(),configuration.getSqlFragments()).parse());
             }
-            if(mapperClasses!=null){
-                for (Class<?> mapperClass : mapperClasses) {
-                    try {
-                        configuration.addMapper(mapperClass);
-                    }catch (Exception ignored){}
-                    MybatisSqlSessionFactoryBuilder factoryBuilder = new MybatisSqlSessionFactoryBuilder();
-                    SqlSessionFactory sessionFactory
-                            = factoryBuilder.build(configuration);
-                    SqlSessionTemplate sqlSessionTemplate=new SqlSessionTemplate(sessionFactory);
-                    String beanName = getBeanId(mapperClass);
-                    lifecycleMange.beforeCreatingInstance(mapperClass,beanName,TYPE);
-                    mappers.add(new Module(beanName,TYPE,sqlSessionTemplate.getMapper(mapperClass)));
-                }
-            }
+            SqlSessionFactory sessionFactory = new MybatisSqlSessionFactoryBuilder().build(configuration);
+            mappers.addAll(getMappers(sessionFactory,configuration,luckyDataSource.getDbname()));
         }
         return mappers;
-    }
-
-
-    private String getBeanId(Class<?> mapperClass){
-        String id = mapperClass.getAnnotation(Mapper.class).id();
-        return Assert.isBlankString(id)? Namer.getBeanName(mapperClass):id;
     }
 }

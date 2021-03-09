@@ -6,6 +6,7 @@ import com.lucky.framework.serializable.XMLSerializationScheme;
 import com.lucky.framework.serializable.implement.GsonSerializationScheme;
 import com.lucky.framework.serializable.implement.XtreamSerializationScheme;
 import com.lucky.utils.base.Assert;
+import com.lucky.utils.conversion.unit.FileUnitUtils;
 import com.lucky.web.core.*;
 import com.lucky.web.core.parameter.analysis.ParameterAnalysis;
 import com.lucky.web.core.parameter.analysis.ParameterAnalysisChain;
@@ -172,8 +173,16 @@ public class WebConfig extends LuckyConfig {
         this.multipartMaxFileSize = multipartMaxFileSize;
     }
 
+    public void setMultipartMaxFileSize(String multipartMaxFileSize){
+        this.multipartMaxFileSize= FileUnitUtils.toKb(multipartMaxFileSize);
+    }
+
     public void setMultipartMaxRequestSize(long multipartMaxRequestSize) {
         this.multipartMaxRequestSize = multipartMaxRequestSize;
+    }
+
+    public void setMultipartMaxRequestSize(String multipartMaxRequestSize) {
+        this.multipartMaxRequestSize = FileUnitUtils.toKb(multipartMaxRequestSize);
     }
 
     public void setStaticHander(Map<String, String> staticHander) {
@@ -311,8 +320,8 @@ public class WebConfig extends LuckyConfig {
         conf.setWebRoot("classpath:/templates/");
         conf.setOpenStaticResourceManage(false);
         conf.setPostChangeMethod(false);
-        conf.setMultipartMaxFileSize(1*1024);
-        conf.setMultipartMaxRequestSize(10*1024);
+        conf.setMultipartMaxFileSize("1M");
+        conf.setMultipartMaxRequestSize("10M");
         conf.setXmlSerializationScheme(new XtreamSerializationScheme());
         conf.setJsonSerializationScheme(new GsonSerializationScheme());
         conf.setMappingPreprocess(new DefaultMappingPreprocess());
