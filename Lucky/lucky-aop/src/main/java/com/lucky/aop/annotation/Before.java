@@ -16,12 +16,6 @@ import java.lang.annotation.*;
 public @interface Before {
 
 	/**
-	 * 设置增强方法的唯一标记(默认值：方法名)
-	 * @return ID
-	 */
-	String value() default "";
-
-	/**
 	 * 切面表达式
 	 * P:{包检验表达式}
 	 * C:{N[类名检验表达式],I[IOC_ID校验表达式],T[IOC_TYPE校验表达式],A[是否被注解]}
@@ -29,7 +23,7 @@ public @interface Before {
 	 * P:{*}C:{N[HelloController,MyService]}M:{AC[*],N[show,query(int,String)]}
 	 * @return
 	 */
-	String expression() default "";
+	String value();
 
 	/**
 	 * 优先级，优先级高的增强将会被优先执行

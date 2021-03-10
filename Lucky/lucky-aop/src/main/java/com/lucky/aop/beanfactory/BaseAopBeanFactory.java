@@ -21,6 +21,7 @@ import com.lucky.utils.reflect.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
@@ -37,6 +38,10 @@ public abstract class BaseAopBeanFactory extends AopBeanFactory {
     private static final Logger log= LoggerFactory.getLogger("c.l.f.beanfactory.BaseAopBeanFactory");
     protected final Set<PointRun> pointRunSet;
     protected final Set<InjectionAopPoint> injectionAopPoints;
+
+    private Class<? extends Annotation>[] ASPECT_ANNOTATIONS=new Class[]{
+            Aspect.class, org.aspectj.lang.annotation.Aspect.class
+    };
 
     public BaseAopBeanFactory(){
         super();
@@ -111,7 +116,17 @@ public abstract class BaseAopBeanFactory extends AopBeanFactory {
         //便利IOC容器中所有的组件，找到那些需要代理的组件，找到后将对应的切面织入
         //织入原理为Cglib的动态代理，最后将代理对象替换掉IOC容器中的源对象
         for (Module bean : beans) {
+
+            //已经是代理对象的不再代理
             if(AopProxyFactory.isProxyObjectClass(bean.getComponent().getClass())){
+                continue;
+            }
+            //切面不代理
+            if(AnnotationUtils.isExistOrByArray(bean.getOriginalType(),ASPECT_ANNOTATIONS)){
+                continue;
+            }
+            //AopPoint不代理
+            if(bean.getComponent() instanceof AopPoint){
                 continue;
             }
             Object aspect =isPost? AopProxyFactory.postInjectionProxy(pointRunSet,bean)
@@ -121,10 +136,5 @@ public abstract class BaseAopBeanFactory extends AopBeanFactory {
                 log.info("Create Aop Proxy Bean `{}`",bean.getComponent());
             }
         }
-    }
-
-    protected String getBeanName(Class<?> aClass) {
-        String value = AnnotationUtils.get(aClass, Aspect.class).value();
-        return Assert.isBlankString(value)? Namer.getBeanName(aClass) :value;
     }
 }

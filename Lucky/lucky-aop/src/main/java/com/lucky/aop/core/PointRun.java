@@ -53,7 +53,7 @@ public class PointRun {
 		this.point = point;
 		this.point.setPriority(exp.priority());
 		this.aopExecutionChecker.setAspectMethod(proceedMethod);
-		this.aopExecutionChecker.setPositionExpression(exp.expression());
+		this.aopExecutionChecker.setPositionExpression(exp.value());
 	}
 	
 	/**
@@ -66,7 +66,7 @@ public class PointRun {
 		this.point = ClassUtils.newObject(pointClass);
 		this.point.setPriority(exp.priority());
 		this.aopExecutionChecker.setAspectMethod(proceedMethod);
-		this.aopExecutionChecker.setPositionExpression(exp.expression());
+		this.aopExecutionChecker.setPositionExpression(exp.value());
 	}
 
 	/**
@@ -116,14 +116,12 @@ public class PointRun {
 		private final Method aspectMethod;
 		private String returning="";
 		private String throwing="";
-		private boolean isFirst;
 
 
 		public MethodAopPoint(Object aspectObject, Location location, Method aspectMethod) {
 			this.aspectObject = aspectObject;
 			this.location = location;
 			this.aspectMethod = aspectMethod;
-			isFirst=true;
 			aroundMethodParamCheck();
 		}
 
@@ -199,10 +197,6 @@ public class PointRun {
 
 		@Override
 		public Object proceed(AopChain chain) throws Throwable {
-			if(isFirst){
-				Injection.injection(aspectObject,"aspect");
-				isFirst=false;
-			}
 			if(location==Location.BEFORE) {
 				perform(aspectObject, aspectMethod,chain,null,null,-1);
 				return chain.proceed();

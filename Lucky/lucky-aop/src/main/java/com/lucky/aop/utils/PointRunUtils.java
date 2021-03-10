@@ -43,17 +43,17 @@ public abstract class PointRunUtils {
     }
 
     public static String getReturning(Annotation annotation){
-        if(annotation instanceof org.aspectj.lang.annotation.AfterReturning){
-            org.aspectj.lang.annotation.AfterReturning afterReturning= (org.aspectj.lang.annotation.AfterReturning) annotation;
-            return afterReturning.returning();
+        if((annotation instanceof org.aspectj.lang.annotation.AfterReturning)
+          ||(annotation instanceof AfterReturning)){
+            return (String)AnnotationUtils.getValue(annotation,"returning");
         }
         return "";
     }
 
     public static String getThrowing(Annotation annotation){
-        if(annotation instanceof org.aspectj.lang.annotation.AfterThrowing){
-            org.aspectj.lang.annotation.AfterThrowing afterReturning= (org.aspectj.lang.annotation.AfterThrowing) annotation;
-            return afterReturning.throwing();
+        if((annotation instanceof org.aspectj.lang.annotation.AfterThrowing)
+          ||(annotation instanceof AfterThrowing)){
+            return (String)AnnotationUtils.getValue(annotation,"throwing");
         }
         return "";
     }
@@ -78,12 +78,10 @@ public abstract class PointRunUtils {
     }
 
     public static String getPointcutExecution(Class<?> aspectClass,Method method,Annotation annotation){
-        Class<? extends Annotation> aClass = annotation.annotationType();
         String pointcutId;
-        if(AnnotationUtils.isExistOrByArray(method,AspectJ.ASPECTJ_EXPANDS_ANNOTATION)){
+        if(AnnotationUtils.isExistOrByArray(method,AspectJ.ASPECTJ_EXPANDS_ANNOTATION)
+                || AnnotationUtils.isExistOrByArray(method,PointRun.EXPAND_ANNOTATIONS)){
             pointcutId = (String) AnnotationUtils.getValue(annotation, "value");
-        }else if(AnnotationUtils.isExistOrByArray(method,PointRun.EXPAND_ANNOTATIONS)){
-            pointcutId = (String) AnnotationUtils.getValue(annotation, "expression");
         }else{
             throw new RuntimeException();
         }
