@@ -7,6 +7,7 @@ import com.lucky.utils.reflect.MethodUtils;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,8 @@ public class TargetMethodSignature implements Serializable {
 	private final  Object proxyObject;
 	/** 当前真实类的对象*/
 	private Object targetObject;
+	/** 真正将被调用的对象*/
+	private Object runObject;
 	/** 当前真实类对应的Class*/
 	private final Class<?> targetClass;
 	/** 当前真实方法的Method*/
@@ -101,15 +104,27 @@ public class TargetMethodSignature implements Serializable {
 			targetObject= ClassUtils.newObject(targetClass);
 			Field[] allFields = ClassUtils.getAllFields(targetClass);
 			for (Field field : allFields) {
+				if(Modifier.isFinal(field.getModifiers())){
+					continue;
+				}
 				FieldUtils.setValue(targetObject,field,FieldUtils.getValue(proxyObject,field));
 			}
 		}
 		return targetObject;
 	}
 
-	public TargetMethodSignature(Object aspectObject,Object targetObject, Method currMethod, Object[] params) {
+	/**
+	 * 真正被调用的对象
+	 * @return
+	 */
+	public Object getRunObject() {
+		return runObject;
+	}
+
+	public TargetMethodSignature(Object aspectObject, Object targetObject, Method currMethod, Object[] params) {
 		this.proxyObject =aspectObject;
 		this.targetObject=targetObject;
+		this.runObject=this.targetObject==null?this.proxyObject:this.targetObject;
 		this.targetClass=this.targetObject==null?aspectObject.getClass().getSuperclass():this.targetObject.getClass();
 		this.currMethod=currMethod;
 		this.params=params;

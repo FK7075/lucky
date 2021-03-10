@@ -79,7 +79,10 @@ public class PointRun {
 		Class<?> aspectClass = aspectObject.getClass();
 		Annotation annotation=AnnotationUtils.getByArray(aspectMethod, (Class<? extends Annotation>[]) ArrayUtils.merge(EXPAND_ANNOTATIONS,AspectJ.ASPECTJ_EXPANDS_ANNOTATION));
 		Location location = PointRunUtils.getLocation(annotation);
-		this.point=new MethodAopPoint(aspectObject,location,aspectMethod);
+		MethodAopPoint methodAopPoint=new MethodAopPoint(aspectObject,location,aspectMethod);
+		methodAopPoint.setReturning(PointRunUtils.getReturning(annotation));
+		methodAopPoint.setThrowing(PointRunUtils.getThrowing(annotation));
+		this.point=methodAopPoint;
 		this.point.setPriority(PointRunUtils.getPriority(aspectClass, aspectMethod));
 		this.aopExecutionChecker.setAspectMethod(aspectMethod);
 		this.aopExecutionChecker.setPositionExpression(PointRunUtils.getPointcutExecution(aspectClass,aspectMethod,annotation));
@@ -107,11 +110,14 @@ public class PointRun {
 		return aopExecutionChecker.classExamine(module);
 	}
 
-	public static class MethodAopPoint extends AopPoint{
+	public static class MethodAopPoint extends AopPoint {
 		private final Object aspectObject;
 		private final Location location;
 		private final Method aspectMethod;
+		private String returning="";
+		private String throwing="";
 		private boolean isFirst;
+
 
 		public MethodAopPoint(Object aspectObject, Location location, Method aspectMethod) {
 			this.aspectObject = aspectObject;
@@ -119,6 +125,14 @@ public class PointRun {
 			this.aspectMethod = aspectMethod;
 			isFirst=true;
 			aroundMethodParamCheck();
+		}
+
+		public void setReturning(String returning) {
+			this.returning = returning;
+		}
+
+		public void setThrowing(String throwing) {
+			this.throwing = throwing;
 		}
 
 		private void aroundMethodParamCheck(){
@@ -227,7 +241,6 @@ public class PointRun {
 					long end = System.currentTimeMillis();
 					perform(aspectObject, aspectMethod,chain,e,null,end-start);
 				}
-
 			}
 			return null;
 		}
@@ -238,15 +251,24 @@ public class PointRun {
 		}
 
 		//设置增强方法的执行参数@Param配置
-		private Object[] setParams(Method expandMethod,AopChain chain,Throwable ex,Object result,long runtime) {
+		private Object[] setParams(Method aspectMethod, AopChain chain, Throwable ex, Object result, long runtime) {
 			int index;
 			String aopParamValue,indexStr;
-			Parameter[] parameters = expandMethod.getParameters();
+			Parameter[] parameters = aspectMethod.getParameters();
+			String[] classParamNames = MethodUtils.getClassParamNames(aspectMethod);
 			Object[] expandParams=new Object[parameters.length];
 			TargetMethodSignature targetMethodSignature = tlTargetMethodSignature.get();
 			AopChainProceedingJoinPoint joinPoint=new AopChainProceedingJoinPoint(chain,targetMethodSignature);
 			ApplicationContext applicationContext= AutoScanApplicationContext.create();
 			for(int i=0;i<parameters.length;i++) {
+				if(returning.equals(classParamNames[i])){
+					expandParams[i]=result;
+					continue;
+				}
+				if(throwing.equals(classParamNames[i])){
+					expandParams[i]=ex;
+					continue;
+				}
 				Class<?> paramClass = parameters[i].getType();
 				if(parameters[i].isAnnotationPresent(Param.class)){
 					aopParamValue=parameters[i].getAnnotation(Param.class).value();
@@ -261,10 +283,10 @@ public class PointRun {
 						try {
 							index=Integer.parseInt(indexStr);
 						}catch(NumberFormatException e) {
-							throw new AopParamsConfigurationException("错误的表达式，参数表达式中的索引不合法，索引只能为整数！错误位置："+expandMethod+"@Param("+aopParamValue+")=>err");
+							throw new AopParamsConfigurationException("错误的表达式，参数表达式中的索引不合法，索引只能为整数！错误位置："+ aspectMethod +"@Param("+aopParamValue+")=>err");
 						}
 						if(!targetMethodSignature.containsIndex(index)) {
-							throw new AopParamsConfigurationException("错误的表达式，参数表达式中的索引超出参数列表索引范围！错误位置："+expandMethod+"@Param("+aopParamValue+")=>err");
+							throw new AopParamsConfigurationException("错误的表达式，参数表达式中的索引超出参数列表索引范围！错误位置："+ aspectMethod +"@Param("+aopParamValue+")=>err");
 						}
 						expandParams[i]=targetMethodSignature.getParamByIndex(index);
 					}else {//根据参数名得到具体参数

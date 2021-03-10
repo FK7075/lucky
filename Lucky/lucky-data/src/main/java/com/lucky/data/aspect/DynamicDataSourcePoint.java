@@ -133,7 +133,7 @@ public class DynamicDataSourcePoint extends InjectionAopPoint {
     //数据源替换，将所真实对象的所有属性(包含所有属性的嵌套属性)的SqlCore替换为拥有新数据源的SqlCore，并将真实对象的引用指向该对象
     private void dataSourceSwitch(TargetMethodSignature tms,String newDBName){
         Map<Field,Object> oldFieldMapperMap=thlSourceFieldKVMap.get();
-        Object aspectObject=tms.getProxyObject();
+        Object aspectObject=tms.getRunObject();
         SqlCore newSqlCore=SqlCoreFactory.createSqlCore(newDBName);
         for(Map.Entry<Field,Object> entry:oldFieldMapperMap.entrySet()) {
             Field field = entry.getKey();
@@ -152,7 +152,7 @@ public class DynamicDataSourcePoint extends InjectionAopPoint {
 
     //获取一个拥有全新数据源的克隆来替代原来真实对象的原有属性
     private Object dbChange(SqlCore newSqlCore, Object fieldObject){
-        Class<?> fClass = fieldObject.getClass();
+        Class<?> fClass = CglibProxy.getOriginalType(fieldObject.getClass());
         Object copyFieldObj = copy(fieldObject);
         Field[] allFields = ClassUtils.getAllFields(CglibProxy.getOriginalType(fClass));
         for (Field field : allFields) {
@@ -205,11 +205,11 @@ public class DynamicDataSourcePoint extends InjectionAopPoint {
     private void backup(TargetMethodSignature tms){
         Map<Field,Object> oldFieldMapperMap=new HashMap<>();
         Class<?> targetClass=tms.getTargetClass();
-        Object aspectObject=tms.getProxyObject();
+        Object targetObject=tms.getRunObject();
         Field[] allFields= ClassUtils.getAllFields(targetClass);
         for (Field field : allFields) {
             Class<?> type = field.getType();
-            Object fieldValue = FieldUtils.getValue(aspectObject, field);
+            Object fieldValue = FieldUtils.getValue(targetObject, field);
             //&&!CglibProxy.isAgent(fieldValue.getClass())
             if((AutoScanApplicationContext.create().isIOCClass(type)
                     || SqlCore.class.isAssignableFrom(type))){

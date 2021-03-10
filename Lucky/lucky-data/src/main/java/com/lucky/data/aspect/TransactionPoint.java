@@ -156,7 +156,7 @@ public class TransactionPoint extends InjectionAopPoint {
     //替换，将所真实对象的所有属性(包含所有属性的嵌套属性)的SqlCore替换为支持事务操作的SqlCore，并将真实对象的引用指向该对象
     private List<com.lucky.jacklamb.jdbc.transaction.Transaction > replaceCoreAndOpenTransaction(TargetMethodSignature tms, int isolationLevel){
         Map<Field,Object> oldFieldMapperMap=thlSourceFieldKVMap.get();
-        Object aspectObject=tms.getProxyObject();
+        Object aspectObject=tms.getRunObject();
         Map<String, SqlCore> dbCores=new HashMap<>();
         for(Map.Entry<Field,Object> entry:oldFieldMapperMap.entrySet()){
             Class<?> fieldClass = CglibProxy.getOriginalType(entry.getValue().getClass());
@@ -261,7 +261,7 @@ public class TransactionPoint extends InjectionAopPoint {
     private void backup(TargetMethodSignature tms){
         Map<Field,Object> oldFieldMapperMap=new HashMap<>();
         Class<?> targetClass=tms.getTargetClass();
-        Object aspectObject=tms.getProxyObject();
+        Object aspectObject=tms.getRunObject();
         Field[] allFields= ClassUtils.getAllFields(targetClass);
         for (Field field : allFields) {
             Class<?> type = field.getType();

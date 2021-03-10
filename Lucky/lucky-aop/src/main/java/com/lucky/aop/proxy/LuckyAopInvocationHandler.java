@@ -46,6 +46,9 @@ public class LuckyAopInvocationHandler extends LuckyInvocationHandler {
     }
     @Override
     public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
+        if(params==null){
+            params=new Object[0];
+        }
         //Object方法不执行代理
         if(MethodUtils.isObjectMethod(method)){
             return MethodUtils.invoke(getTarget(),method,params);

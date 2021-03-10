@@ -118,7 +118,7 @@ public abstract class ClassUtils {
                 delCoverMethods.add(superMethod);
             }
         }
-        return delCoverMethods.toArray(new Method[delCoverMethods.size()]);
+        return delCoverMethods.toArray(new Method[0]);
     }
 
     /**

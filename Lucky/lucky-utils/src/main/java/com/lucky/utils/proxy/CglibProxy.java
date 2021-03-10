@@ -13,7 +13,7 @@ public abstract class CglibProxy {
     public static <T> T getCglibProxyObject(Class<T> clazz, MethodInterceptor methodInterceptor){
         final Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(clazz);
-        enhancer.setInterfaces(clazz.getInterfaces());
+//        enhancer.setInterfaces(clazz.getInterfaces());
         enhancer.setNamingPolicy(new LuckyNamingPolicy());
         enhancer.setCallback(methodInterceptor);
         return (T) enhancer.create();
@@ -22,7 +22,7 @@ public abstract class CglibProxy {
     public static Object getCglibProxyObject(LuckyMethodInterceptor luckyMethodInterceptor){
         final Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(luckyMethodInterceptor.getSuperClass());
-        enhancer.setInterfaces(luckyMethodInterceptor.getInterfaces());
+//        enhancer.setInterfaces(luckyMethodInterceptor.getInterfaces());
         enhancer.setNamingPolicy(new LuckyNamingPolicy());
         enhancer.setCallback(luckyMethodInterceptor);
         return enhancer.create();

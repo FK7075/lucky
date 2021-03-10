@@ -35,11 +35,14 @@ public class ProxyObjectFactory {
     }
 
     public Object getProxyObject(Object target, List<PointRun> points){
-        Class<?>[] interfaces = target.getClass().getInterfaces();
-        if(Assert.isEmptyArray(interfaces)){
-            return getCglibProxyObject(target,points);
-        }
-        return getJdkProxyObject(target,points);
+//        Class<?>[] interfaces = target.getClass().getInterfaces();
+//        if(Assert.isEmptyArray(interfaces)){
+//            return getCglibProxyObject(target,points);
+//        }
+//        return getJdkProxyObject(target,points);
+        //TODO JDK的动态代理存在一些暂时无法解决的问题，所以此处始终使用Cglib的动态代理
+        //TODO [issues]->接口的Method与实现类的Method在JDK动态代理模式下不兼容
+        return getCglibProxyObject(target,points);
     }
 
     public Object getJdkProxyObject(Object target,List<PointRun> points){

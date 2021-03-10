@@ -42,6 +42,22 @@ public abstract class PointRunUtils {
         return 5;
     }
 
+    public static String getReturning(Annotation annotation){
+        if(annotation instanceof org.aspectj.lang.annotation.AfterReturning){
+            org.aspectj.lang.annotation.AfterReturning afterReturning= (org.aspectj.lang.annotation.AfterReturning) annotation;
+            return afterReturning.returning();
+        }
+        return "";
+    }
+
+    public static String getThrowing(Annotation annotation){
+        if(annotation instanceof org.aspectj.lang.annotation.AfterThrowing){
+            org.aspectj.lang.annotation.AfterThrowing afterReturning= (org.aspectj.lang.annotation.AfterThrowing) annotation;
+            return afterReturning.throwing();
+        }
+        return "";
+    }
+
     public static Location getLocation(Annotation annotation){
         if((annotation instanceof After)||(annotation instanceof org.aspectj.lang.annotation.After)){
             return Location.AFTER;

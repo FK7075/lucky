@@ -64,9 +64,10 @@ public class AopProxyFactory {
     }
 
     /**
-     * 执行代理
+     * 执行代理(注入之前，代理对象支持嵌套执行)
      * @param pointRunCollection 所有的Aspect组件
      * @param module   当前组件
+     * @return 支持嵌套的代理对象
      */
     public static Object preInjectionProxy(Collection<PointRun> pointRunCollection,Module module) {
         List<PointRun> findPointByBean = findPointByBean(pointRunCollection, module);
@@ -78,6 +79,12 @@ public class AopProxyFactory {
         }
     }
 
+    /**
+     *  执行代理(注入之后，代理对象不支持嵌套执行)
+     * @param pointRunCollection 所有的Aspect组件
+     * @param module 当前组件
+     * @return 不支持嵌套的代理对象
+     */
     public static Object postInjectionProxy(Collection<PointRun> pointRunCollection,Module module){
         List<PointRun> findPointByBean = findPointByBean(pointRunCollection, module);
         Class<?> beanClass=module.getOriginalType();
