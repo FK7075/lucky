@@ -1,8 +1,11 @@
 package com.lucky.aop.core;
 
+import com.lucky.utils.reflect.ClassUtils;
+import com.lucky.utils.reflect.FieldUtils;
 import com.lucky.utils.reflect.MethodUtils;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
@@ -16,7 +19,9 @@ import java.util.Map;
 public class TargetMethodSignature implements Serializable {
 	
 	/** 当前真实类的代理对象*/
-	private final  Object aspectObject;
+	private final  Object proxyObject;
+	/** 当前真实类的对象*/
+	private Object targetObject;
 	/** 当前真实类对应的Class*/
 	private final Class<?> targetClass;
 	/** 当前真实方法的Method*/
@@ -27,11 +32,8 @@ public class TargetMethodSignature implements Serializable {
 	private final Map<Integer,Object> indexMap;
 	/** 由当前真实方法的参数列表值和其对应参数名组成的Map<paramName,value>*/
 	private Map<String,Object> nameMap;
-	
-	/**
-	 * 参数列表的 Parameter[]
-	 */
-	private Parameter[] parameters;
+	/** 参数列表的 Parameter[]*/
+	private final Parameter[] parameters;
 	
 	/**
 	 * 得到当前真实类对应的Class
@@ -45,8 +47,8 @@ public class TargetMethodSignature implements Serializable {
 	 * 得到当前真实类的代理对象
 	 * @return
 	 */
-	public Object getAspectObject() {
-		return aspectObject;
+	public Object getProxyObject() {
+		return proxyObject;
 	}
 
 	/**
@@ -90,9 +92,25 @@ public class TargetMethodSignature implements Serializable {
 		return parameters;
 	}
 
-	public TargetMethodSignature(Object aspectObject, Method currMethod, Object[] params) {
-		this.aspectObject=aspectObject;
-		this.targetClass=aspectObject.getClass().getSuperclass();
+	/**
+	 * 得到真实对象
+	 * @return
+	 */
+	public Object getTargetObject() {
+		if(targetObject==null){
+			targetObject= ClassUtils.newObject(targetClass);
+			Field[] allFields = ClassUtils.getAllFields(targetClass);
+			for (Field field : allFields) {
+				FieldUtils.setValue(targetObject,field,FieldUtils.getValue(proxyObject,field));
+			}
+		}
+		return targetObject;
+	}
+
+	public TargetMethodSignature(Object aspectObject,Object targetObject, Method currMethod, Object[] params) {
+		this.proxyObject =aspectObject;
+		this.targetObject=targetObject;
+		this.targetClass=this.targetObject==null?aspectObject.getClass().getSuperclass():this.targetObject.getClass();
 		this.currMethod=currMethod;
 		this.params=params;
 		indexMap=new HashMap<>();

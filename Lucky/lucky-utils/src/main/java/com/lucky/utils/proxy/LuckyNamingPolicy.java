@@ -12,11 +12,11 @@ public class LuckyNamingPolicy extends DefaultNamingPolicy {
 
     @Override
     protected String getTag() {
-        return "PROXY";
+        return "CGLIB";
     }
 
     @Override
     public String getClassName(String prefix, String source, Object key, Predicate names) {
-        return super.getClassName(prefix, "LUCKY_", key, names);
+        return super.getClassName(prefix, "ByLucky", key, names);
     }
 }

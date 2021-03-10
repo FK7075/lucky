@@ -3,6 +3,8 @@ package com.lucky.aop.core;
 
 import com.lucky.aop.annotation.Expand;
 import com.lucky.framework.container.Module;
+import com.lucky.utils.proxy.CglibProxy;
+import com.lucky.utils.proxy.JDKProxy;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
 import org.slf4j.Logger;
@@ -38,7 +40,21 @@ public class AopProxyFactory {
         return pointRuns;
     }
 
-    public static boolean isAgent(Class<?> beanClass){
+    /**
+     * 是否为代理对象的Class
+     * @param beanClass 待检验的Class
+     * @return Y(true)/N(false)
+     */
+    public static  boolean isProxyObjectClass(Class<?> beanClass){
+        return JDKProxy.isAgent(beanClass)|| CglibProxy.isAgent(beanClass);
+    }
+
+    /**
+     * 判断当前Class是否需要代理
+     * @param beanClass 待检验的Class
+     * @return Y(true)/N(false)
+     */
+    public static boolean isNeedProxy(Class<?> beanClass){
         for (InjectionAopPoint iaPoint : injectionAopPointSet) {
             if(iaPoint.pointCutClass(beanClass)){
                 return true;
@@ -52,11 +68,21 @@ public class AopProxyFactory {
      * @param pointRunCollection 所有的Aspect组件
      * @param module   当前组件
      */
-    public static Object aspect(Collection<PointRun> pointRunCollection,Module module) {
-        List<PointRun> findPointByBean = findPointbyBean(pointRunCollection, module);
+    public static Object preInjectionProxy(Collection<PointRun> pointRunCollection,Module module) {
+        List<PointRun> findPointByBean = findPointByBean(pointRunCollection, module);
         Class<?> beanClass=module.getOriginalType();
-        if (!findPointByBean.isEmpty()||isAgent(beanClass)) {
-            return PointRunFactory.createProxyFactory().getProxy(module.getComponent(), findPointByBean);
+        if (!findPointByBean.isEmpty()||isNeedProxy(beanClass)) {
+            return ProxyClassFactory.createProxyFactory().getProxy(module.getComponent(), findPointByBean);
+        } else {
+            return module.getComponent();
+        }
+    }
+
+    public static Object postInjectionProxy(Collection<PointRun> pointRunCollection,Module module){
+        List<PointRun> findPointByBean = findPointByBean(pointRunCollection, module);
+        Class<?> beanClass=module.getOriginalType();
+        if (!findPointByBean.isEmpty()||isNeedProxy(beanClass)) {
+            return ProxyObjectFactory.getProxyFactory().getProxyObject(module.getComponent(), findPointByBean);
         } else {
             return module.getComponent();
         }
@@ -69,7 +95,7 @@ public class AopProxyFactory {
      * @param module   当前组件
      * @return
      */
-    public static List<PointRun> findPointbyBean(Collection<PointRun> pointRunCollection, Module module) {
+    public static List<PointRun> findPointByBean(Collection<PointRun> pointRunCollection, Module module) {
         List<PointRun> pointRuns = new ArrayList<>();
         for (PointRun pointRun : pointRunCollection) {
             if (pointRun.classExamine(module)) {

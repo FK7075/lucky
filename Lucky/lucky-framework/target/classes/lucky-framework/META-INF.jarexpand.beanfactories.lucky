@@ -5,4 +5,4 @@ com.lucky.web.beanfactory.LuckyWebBeanFactory:REPLACE
 com.lucky.quartz.beanfactory.LuckyQuartzBeanFactory:REPLACE
 
 ##AOP
-com.lucky.aop.beanfactory.LuckyAopBeanFactory:SUPPLEMENT
+com.lucky.aop.beanfactory.LuckyAopNestedProxyBeanFactory:SUPPLEMENT

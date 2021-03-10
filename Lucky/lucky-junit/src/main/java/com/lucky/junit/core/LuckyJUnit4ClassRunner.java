@@ -1,7 +1,8 @@
 package com.lucky.junit.core;
 
 import com.lucky.aop.core.AopProxyFactory;
-import com.lucky.aop.core.PointRunFactory;
+import com.lucky.aop.core.ProxyClassFactory;
+import com.lucky.aop.core.ProxyObjectFactory;
 import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.container.Injection;
 import com.lucky.junit.annotation.LuckyBootTest;
@@ -40,11 +41,11 @@ public class LuckyJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 	@Override
 	protected Object createTest() throws Exception {
 		Object createTest = super.createTest();
-		Class<?> aClass = createTest.getClass();
-		if(AopProxyFactory.isAgent(aClass)){
-			createTest= PointRunFactory.createProxyFactory().getProxy(createTest);
-		}
 		Injection.injection(createTest,"test");
+		Class<?> aClass = createTest.getClass();
+		if(AopProxyFactory.isNeedProxy(aClass)){
+			createTest= ProxyObjectFactory.getProxyFactory().getProxyObject(createTest);
+		}
 		return createTest;
 	}
 

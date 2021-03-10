@@ -1,6 +1,7 @@
 package com.lucky.aop.core;
 
 import com.lucky.aop.annotation.*;
+import com.lucky.aop.aspectj.AopChainProceedingJoinPoint;
 import com.lucky.aop.aspectj.constant.AspectJ;
 import com.lucky.aop.conf.AopConfig;
 import com.lucky.aop.enums.Location;
@@ -14,6 +15,8 @@ import com.lucky.utils.base.ArrayUtils;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.utils.reflect.MethodUtils;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -121,17 +124,61 @@ public class PointRun {
 		private void aroundMethodParamCheck(){
 			if(location==Location.AROUND){
 				Parameter[] parameters = aspectMethod.getParameters();
-				int cursor=0;
+				int aopChain=0;
+				int joinPoint=0;
 				for (Parameter parameter : parameters) {
-					if (AopChain.class.isAssignableFrom(parameter.getType())) {
-						cursor++;
+					Class<?> parameterType = parameter.getType();
+					if (AopChain.class.isAssignableFrom(parameterType)) {
+						aopChain++;
+					}
+					if(ProceedingJoinPoint.class.isAssignableFrom(parameterType)){
+						joinPoint++;
 					}
 				}
-				if(cursor==0){
-					throw new AopParamsConfigurationException("环绕增强方法中必须要带有一个`com.lucky.aop.core.AopChain`类型的参数，该方法中没有AopChain参数，错误位置："+aspectMethod);
+				//没有AopChain参数也没有ProceedingJoinPoint参数
+				if(aopChain==0 && joinPoint==0){
+					throw new AopParamsConfigurationException(
+							String.format("环绕增强方法参数中必须带有一个`%s`类型或者`%s`类型的参数. [aopChain=%s,proceedingJoinPoint=%s]\n\t错误位置: %s",
+									      AopChain.class.getName(),
+									      ProceedingJoinPoint.class.getName(),
+									      aopChain,
+									      joinPoint,
+									      aspectMethod)
+					);
 				}
-				if(cursor>1){
-					throw new AopParamsConfigurationException("环绕增强方法中有且只能有一个`com.lucky.aop.core.AopChain`类型的参数，该方法中包含"+cursor+"个AopChain参数，错误位置："+aspectMethod);
+
+				//AopChain参数和ProceedingJoinPoint参数同时存在
+				if(aopChain!=0 && joinPoint!=0){
+					throw new AopParamsConfigurationException(
+							String.format("环绕增强方法参数中只能有一个`%s`类型或者`%s`类型的参数. [aopChain=%s,proceedingJoinPoint=%s]\n\t错误位置: %s",
+									AopChain.class.getName(),
+									ProceedingJoinPoint.class.getName(),
+									aopChain,
+									joinPoint,
+									aspectMethod)
+					);
+				}
+
+				//没有AopChain参数，但是存在多个ProceedingJoinPoint参数
+				if(aopChain==0 && joinPoint>1){
+					throw new AopParamsConfigurationException(
+							String.format("环绕增强方法参数中只能存在一个`%s`类型的参数. [aopChain=%s,proceedingJoinPoint=%s]\n\t错误位置: %s",
+									ProceedingJoinPoint.class.getName(),
+									aopChain,
+									joinPoint,
+									aspectMethod)
+					);
+				}
+
+				//没有ProceedingJoinPoint参数，但是存在多个AopChain参数
+				if(joinPoint==0 && aopChain>1){
+					throw new AopParamsConfigurationException(
+							String.format("环绕增强方法参数中只能存在一个`%s`类型的参数. [aopChain=%s,proceedingJoinPoint=%s]\n\t错误位置: %s",
+									AopChain.class.getName(),
+									aopChain,
+									joinPoint,
+									aspectMethod)
+					);
 				}
 			}
 		}
@@ -190,13 +237,14 @@ public class PointRun {
 			return MethodUtils.invoke(expand,expandMethod,setParams(expandMethod,chain,e,r,t));
 		}
 
-		//设置增强方法的执行参数-@AopParam配置
+		//设置增强方法的执行参数@Param配置
 		private Object[] setParams(Method expandMethod,AopChain chain,Throwable ex,Object result,long runtime) {
 			int index;
 			String aopParamValue,indexStr;
 			Parameter[] parameters = expandMethod.getParameters();
 			Object[] expandParams=new Object[parameters.length];
 			TargetMethodSignature targetMethodSignature = tlTargetMethodSignature.get();
+			AopChainProceedingJoinPoint joinPoint=new AopChainProceedingJoinPoint(chain,targetMethodSignature);
 			ApplicationContext applicationContext= AutoScanApplicationContext.create();
 			for(int i=0;i<parameters.length;i++) {
 				Class<?> paramClass = parameters[i].getType();
@@ -235,7 +283,9 @@ public class PointRun {
 						}
 					}
 				}else{
-					if(TargetMethodSignature.class.isAssignableFrom(paramClass)) {
+					if(JoinPoint.class.isAssignableFrom(paramClass)){
+						expandParams[i]=joinPoint;
+					}else if(TargetMethodSignature.class.isAssignableFrom(paramClass)) {
 						expandParams[i]=targetMethodSignature;
 					}else if(AopChain.class.isAssignableFrom(paramClass)){
 						expandParams[i]=chain;

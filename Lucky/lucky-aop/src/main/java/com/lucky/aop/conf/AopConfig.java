@@ -2,7 +2,6 @@ package com.lucky.aop.conf;
 
 import com.lucky.aop.aspectj.AspectJAopExecutionChecker;
 import com.lucky.aop.core.AopExecutionChecker;
-import com.lucky.aop.core.DefaultAopExecutionChecker;
 
 /**
  * @author fk

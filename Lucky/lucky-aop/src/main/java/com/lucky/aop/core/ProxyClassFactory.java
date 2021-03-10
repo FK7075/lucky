@@ -2,21 +2,20 @@ package com.lucky.aop.core;
 
 import com.lucky.aop.proxy.LuckyAopInvocationHandler;
 import com.lucky.aop.proxy.LuckyAopMethodInterceptor;
-import com.lucky.utils.base.Assert;
 import com.lucky.utils.proxy.CglibProxy;
 import com.lucky.utils.proxy.JDKProxy;
 
 import java.util.List;
 
-public class PointRunFactory {
+public class ProxyClassFactory {
 	
-	private static PointRunFactory proxyFactory;
+	private static ProxyClassFactory proxyFactory;
 	
-	private PointRunFactory() {}
+	private ProxyClassFactory() {}
 	
-	public static PointRunFactory createProxyFactory() {
+	public static ProxyClassFactory createProxyFactory() {
 		if(proxyFactory==null)
-			proxyFactory=new PointRunFactory();
+			proxyFactory=new ProxyClassFactory();
 		return proxyFactory;
 	}
 	
@@ -47,16 +46,8 @@ public class PointRunFactory {
 		return CglibProxy.getCglibProxyObject(targetClass,new LuckyAopMethodInterceptor(pointRuns));
 	}
 
-	public Object getJDKProxy(Object target,List<PointRun> pointRuns){
-		return JDKProxy.getProxy(new LuckyAopInvocationHandler(target,pointRuns));
-	}
-
 	public Object getCglibProxy(Class<?> targetClass,PointRun...pointRuns){
 		return CglibProxy.getCglibProxyObject(targetClass,new LuckyAopMethodInterceptor(pointRuns));
-	}
-
-	public Object getJDKProxy(Object target,PointRun...pointRuns){
-		return JDKProxy.getProxy(new LuckyAopInvocationHandler(target,pointRuns));
 	}
 
 }

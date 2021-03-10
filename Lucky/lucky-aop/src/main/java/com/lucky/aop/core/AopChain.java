@@ -4,4 +4,8 @@ public interface AopChain extends Cloneable{
 
 	Object proceed() throws Throwable;
 
+	Object[] getArgument();
+
+	void setArgument(Object[] arguments);
+
 }

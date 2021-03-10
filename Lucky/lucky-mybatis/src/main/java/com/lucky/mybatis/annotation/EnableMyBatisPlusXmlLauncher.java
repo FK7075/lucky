@@ -3,9 +3,7 @@ package com.lucky.mybatis.annotation;
 import com.lucky.framework.annotation.Exclusions;
 import com.lucky.framework.annotation.Imports;
 import com.lucky.mybatis.beanfactory.MybatisBeanFactory;
-import com.lucky.mybatis.beanfactory.MybatisXmlBeanFactory;
-import com.lucky.mybatis.beanfactory.MybatisPlusBeanFactory;
-import com.lucky.mybatis.beanfactory.MybatisPlusXmlBeanFactory;
+import com.lucky.mybatis.beanfactory.*;
 
 import java.lang.annotation.*;
 

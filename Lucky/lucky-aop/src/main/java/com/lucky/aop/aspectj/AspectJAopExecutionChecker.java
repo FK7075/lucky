@@ -9,9 +9,9 @@ import org.aspectj.weaver.tools.ShadowMatch;
 import java.lang.reflect.Method;
 
 /**
- * @author fk7075
- * @version 1.0.0
- * @date 2021/3/7 上午9:22
+ * @author fk
+ * @version 1.0
+ * @date 2021/3/10 0010 11:47
  */
 public class AspectJAopExecutionChecker extends AopExecutionChecker {
 

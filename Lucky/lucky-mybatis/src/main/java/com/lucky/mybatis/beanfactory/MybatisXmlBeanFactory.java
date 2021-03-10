@@ -24,17 +24,8 @@ public class MybatisXmlBeanFactory extends BaseMybatisFactory {
 
     @Override
     public List<Module> createBean() {
-        List<Module> mappers = super.createBean();
-        BufferedReader reader = Resources.getReader("/mybatis.xml");
         SqlSessionFactory sqlSessionFactory
-                =new SqlSessionFactoryBuilder().build(reader);
-        List<Class<?>> mapperPlugins = getPluginByAnnotation(Mapper.class);
-        for (Class<?> mapperPlugin : mapperPlugins) {
-            SqlSessionTemplate sqlSessionTemplate=new SqlSessionTemplate(sqlSessionFactory);
-            String beanId = getBeanId(mapperPlugin);
-            lifecycleMange.beforeCreatingInstance(mapperPlugin,beanId,TYPE);
-            mappers.add(new Module(getBeanId(mapperPlugin),TYPE,sqlSessionTemplate.getMapper(mapperPlugin)));
-        }
-        return mappers;
+                =new SqlSessionFactoryBuilder().build(Resources.getReader(DEFAULT_XML_CONF));
+        return getMappers(sqlSessionFactory);
     }
 }

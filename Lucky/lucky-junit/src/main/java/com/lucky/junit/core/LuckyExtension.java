@@ -1,7 +1,8 @@
 package com.lucky.junit.core;
 
 import com.lucky.aop.core.AopProxyFactory;
-import com.lucky.aop.core.PointRunFactory;
+import com.lucky.aop.core.ProxyClassFactory;
+import com.lucky.aop.core.ProxyObjectFactory;
 import com.lucky.framework.AutoScanApplicationContext;
 import com.lucky.framework.container.Injection;
 import com.lucky.junit.annotation.LuckyBootTest;
@@ -81,10 +82,10 @@ public class LuckyExtension implements BeforeAllCallback, AfterAllCallback,
     public Object createTestInstance(TestInstanceFactoryContext testInstanceFactoryContext, ExtensionContext extensionContext) throws TestInstantiationException {
         Class<?> testClass = extensionContext.getTestClass().get();
         Object  testInstance= ClassUtils.newObject(testClass);
-        if(AopProxyFactory.isAgent(testClass)){
-            testInstance= PointRunFactory.createProxyFactory().getProxy(testInstance);
-        }
         Injection.injection(testInstance,"test");
+        if(AopProxyFactory.isNeedProxy(testClass)){
+            testInstance= ProxyObjectFactory.getProxyFactory().getProxyObject(testInstance);
+        }
         return testInstance;
 
     }

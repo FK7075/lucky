@@ -1,4 +1,4 @@
-# @Configuration
-com.lucky.framework.annotation.Configuration=\
-com.lucky.aop.beanfactory.LuckyAopAutoConfig
+# SpareComponents
+com.lucky.framework.scan.SpareComponents=\
+com.lucky.aop.beanfactory.LuckyAopProxyPostProcessing
 

@@ -8,14 +8,24 @@ import java.lang.reflect.Proxy;
 
 public abstract class CglibProxy {
 
-    private static final String PROXY_NAME="$$LUCKY_PROXY$$";
+    private static final String PROXY_NAME="$$ByLuckyCGLIB$$";
 
     public static <T> T getCglibProxyObject(Class<T> clazz, MethodInterceptor methodInterceptor){
         final Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(clazz);
+        enhancer.setInterfaces(clazz.getInterfaces());
         enhancer.setNamingPolicy(new LuckyNamingPolicy());
         enhancer.setCallback(methodInterceptor);
         return (T) enhancer.create();
+    }
+
+    public static Object getCglibProxyObject(LuckyMethodInterceptor luckyMethodInterceptor){
+        final Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(luckyMethodInterceptor.getSuperClass());
+        enhancer.setInterfaces(luckyMethodInterceptor.getInterfaces());
+        enhancer.setNamingPolicy(new LuckyNamingPolicy());
+        enhancer.setCallback(luckyMethodInterceptor);
+        return enhancer.create();
     }
 
     public static boolean isAgent(Class<?> aClass){

@@ -1,9 +1,11 @@
 package com.lucky.aop.core;
 
+import com.lucky.utils.base.Assert;
 import com.lucky.utils.reflect.MethodUtils;
 import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.List;
 
 /**
@@ -65,6 +67,34 @@ public class JDKAopChain implements AopChain{
             result=point.proceed(this);
         }
         return result;
+    }
+
+    @Override
+    public Object[] getArgument() {
+        return params;
+    }
+
+    @Override
+    public void setArgument(Object[] arguments) {
+        Assert.notNull(arguments, "Argument array passed to proceed cannot be null");
+        Parameter[] parameters = currMethod.getParameters();
+        if (arguments.length != parameters.length) {
+            throw new IllegalArgumentException("Expecting " +
+                    parameters.length + " arguments to proceed, " +
+                    "but was passed " + arguments.length + " arguments");
+        }
+
+        for (int i = 0,j=parameters.length; i < j; i++) {
+            if(arguments[i]==null){
+                continue;
+            }
+            Class<?> argumentsClass = arguments[i].getClass();
+            Class<?> paramsClass = parameters[i].getType();
+            if((!paramsClass.equals(argumentsClass))||(!paramsClass.isAssignableFrom(argumentsClass))){
+                throw new IllegalArgumentException("It is expected that the type of the [`"+i+"`] parameter is `"+paramsClass.getName()+"`, but the provided parameter type is `"+argumentsClass.getName()+"`");
+            }
+        }
+        params=arguments;
     }
 
     public Object clone(){
