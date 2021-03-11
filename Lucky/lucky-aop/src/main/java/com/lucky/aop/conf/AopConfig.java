@@ -2,6 +2,7 @@ package com.lucky.aop.conf;
 
 import com.lucky.aop.aspectj.AspectJAopExecutionChecker;
 import com.lucky.aop.core.AopExecutionChecker;
+import com.lucky.utils.reflect.ClassUtils;
 
 /**
  * @author fk
@@ -12,14 +13,14 @@ public class AopConfig {
 
     private static AopConfig aopConfig;
 
-    private AopExecutionChecker aopExecutionChecker;
+    private Class<? extends AopExecutionChecker> aopExecutionCheckerClass;
 
     public AopExecutionChecker getAopExecutionChecker() {
-        return aopExecutionChecker;
+        return ClassUtils.newObject(aopExecutionCheckerClass);
     }
 
-    public void setAopExecutionChecker(AopExecutionChecker aopExecutionChecker) {
-        this.aopExecutionChecker = aopExecutionChecker;
+    public void setAopExecutionChecker(Class<? extends AopExecutionChecker> aopExecutionCheckerClass) {
+        this.aopExecutionCheckerClass = aopExecutionCheckerClass;
     }
 
     private AopConfig(){
@@ -29,7 +30,7 @@ public class AopConfig {
     public static AopConfig defaultAopConfig(){
         if(aopConfig==null){
             aopConfig=new AopConfig();
-            aopConfig.setAopExecutionChecker(new AspectJAopExecutionChecker());
+            aopConfig.setAopExecutionChecker(AspectJAopExecutionChecker.class);
         }
         return aopConfig;
     }

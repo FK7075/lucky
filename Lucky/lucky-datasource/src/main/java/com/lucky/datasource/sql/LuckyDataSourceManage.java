@@ -3,6 +3,7 @@ package com.lucky.datasource.sql;
 import com.lucky.utils.annotation.NonNull;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.config.ConfigUtils;
+import com.lucky.utils.config.YamlConfAnalysis;
 import com.lucky.utils.reflect.ClassUtils;
 
 import java.util.ArrayList;
@@ -113,7 +114,11 @@ public class LuckyDataSourceManage {
      * 解析配置文件，并将配置文件中配置的所有数据源注册到数据源管理器中
      */
     public static void confLuckyDataSource(){
-        Map<String, Object> map = ConfigUtils.getYamlConfAnalysis().getMap();
+        YamlConfAnalysis yaml = ConfigUtils.getYamlConfAnalysis();
+        if(yaml==null){
+            return;
+        }
+        Map<String, Object> map = yaml.getMap();
         if(!map.containsKey("lucky")){
             return;
         }

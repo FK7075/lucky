@@ -8,8 +8,7 @@ import com.lucky.utils.reflect.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author fk
@@ -89,13 +88,19 @@ public abstract class PointRunUtils {
         if(pointcutExecutionMap.containsKey(pointcutId)){
             return pointcutExecutionMap.get(pointcutId);
         }
-        //2.方式一的简写方式验证
+        //2.方式一的简写方式验证(尝试将简写模式还原为全写模式进行验证)
         String full= aspectClass.getName()+"."+pointcutId;
         if (pointcutExecutionMap.containsKey(full)){
             return pointcutExecutionMap.get(full);
         }
         //没有注册则视为表达式
         return pointcutId;
+    }
+
+    public static void main(String[] args) {
+        ExpressionUtil util=new ExpressionUtil();
+        String str="ttt()";
+        System.out.println(util.getExpression(str));
     }
 
     private static boolean inAnnotationArray(Class<? extends Annotation>[] array,Class<?extends Annotation> annClass){
@@ -106,4 +111,40 @@ public abstract class PointRunUtils {
         }
         return false;
     }
+
+    private static class ExpressionUtil {
+        private final static List<Character> OPERATORS;
+        private List<Character> expressionStack=new ArrayList<>();
+
+        static {
+            OPERATORS=new ArrayList<>();
+            OPERATORS.add('&');OPERATORS.add('|');
+            OPERATORS.add('!');
+        }
+
+        public List<String> getExpression(String fullExpression){
+            List<String> list=new ArrayList<>();
+            for(char c: fullExpression.toCharArray()){
+                if(!expressionStack.isEmpty() && OPERATORS.contains(c)){
+                    list.add(listToString(expressionStack));
+                    expressionStack.clear();
+                }else if(!OPERATORS.contains(c)){
+                    expressionStack.add(c);
+                }
+            }
+            if(!expressionStack.isEmpty()){
+                list.add(listToString(expressionStack));
+            }
+            return list;
+        }
+
+        private String listToString(List<Character> list){
+            StringBuilder sb=new StringBuilder();
+            for (Character character : list) {
+                sb.append(character);
+            }
+            return sb.toString().trim();
+        }
+    }
+
 }

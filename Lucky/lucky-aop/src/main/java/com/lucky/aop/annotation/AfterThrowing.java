@@ -17,14 +17,14 @@ public @interface AfterThrowing {
 
 	/**
 	 * 切面表达式
-	 * P:{包检验表达式}
-	 * C:{N[类名检验表达式],I[IOC_ID校验表达式],T[IOC_TYPE校验表达式],A[是否被注解]}
-	 * M:{N[方法名校验表达式],A[是否被注解],AC[访问修饰符],O[要增强的继承自Object对象的方法]}
-	 * P:{*}C:{N[HelloController,MyService]}M:{AC[*],N[show,query(int,String)]}
-	 * @return
+	 * @see Pointcut#value()
+	 * @return 切面表达式
 	 */
 	String value();
 
+	/**
+	 * @return the name of the argument in the advice signature to bind the thrown exception to
+	 */
 	String throwing() default "";
 
 	/**
