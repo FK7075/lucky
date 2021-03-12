@@ -15,30 +15,21 @@ import java.lang.reflect.Method;
  */
 public class AspectJAopExecutionChecker extends AopExecutionChecker {
 
-    private PointcutExpression pe;
+    private AspectJExpressionPointcut aspectJExpressionPointcut;
 
     @Override
     public void setPositionExpression(String positionExpression) {
         super.setPositionExpression(positionExpression);
-        PointcutParser parser=
-                PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
-        pe=parser.parsePointcutExpression(positionExpression);
+        aspectJExpressionPointcut=new AspectJExpressionPointcut(positionExpression);
     }
 
     @Override
     protected boolean methodExamine(Class<?> targetClass, Method method) {
-        ShadowMatch shadowMatch = pe.matchesMethodExecution(method);
-        if(shadowMatch.alwaysMatches()){
-            return true;
-        }
-        if(shadowMatch.neverMatches()){
-            return false;
-        }
-        return shadowMatch.maybeMatches();
+        return aspectJExpressionPointcut.matchsMethod(method,targetClass);
     }
 
     @Override
     protected boolean classExamine(Module bean) {
-        return pe.couldMatchJoinPointsInType(bean.getOriginalType());
+        return aspectJExpressionPointcut.matchsClass(bean.getOriginalType());
     }
 }

@@ -54,6 +54,10 @@ public class LuckyAopObjectProxyMethodInterceptor extends LuckyMethodInterceptor
             return methodProxy.invoke(getTarget(),params);
         }
         final List<AopPoint> points=new ArrayList<>();
+        if(isFirst){
+            Injection.injection(getTarget(),"aspectj");
+            isFirst=false;
+        }
         TargetMethodSignature targetMethodSignature
                 =new TargetMethodSignature(proxy,getTarget(),method,params);
 

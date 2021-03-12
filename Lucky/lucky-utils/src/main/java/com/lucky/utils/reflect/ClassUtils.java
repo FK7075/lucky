@@ -8,10 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public abstract class ClassUtils {
 
@@ -22,6 +19,8 @@ public abstract class ClassUtils {
     private static final char PACKAGE_SEPARATOR = '.';
     /** The path separator character: {@code '/'}. */
     private static final char PATH_SEPARATOR = '/';
+    /** A reusable empty class array constant. */
+    private static final Class<?>[] EMPTY_CLASS_ARRAY = {};
 
     public static Class<?> forName(String fullPath,ClassLoader loader){
         Assert.notNull(fullPath, "Name must not be null");
@@ -84,6 +83,25 @@ public abstract class ClassUtils {
         Method[] superMethods = getAllMethod(clzz.getSuperclass());
         return delCoverMethods(clzzMethods,superMethods);
     }
+
+    //获取类的所有方法,包括继承的父类和实现的接口里面的方法
+    public static List<Method> getAllMethodForClass(Class<?> beanClass) {
+        List<Method> allMethods = new LinkedList<>();
+        //获取beanClass的所有接口
+        Set<Class<?>> classes = new LinkedHashSet<>(ClassUtils.getAllInterfacesForClassAsSet(beanClass));
+        classes.add(beanClass);
+
+        //遍历所有的类和接口反射获取到所有的方法
+        for (Class<?> clazz : classes) {
+            Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
+            for (Method m : methods) {
+                allMethods.add(m);
+            }
+        }
+
+        return allMethods;
+    }
+
 
 
     public static String classPackageAsResourcePath(@Nullable Class<?> clazz) {
@@ -396,4 +414,120 @@ public abstract class ClassUtils {
         }
         return cl;
     }
+
+    /**
+     * Return all interfaces that the given class implements as an array,
+     * including ones implemented by superclasses.
+     * <p>If the class itself is an interface, it gets returned as sole interface.
+     * @param clazz the class to analyze for interfaces
+     * @param classLoader the ClassLoader that the interfaces need to be visible in
+     * (may be {@code null} when accepting all declared interfaces)
+     * @return all interfaces that the given object implements as an array
+     */
+    public static Class<?>[] getAllInterfacesForClass(Class<?> clazz, @Nullable ClassLoader classLoader) {
+        return toClassArray(getAllInterfacesForClassAsSet(clazz, classLoader));
+    }
+
+    /**
+     * Return all interfaces that the given instance implements as a Set,
+     * including ones implemented by superclasses.
+     * @param instance the instance to analyze for interfaces
+     * @return all interfaces that the given instance implements as a Set
+     */
+    public static Set<Class<?>> getAllInterfacesAsSet(Object instance) {
+        Assert.notNull(instance, "Instance must not be null");
+        return getAllInterfacesForClassAsSet(instance.getClass());
+    }
+
+    /**
+     * Return all interfaces that the given class implements as a Set,
+     * including ones implemented by superclasses.
+     * <p>If the class itself is an interface, it gets returned as sole interface.
+     * @param clazz the class to analyze for interfaces
+     * @return all interfaces that the given object implements as a Set
+     */
+    public static Set<Class<?>> getAllInterfacesForClassAsSet(Class<?> clazz) {
+        return getAllInterfacesForClassAsSet(clazz, null);
+    }
+
+    /**
+     * Return all interfaces that the given class implements as a Set,
+     * including ones implemented by superclasses.
+     * <p>If the class itself is an interface, it gets returned as sole interface.
+     * @param clazz the class to analyze for interfaces
+     * @param classLoader the ClassLoader that the interfaces need to be visible in
+     * (may be {@code null} when accepting all declared interfaces)
+     * @return all interfaces that the given object implements as a Set
+     */
+    public static Set<Class<?>> getAllInterfacesForClassAsSet(Class<?> clazz, @Nullable ClassLoader classLoader) {
+        Assert.notNull(clazz, "Class must not be null");
+        if (clazz.isInterface() && isVisible(clazz, classLoader)) {
+            return Collections.singleton(clazz);
+        }
+        Set<Class<?>> interfaces = new LinkedHashSet<>();
+        Class<?> current = clazz;
+        while (current != null) {
+            Class<?>[] ifcs = current.getInterfaces();
+            for (Class<?> ifc : ifcs) {
+                if (isVisible(ifc, classLoader)) {
+                    interfaces.add(ifc);
+                }
+            }
+            current = current.getSuperclass();
+        }
+        return interfaces;
+    }
+
+    /**
+     * Check whether the given class is visible in the given ClassLoader.
+     * @param clazz the class to check (typically an interface)
+     * @param classLoader the ClassLoader to check against
+     * (may be {@code null} in which case this method will always return {@code true})
+     */
+    public static boolean isVisible(Class<?> clazz, @Nullable ClassLoader classLoader) {
+        if (classLoader == null) {
+            return true;
+        }
+        try {
+            if (clazz.getClassLoader() == classLoader) {
+                return true;
+            }
+        }
+        catch (SecurityException ex) {
+            // Fall through to loadable check below
+        }
+
+        // Visible if same Class can be loaded from given ClassLoader
+        return isLoadable(clazz, classLoader);
+    }
+
+    /**
+     * Check whether the given class is loadable in the given ClassLoader.
+     * @param clazz the class to check (typically an interface)
+     * @param classLoader the ClassLoader to check against
+     * @since 5.0.6
+     */
+    private static boolean isLoadable(Class<?> clazz, ClassLoader classLoader) {
+        try {
+            return (clazz == classLoader.loadClass(clazz.getName()));
+            // Else: different class with same name found
+        }
+        catch (ClassNotFoundException ex) {
+            // No corresponding class found at all
+            return false;
+        }
+    }
+
+    /**
+     * Copy the given {@code Collection} into a {@code Class} array.
+     * <p>The {@code Collection} must contain {@code Class} elements only.
+     * @param collection the {@code Collection} to copy
+     * @return the {@code Class} array
+     * @since 3.1
+     */
+    public static Class<?>[] toClassArray(@Nullable Collection<Class<?>> collection) {
+        return (!Assert.isEmptyCollection(collection) ? collection.toArray(EMPTY_CLASS_ARRAY) : EMPTY_CLASS_ARRAY);
+    }
+
+
 }
