@@ -1,6 +1,7 @@
 package com.lucky.aop.proxy;
 
 import com.lucky.aop.core.*;
+import com.lucky.framework.container.Injection;
 import com.lucky.utils.proxy.LuckyMethodInterceptor;
 import com.lucky.utils.reflect.MethodUtils;
 import net.sf.cglib.proxy.MethodProxy;

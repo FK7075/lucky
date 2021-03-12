@@ -10,7 +10,6 @@
     <version>1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-
   <artifactId>lucky-aop</artifactId>
   <name>lucky-aop</name>
   <url>https://github.com/FK7075/lucky</url>
@@ -19,6 +18,13 @@
     <dependency>
       <groupId>com.lucky.jacklamb</groupId>
       <artifactId>lucky-framework</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.lucky.jacklamb</groupId>
+      <artifactId>lucky-utils</artifactId>
       <version>1.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>

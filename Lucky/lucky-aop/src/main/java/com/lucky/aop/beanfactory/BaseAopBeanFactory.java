@@ -10,6 +10,7 @@ import com.lucky.aop.core.InjectionAopPoint;
 import com.lucky.aop.core.PointRun;
 import com.lucky.aop.utils.PointRunUtils;
 import com.lucky.framework.container.FusionStrategy;
+import com.lucky.framework.container.Injection;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.AopBeanFactory;
 import com.lucky.framework.container.factory.Namer;
@@ -136,5 +137,13 @@ public abstract class BaseAopBeanFactory extends AopBeanFactory {
                 log.info("Create Aop Proxy Bean `{}`",bean.getComponent());
             }
         }
+    }
+
+    protected void injection(Collection<Module> beans){
+        for (Module bean : beans) {
+            bean.setInjection(false);
+            Injection.injection(bean);
+        }
+
     }
 }

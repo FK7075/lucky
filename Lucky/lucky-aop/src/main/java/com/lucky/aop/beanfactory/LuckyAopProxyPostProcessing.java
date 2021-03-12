@@ -2,8 +2,11 @@ package com.lucky.aop.beanfactory;
 
 import com.lucky.framework.annotation.Component;
 import com.lucky.framework.container.FusionStrategy;
+import com.lucky.framework.container.Module;
 import com.lucky.framework.container.SingletonContainer;
 import com.lucky.framework.container.lifecycle.ContainerLifecycle;
+
+import java.util.Collection;
 
 /**
  * @author fk
@@ -24,7 +27,9 @@ public class LuckyAopProxyPostProcessing extends BaseAopBeanFactory implements C
     @Override
     public void afterContainerInitialized(SingletonContainer singletonPool) {
         loadPoint();
-        proxy(singletonPool.values(),true);
+        Collection<Module> beans = singletonPool.values();
+        proxy(beans,true);
+        injection(beans);
     }
 
 }

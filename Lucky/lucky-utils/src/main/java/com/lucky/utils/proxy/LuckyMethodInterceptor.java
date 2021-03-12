@@ -2,9 +2,6 @@ package com.lucky.utils.proxy;
 
 import com.lucky.utils.base.Assert;
 import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-
-import java.lang.reflect.Method;
 
 /**
  * @author fk
@@ -17,6 +14,8 @@ public abstract class LuckyMethodInterceptor implements MethodInterceptor {
     private ClassLoader loader;
     private Class<?>[] interfaces;
     private Class<?> superClass;
+    protected boolean isFirst=true;
+
 
     public Object getTarget() {
         return target;
