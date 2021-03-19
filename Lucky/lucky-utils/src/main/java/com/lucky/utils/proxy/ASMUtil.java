@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -126,5 +127,13 @@ public class ASMUtil {
 		cr.accept(classVisitor,ClassReader.SKIP_FRAMES);
 
 		return methodParametersNames;
+	}
+
+	public static List<String> getClassOrInterfaceMethodParamNames(final Method method) throws IOException {
+		Class<?> declaringClass = method.getDeclaringClass();
+		if(Modifier.isInterface(declaringClass.getModifiers())){
+			return getInterfaceMethodParamNames(method);
+		}
+		return Arrays.asList(getMethodParamNames(method));
 	}
 }

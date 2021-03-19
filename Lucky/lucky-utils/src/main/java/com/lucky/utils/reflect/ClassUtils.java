@@ -47,6 +47,16 @@ public abstract class ClassUtils {
         return delCoverFields(clzzFields,superFields);
     }
 
+    public static <T> Constructor<T> getConstructor(Class<T> aClass,Class<?>[] paramTypes){
+        try {
+            return aClass.getConstructor(paramTypes);
+        } catch (NoSuchMethodException e) {
+            LuckyReflectionException lex = new LuckyReflectionException(e);
+            log.error("NoSuchMethodException: 找不到 `"+aClass.getName()+"` 的构造器，无法实例化其对象！",lex);
+            throw lex;
+        }
+    }
+
     /**
      * 过滤掉被@Cover注解标注的属性
      * @param thisFields 当前类的所有属性
@@ -388,6 +398,19 @@ public abstract class ClassUtils {
     public static String convertClassNameToResourcePath(String className) {
         Assert.notNull(className, "Class name must not be null");
         return className.replace(PACKAGE_SEPARATOR, PATH_SEPARATOR);
+    }
+
+    public static List<Method> getAllMethods(Class<?> aClass){
+        List<Method> allMethods = new LinkedList<>();
+        //获取beanClass的所有接口
+        Set<Class<?>> classes = new LinkedHashSet<>(getAllInterfacesForClassAsSet(aClass));
+        classes.add(aClass);
+        //遍历所有的类和接口反射获取到所有的方法
+        for (Class<?> clazz : classes) {
+            Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
+            allMethods.addAll(Arrays.asList(methods));
+        }
+        return allMethods;
     }
 
     @Nullable
