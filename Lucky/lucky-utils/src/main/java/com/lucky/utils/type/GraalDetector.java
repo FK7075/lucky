@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,32 +16,24 @@
 
 package com.lucky.utils.type;
 
-
-import com.lucky.utils.fileload.Resource;
-
 /**
- * Simple facade for accessing class metadata,
- * as read by an ASM {@link ClassReader}.
+ * A common delegate for detecting a GraalVM native image environment.
  *
  * @author Juergen Hoeller
- * @since 2.5
+ * @author Sebastien Deleuze
+ * @since 5.1
  */
-public interface MetadataReader {
+abstract class GraalDetector {
+
+    // See https://github.com/oracle/graal/blob/master/sdk/src/org.graalvm.nativeimage/src/org/graalvm/nativeimage/ImageInfo.java
+    private static final boolean imageCode = (System.getProperty("org.graalvm.nativeimage.imagecode") != null);
+
 
     /**
-     * Return the resource reference for the class file.
+     * Return whether this runtime environment lives within a native image.
      */
-    Resource getResource();
-
-    /**
-     * Read basic class metadata for the underlying class.
-     */
-    ClassMetadata getClassMetadata();
-
-    /**
-     * Read full annotation metadata for the underlying class,
-     * including metadata for annotated methods.
-     */
-    AnnotationMetadata getAnnotationMetadata();
+    public static boolean inImageCode() {
+        return imageCode;
+    }
 
 }
