@@ -34,9 +34,9 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
     private static final byte[] LUCKY_PAGE_BYTE=Resources.getByteArray("/lucky-web/LUCKY.html");
     private static final Logger log= LoggerFactory.getLogger("c.l.web.mapping.UrlMappingCollection");
     /** URL映射集合*/
-    private List<UrlMapping> list;
+    private final List<UrlMapping> list;
     /** 服务启动时和关闭时执行的方法*/
-    private List<UrlMapping> runList;
+    private final List<UrlMapping> runList;
     /** URL扩展*/
     private Map<String,UrlMappingCollection> expandMap;
     /** 被逻辑删除的扩展名*/
@@ -45,7 +45,7 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
     private Map<String, JarExpand> expandInfoMap;
 
 
-    private List<UrlMapping> allMapping;
+    private final List<UrlMapping> allMapping;
 
 
     public UrlMappingCollection(){
@@ -78,6 +78,7 @@ public class UrlMappingCollection implements Iterable<UrlMapping> {
         return list.isEmpty();
     }
 
+    @NonNull
     public Iterator<UrlMapping> iterator() {
         return list.iterator();
     }

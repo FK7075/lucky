@@ -21,7 +21,7 @@ import java.util.Map;
 public abstract class ErrorPage {
 
     private final static String LUCKY_STR="LUCKY_RDS_CHAR_DOLLAR_\\)&@!";
-    private static Map<String,String> errorPageMap;
+    private static final Map<String,String> errorPageMap;
 
     static {
         errorPageMap=new HashMap<>();

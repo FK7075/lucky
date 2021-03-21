@@ -35,7 +35,6 @@ public class AdvisorAutoProxyCreator implements AdvisorRegistry,BeanPostProcesso
         return advisors;
     }
 
-    @Override
     public void setBeanFactory(BeanFactory bf) {
         this.beanFactory = bf;
     }

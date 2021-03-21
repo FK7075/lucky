@@ -585,8 +585,8 @@
 //            Method attribute = attributes.get(i);
 //            Object value1 = ReflectionUtils.invokeMethod(attribute, annotation);
 //            Object value2;
-//            if (extractedValue instanceof org.springframework.core.annotation.TypeMappedAnnotation) {
-//                value2 = ((org.springframework.core.annotation.TypeMappedAnnotation<?>) extractedValue).getValue(attribute.getName()).orElse(null);
+//            if (extractedValue instanceof TypeMappedAnnotation) {
+//                value2 = ((TypeMappedAnnotation<?>) extractedValue).getValue(attribute.getName()).orElse(null);
 //            }
 //            else {
 //                value2 = valueExtractor.extract(attribute, extractedValue);

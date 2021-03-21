@@ -1,6 +1,7 @@
 package com.lucky.web.mapping;
 
 import com.lucky.framework.scan.JarExpand;
+import com.lucky.utils.annotation.NonNull;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.base.ExceptionUtils;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ public class ExceptionMappingCollection implements Iterable<ExceptionMapping> {
     private static final Logger log= LoggerFactory.getLogger("c.l.w.mapping.ExceptionMappingCollection");
 
     /** 异常处理器的集合【ExceptionHandler集】*/
-    private List<ExceptionMapping> list;
+    private final List<ExceptionMapping> list;
     /** ExceptionHandler扩展*/
     private Map<String,ExceptionMappingCollection> expandMap;
     /** 被逻辑删除的扩展名*/
@@ -41,6 +42,7 @@ public class ExceptionMappingCollection implements Iterable<ExceptionMapping> {
         return list.isEmpty();
     }
 
+    @NonNull
     public Iterator<ExceptionMapping> iterator() {
         return list.iterator();
     }

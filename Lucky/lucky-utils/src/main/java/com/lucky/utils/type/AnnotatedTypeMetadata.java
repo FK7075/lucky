@@ -97,7 +97,7 @@
 //        if (!annotation.isPresent()) {
 //            return null;
 //        }
-//        return annotation.asAnnotationAttributes(Adapt.values(classValuesAsString, true));
+//        return annotation.asAnnotationAttributes(MergedAnnotation.Adapt.values(classValuesAsString, true));
 //    }
 //
 //    /**
@@ -132,7 +132,7 @@
 //    default MultiValueMap<String, Object> getAllAnnotationAttributes(
 //            String annotationName, boolean classValuesAsString) {
 //
-//        Adapt[] adaptations = Adapt.values(classValuesAsString, true);
+//        MergedAnnotation.Adapt[] adaptations = MergedAnnotation.Adapt.values(classValuesAsString, true);
 //        return getAnnotations().stream(annotationName)
 //                .filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
 //                .map(MergedAnnotation::withNonMergedAttributes)

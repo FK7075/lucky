@@ -95,7 +95,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
     public <T> List<T> getBean(Class<T>...aClasses) {
         List<Module> modules = singletonPool.getBeanByClass(aClasses);
         List<T> list=new ArrayList<>(modules.size());
-        modules.stream().forEach(m->list.add((T)m.getComponent()));
+        modules.forEach(m->list.add((T)m.getComponent()));
         return list;
     }
 
@@ -108,7 +108,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
     public List<?> getBeanByAnnotation(Class<? extends Annotation>...annotationClasses) {
         return singletonPool.getBeanByAnnotation(annotationClasses)
                 .stream()
-                .map(m->m.getComponent())
+                .map(Module::getComponent)
                 .collect(Collectors.toList());
     }
 
@@ -121,7 +121,7 @@ public class AutoScanApplicationContext implements ApplicationContext{
     public List<?> getBeans() {
         return singletonPool.values()
                 .stream()
-                .map(m->m.getComponent())
+                .map(Module::getComponent)
                 .collect(Collectors.toList());
     }
 
