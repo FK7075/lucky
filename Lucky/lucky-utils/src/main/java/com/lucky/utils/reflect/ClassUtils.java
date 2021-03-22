@@ -478,6 +478,49 @@ public abstract class ClassUtils {
         }
     }
 
+    /**
+     * Check whether the given class is cache-safe in the given context,
+     * i.e. whether it is loaded by the given ClassLoader or a parent of it.
+     * @param clazz the class to analyze
+     * @param classLoader the ClassLoader to potentially cache metadata in
+     * (may be {@code null} which indicates the system class loader)
+     */
+    public static boolean isCacheSafe(Class<?> clazz, @Nullable ClassLoader classLoader) {
+        Assert.notNull(clazz, "Class must not be null");
+        try {
+            ClassLoader target = clazz.getClassLoader();
+            // Common cases
+            if (target == classLoader || target == null) {
+                return true;
+            }
+            if (classLoader == null) {
+                return false;
+            }
+            // Check for match in ancestors -> positive
+            ClassLoader current = classLoader;
+            while (current != null) {
+                current = current.getParent();
+                if (current == target) {
+                    return true;
+                }
+            }
+            // Check for match in children -> negative
+            while (target != null) {
+                target = target.getParent();
+                if (target == classLoader) {
+                    return false;
+                }
+            }
+        }
+        catch (SecurityException ex) {
+            // Fall through to loadable check below
+        }
+
+        // Fallback for ClassLoaders without parent/child relationship:
+        // safe if same Class can be loaded from given ClassLoader
+        return (classLoader != null && isLoadable(clazz, classLoader));
+    }
+
 
     /**
      * Determine if the supplied class is an <em>inner class</em>,
