@@ -46,4 +46,16 @@ public abstract class ArrayUtils {
         list.toArray(result);
         return result;
     }
+
+    public static boolean containStr(String[] strArray,String str){
+        if(Assert.isEmptyArray(strArray)){
+            return false;
+        }
+        for (String s : strArray) {
+            if(s.equals(str)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
