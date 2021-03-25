@@ -51,22 +51,26 @@ public class JexlEngineUtil {
     }
 
     private Object getValue(String $prefix){
+        Object evaluate=null;
         String  prefix=$prefix.substring(2,$prefix.length()-1).trim();
         StringBuilder sb=new StringBuilder(PREFIX);
-        String[] split = prefix.split("\\.");
-        for (String key : split) {
-            if(key.contains("-")){
-                sb.append(".'").append(key).append("'");
-            }else{
-                sb.append(".").append(key);
+
+        //先尝试将这个key作为整体来获取value，如果获取不到则使用分布获取
+        sb.append(".'").append(prefix).append("'");
+        evaluate =getPropertyByJexl(sb.toString(), $prefix);
+        if(evaluate == null){
+            sb=new StringBuilder(PREFIX);
+            String[] split = prefix.split("\\.");
+            for (String key : split) {
+                if(key.contains("-")){
+                    sb.append(".'").append(key).append("'");
+                }else{
+                    sb.append(".").append(key);
+                }
+
             }
 
-        }
-        Object evaluate=null;
-        try {
-            evaluate = engine.createExpression(sb.toString()).evaluate(context);
-        }catch (Exception e){
-            throw new GetConfigurationInfoException($prefix,e);
+            evaluate =getPropertyByJexl(sb.toString(), $prefix);
         }
 
         if(evaluate instanceof String){
@@ -77,6 +81,15 @@ public class JexlEngineUtil {
             }
         }
         return evaluate;
+    }
+
+    private Object getPropertyByJexl(String key,String $prefix){
+        try {
+            return engine.createExpression(key).evaluate(context);
+        }catch (Exception e){
+            throw new GetConfigurationInfoException($prefix,e);
+        }
+
     }
 
     public static boolean isExpression(String prefix){
