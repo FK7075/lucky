@@ -1,5 +1,7 @@
 package com.lucky.jacklamb.jdbc.core.abstcore;
 
+import com.lucky.datasource.sql.LuckyDataSource;
+import com.lucky.datasource.sql.LuckyDataSourceManage;
 import com.lucky.jacklamb.createtable.CreateTableSqlGenerate;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.exception.CreateMapperException;
@@ -14,6 +16,7 @@ import com.lucky.jacklamb.querybuilder.Translator;
 import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.utils.reflect.FieldUtils;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -28,7 +31,7 @@ import java.util.UUID;
  * @author fk-7075
  *
  */
-public abstract class SqlCore extends GeneralObjectCoreBase {
+public abstract class SqlCore extends GeneralObjectCoreBase implements Closeable {
 
 	public Transaction openTransaction(){
 		return super.openTransaction();
@@ -458,5 +461,13 @@ public abstract class SqlCore extends GeneralObjectCoreBase {
 		if(list!=null&&!list.isEmpty())
 			return list.get(0);
 		return null;
+	}
+
+	@Override
+	public void close() throws IOException {
+		LuckyDataSource dataSource = LuckyDataSourceManage.getDataSource(getDbName());
+		if (dataSource != null){
+			dataSource.destroy();
+		}
 	}
 }

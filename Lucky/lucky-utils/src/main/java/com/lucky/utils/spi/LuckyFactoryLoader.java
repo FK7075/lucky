@@ -1,4 +1,4 @@
-package com.lucky.framework.spi;
+package com.lucky.utils.spi;
 
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.base.StringUtils;

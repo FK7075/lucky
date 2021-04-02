@@ -5,10 +5,10 @@ import com.lucky.framework.annotation.LuckyBootApplication;
 import com.lucky.framework.exception.AddJarExpandException;
 import com.lucky.framework.scan.exclusions.Exclusions;
 import com.lucky.framework.scan.imports.Imports;
-import com.lucky.framework.spi.LuckyFactoryLoader;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
+import com.lucky.utils.spi.LuckyFactoryLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

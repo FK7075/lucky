@@ -1,6 +1,5 @@
-package com.lucky.framework.spi;
+package com.lucky.utils.spi;
 
-import com.lucky.framework.exception.LuckyIOException;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.reflect.ClassUtils;
 
@@ -91,7 +90,7 @@ public class LuckyServiceLoader<S> implements Iterable<S> {
                 }
             }
         } catch (IOException e) {
-            throw new LuckyIOException(e);
+            throw new RuntimeException(e);
         }
     }
 
