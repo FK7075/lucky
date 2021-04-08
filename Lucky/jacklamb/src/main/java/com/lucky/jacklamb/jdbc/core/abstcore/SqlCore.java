@@ -41,7 +41,7 @@ public abstract class SqlCore extends GeneralObjectCoreBase implements Closeable
 		return super.openTransaction(isolationLevel);
 	}
 
-	private LuckyMapperProxy mapperProxy;
+	private final LuckyMapperProxy mapperProxy;
 
 	public void setFullMap(boolean fullMap) {
         statementCore.setFullMap(fullMap);

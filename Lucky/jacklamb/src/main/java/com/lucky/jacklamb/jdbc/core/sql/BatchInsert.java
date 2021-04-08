@@ -61,24 +61,24 @@ public class BatchInsert {
             list = Stream.of(fields).filter(field -> FieldUtils.isJDKType(field)
                     && !FieldUtils.isParentClass(field,Collection.class)).collect(Collectors.toList());
         }
-        StringBuilder fk = new StringBuilder("");
-        for (int i = 0, j = list.size(); i < j; i++) {
-            if (PojoManage.isNoColumn(list.get(i),dbname)) {
+        StringBuilder fk = new StringBuilder();
+        for (Field field : list) {
+            if (PojoManage.isNoColumn(field, dbname)) {
                 continue;
             }
             if (isFirst) {
                 isFirst = false;
-                prefix.append("(").append("`").append(PojoManage.getTableField(dbname,list.get(i))).append("`").append(",");
+                prefix.append("(").append("`").append(PojoManage.getTableField(dbname, field)).append("`").append(",");
                 fk.append("(?,");
             } else {
-                prefix.append("`").append(PojoManage.getTableField(dbname,list.get(i))).append("`").append(",");
+                prefix.append("`").append(PojoManage.getTableField(dbname, field)).append("`").append(",");
                 fk.append("?,");
             }
         }
         fk = new StringBuilder(fk.substring(0, fk.length() - 1)).append(")");
         prefix = new StringBuilder(prefix.substring(0, prefix.length() - 1)).append(")");
         String suf=copyRepeatStr(fk.append(","),size);
-        return prefix.append(suffix.append(suf.substring(0,suf.length()-1))).toString();
+        return prefix.append(suffix.append(suf, 0, suf.length()-1)).toString();
     }
 
     private String copyRepeatStr(StringBuilder str,int frequency){

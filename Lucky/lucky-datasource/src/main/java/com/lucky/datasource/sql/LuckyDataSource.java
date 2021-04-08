@@ -159,7 +159,7 @@ public abstract class LuckyDataSource extends MapConfigAnalysis implements DataS
     }
 
     public Set<Class<?>> getCreateTable() {
-        return createTable.stream().map(s-> ClassUtils.getClass(s)).collect(Collectors.toSet());
+        return createTable.stream().map(ClassUtils::getClass).collect(Collectors.toSet());
     }
 
     public void setCreateTable(Set<String> createTable) {

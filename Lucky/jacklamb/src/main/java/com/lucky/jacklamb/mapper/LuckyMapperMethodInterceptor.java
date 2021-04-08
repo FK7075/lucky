@@ -36,11 +36,11 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
 
     private static final Logger log = LoggerFactory.getLogger(LuckyMapperMethodInterceptor.class);
 
-    private Class<?> LuckyMapperGeneric;
+    private final Class<?> LuckyMapperGeneric;
 
-    private SqlCore sqlCore;
+    private final SqlCore sqlCore;
 
-    private Map<String, String> sqlMap;
+    private final Map<String, String> sqlMap;
 
     public LuckyMapperMethodInterceptor(Class<?> luckyMapperGeneric, SqlCore sqlCore, Map<String, String> sqlMap) {
         LuckyMapperGeneric = luckyMapperGeneric;
@@ -134,8 +134,7 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
     private Class<?> getGeneric(Method method) {
         ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
         Type[] entry = type.getActualTypeArguments();
-        Class<?> cla = (Class<?>) entry[0];
-        return cla;
+        return (Class<?>) entry[0];
     }
 
     /**
@@ -448,8 +447,7 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
                 SqlAndArray sqlArr = noSqlTo(args[0], sqlStr);
                 sqlStr = sqlArr.getSql();
                 if (method.getParameterCount() == 3) {
-                    List<Object> list = new ArrayList<>();
-                    list.addAll(Arrays.asList(sqlArr.getArray()));
+                    List<Object> list = new ArrayList<>(Arrays.asList(sqlArr.getArray()));
                     list.add(args[1]);
                     list.add(args[2]);
                     args = list.toArray();
@@ -543,10 +541,10 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
             return sqlCore.getOne(LuckyMapperGeneric, params[0]);
         }
         if (isExtendLM && "deleteById".equals(method.getName())) {
-            return (Object) sqlCore.delete(LuckyMapperGeneric, params[0]);
+            return sqlCore.delete(LuckyMapperGeneric, params[0]);
         }
         if (isExtendLM && "count".equals(method.getName()) && params.length == 0) {
-            return (Object) sqlCore.count(LuckyMapperGeneric);
+            return sqlCore.count(LuckyMapperGeneric);
         }
         if (isExtendLM && "selectList".equals(method.getName()) && params.length == 0) {
             return sqlCore.getList(LuckyMapperGeneric);
@@ -556,7 +554,7 @@ public class LuckyMapperMethodInterceptor implements MethodInterceptor {
             return void.class;
         }
         if (isExtendLM && "deleteByIdIn".equals(method.getName()) && params.length == 1) {
-            return (Object) sqlCore.deleteByIdIn(LuckyMapperGeneric, (List<?>) params[0]);
+            return sqlCore.deleteByIdIn(LuckyMapperGeneric, (List<?>) params[0]);
         }
         if (isExtendLM && "selectByIdIn".equals(method.getName()) && params.length == 1) {
             return sqlCore.getByIdIn(LuckyMapperGeneric, (List<?>) params[0]);
