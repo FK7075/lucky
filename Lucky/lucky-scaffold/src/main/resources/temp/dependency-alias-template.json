@@ -12,5 +12,10 @@
   "-t"  : "thymeleaf",
   "-s"  : "shiro",
   "-d"  : "data",
-  "-wm" : "web-management"
+  "-wm" : "web-management",
+  "-cc" : "cloud-client",
+  "-cs" : "cloud-server",
+  "-ib" : "mybatis",
+  "-so" : "solr",
+  "-mo" : "mongodb"
 }

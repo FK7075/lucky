@@ -12,6 +12,11 @@
   "thymeleaf"       : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-thymeleaf</artifactId>\n            </dependency>\n\n",
   "shiro"           : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-shiro</artifactId>\n            </dependency>\n\n",
   "data"            : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-data</artifactId>\n            </dependency>\n\n",
-  "web-management"  : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-web-management</artifactId>\n            </dependency>\n\n"
+  "web-management"  : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-web-management</artifactId>\n            </dependency>\n\n",
+  "mybatis"         : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-mybatis</artifactId>\n            </dependency>\n\n",
+  "cloud-client"    : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-cloud-client</artifactId>\n            </dependency>\n\n",
+  "cloud-server"    : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-cloud-server</artifactId>\n            </dependency>\n\n",
+  "solr"            : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-solr</artifactId>\n            </dependency>\n\n",
+  "mongodb"         : "        <dependency>\n            <groupId>com.lucky.jacklamb</groupId>\n            <artifactId>lucky-mongodb</artifactId>\n            </dependency>\n\n"
 
 }

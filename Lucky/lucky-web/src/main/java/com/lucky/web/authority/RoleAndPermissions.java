@@ -43,7 +43,7 @@ public class RoleAndPermissions {
 
     public void addPermission(String...permission){
         if(permissions==null){
-            permissions=new HashSet();
+            permissions=new HashSet<>();
         }
         permissions.addAll(ArrayUtils.arrayToSet(permission));
     }
