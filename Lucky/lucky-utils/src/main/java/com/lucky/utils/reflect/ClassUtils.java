@@ -115,9 +115,7 @@ public abstract class ClassUtils {
         //遍历所有的类和接口反射获取到所有的方法
         for (Class<?> clazz : classes) {
             Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
-            for (Method m : methods) {
-                allMethods.add(m);
-            }
+            allMethods.addAll(Arrays.asList(methods));
         }
 
         return allMethods;
@@ -162,33 +160,70 @@ public abstract class ClassUtils {
 
     /**
      * 使用反射机制调用构造函数创建一个对象
-     * @param tclass 目标对象的Class
-     * @param cparams 构造器执行的参数
+     * @param tClass 目标对象的Class
+     * @param args 构造器执行的参数
      * @param <T>
      * @return
      */
-    public static <T> T newObject(Class<? extends T> tclass,Object...cparams){
+    public static <T> T newObject(Class<T> tClass,Object...args){
         try {
-            Constructor<? extends T> constructor  =tclass.getConstructor(array2Class(cparams));
+            Constructor<T> constructor = findConstructor(tClass, array2Class(args));
             constructor.setAccessible(true);
-            return constructor.newInstance(cparams);
-        } catch (NoSuchMethodException e) {
+            return constructor.newInstance(args);
+        }catch (Exception e){
             LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error("NoSuchMethodException: 找不到 `"+tclass.getName()+"` 的无参构造器，无法实例化其对象！",lex);
-            throw lex;
-        } catch (IllegalAccessException e) {
-            LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error("IllegalAccessException",lex);
-            throw lex;
-        } catch (InstantiationException e) {
-            LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error("InstantiationException: 在实例化 `"+tclass.getName()+"` 时出现错误！",lex);
-            throw lex;
-        } catch (InvocationTargetException e) {
-            LuckyReflectionException lex = new LuckyReflectionException(e);
-            log.error("InvocationTargetException",lex);
+            log.error("创建对象异常！class: '"+tClass+"',args: '"+Arrays.toString(args)+"'",lex);
             throw lex;
         }
+    }
+
+    public static <T> T newObject(Constructor<T> constructor,Object...args){
+        try {
+            return constructor.newInstance(args);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            LuckyReflectionException lex = new LuckyReflectionException(e);
+            log.error("创建对象异常！Constructor: '"+constructor+"',args: '"+Arrays.toString(args)+"'",lex);
+            throw lex;
+        }
+    }
+
+    public static <T> Constructor<T> findConstructor(Class<T> tClass, Class<?>[] argsClasses) {
+        if(argsClasses == null || argsClasses.length == 0){
+            try {
+                return tClass.getConstructor();
+            } catch (NoSuchMethodException e) {
+                throw new LuckyReflectionException(e);
+            }
+        }
+        Constructor<?> ct=null;
+        try {
+           ct = tClass.getConstructor(argsClasses);
+        }catch (Exception ignored){
+            //使用参数的类型进行精确查找失败...
+        }
+
+        if(ct == null){
+            Constructor<?>[] constructors = tClass.getConstructors();
+            out:for (Constructor<?> constructor : constructors) {
+                Class<?>[] parameterTypes = constructor.getParameterTypes();
+                if(argsClasses.length==parameterTypes.length){
+                    for (int i = 0,j= parameterTypes.length; i < j; i++) {
+                        if(!parameterTypes[i].isAssignableFrom(argsClasses[i])){
+                            continue out;
+                        }
+                    }
+                    ct=constructor;
+                    break;
+                }
+            }
+        }
+
+        if(ct == null){
+            throw new LuckyReflectionException("There is no corresponding construction method class = '"+tClass+"' , args = '"+Arrays.toString(argsClasses)+"'");
+        }
+
+        return (Constructor<T>) ct;
+
 
     }
 

@@ -14,13 +14,13 @@ import java.util.Collection;
  * @date 2021/3/10 0010 15:31
  */
 @Component
-public class LuckyAopProxyPostProcessing extends BaseAopBeanFactory implements ContainerLifecycle {
+public class LuckyAopProxyPostProcess extends BaseAopBeanFactory implements ContainerLifecycle {
 
-    public LuckyAopProxyPostProcessing(){
+    public LuckyAopProxyPostProcess(){
         super();
     }
 
-    public LuckyAopProxyPostProcessing(FusionStrategy fusionStrategy){
+    public LuckyAopProxyPostProcess(FusionStrategy fusionStrategy){
         super(fusionStrategy);
     }
 

@@ -1,4 +1,4 @@
 # SpareComponents
 com.lucky.framework.scan.SpareComponents=\
-com.lucky.aop.beanfactory.LuckyAopProxyPostProcessing
+com.lucky.aop.beanfactory.LuckyAopNestedProxyBeanFactory
 
