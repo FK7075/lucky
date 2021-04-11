@@ -1,32 +1,39 @@
 package org.luckyframework.beans;
 
+import com.lucky.utils.base.Assert;
 import com.lucky.utils.reflect.ClassUtils;
+import org.luckyframework.beans.factory.BeanFactory;
 
 import java.lang.reflect.Constructor;
 
 /**
+ * 基于构造器的工厂Bean
  * @author fk
  * @version 1.0
  * @date 2021/4/9 0009 11:57
  */
 @SuppressWarnings("unchecked")
-public class ConstructorFactoryBean<T> implements FactoryBean<T> {
+public class ConstructorFactoryBean<T> extends AbstractFactoryBean<T> {
 
     private final Class<T> beanClass;
-    private final ConstructorValue[] refArgs;
 
     public ConstructorFactoryBean(String beanClass){
         this((Class<T>)ClassUtils.getClass(beanClass));
     }
 
     public ConstructorFactoryBean(Class<T> beanClass) {
+        super();
         this.beanClass = beanClass;
-        this.refArgs = new ConstructorValue[0];
     }
 
     public ConstructorFactoryBean(Class<T> beanClass, ConstructorValue[] refArgs) {
+        super(refArgs);
         this.beanClass = beanClass;
-        this.refArgs = refArgs;
+    }
+
+    public ConstructorFactoryBean(Class<T> beanClass,Object[] realValues){
+        super(realValues);
+        this.beanClass = beanClass;
     }
 
     @Override
@@ -35,32 +42,9 @@ public class ConstructorFactoryBean<T> implements FactoryBean<T> {
         return ClassUtils.newObject(constructor,getRealArgs());
     }
 
-    private Object getRealArgs() {
-        return null;
-    }
-
-    private Class<?>[] getRealArgsClasses() {
-
-        return null;
-    }
-
     @Override
     public String toString() {
-        return "new " + beanClass.getSimpleName() + "(" + refArgsToString() + ")";
-    }
-
-    private String refArgsToString(){
-        if(refArgs == null){
-            return null;
-        }
-        if(refArgs.length == 0){
-            return "";
-        }
-        StringBuilder result = new StringBuilder();
-        for (ConstructorValue refArg : refArgs) {
-            result.append(refArg.toString()).append(",");
-        }
-        return result.substring(0,result.length()-1);
+        return "new " + beanClass.getSimpleName() + "(" + argsToString() + ")";
     }
 
 }

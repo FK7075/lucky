@@ -10,6 +10,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public abstract class ClassUtils {
 
     private static final Logger log= LoggerFactory.getLogger(ClassUtils.class);
@@ -185,6 +186,30 @@ public abstract class ClassUtils {
             log.error("创建对象异常！Constructor: '"+constructor+"',args: '"+Arrays.toString(args)+"'",lex);
             throw lex;
         }
+    }
+
+    public static Method findMethod(Class<?> tClass,String methodName,Class<?>[] methodParamClasses){
+        try {
+            return tClass.getMethod(methodName,methodParamClasses);
+        }catch (Exception ignored){
+
+        }
+        List<Method> methods = getAllMethodForClass(tClass);
+        out:for (Method m : methods) {
+            if(!m.getName().equals(methodName)){
+                continue;
+            }
+            Class<?>[] parameterTypes = m.getParameterTypes();
+            if(parameterTypes.length == methodParamClasses.length){
+                for (int i = 0 ,j= parameterTypes.length; i < j; i++) {
+                    if(!parameterTypes[i].isAssignableFrom(methodParamClasses[i])){
+                        continue out;
+                    }
+                }
+                return m;
+            }
+        }
+        throw new LuckyReflectionException("There is no static factory method named '"+methodName+"' parameter type '"+Arrays.toString(methodParamClasses)+"' in '"+tClass+"'");
     }
 
     public static <T> Constructor<T> findConstructor(Class<T> tClass, Class<?>[] argsClasses) {

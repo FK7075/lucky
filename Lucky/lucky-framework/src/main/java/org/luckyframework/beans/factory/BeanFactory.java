@@ -1,5 +1,6 @@
 package org.luckyframework.beans.factory;
 
+import com.lucky.utils.type.ResolvableType;
 import org.luckyframework.exception.BeansException;
 import org.luckyframework.exception.NoSuchBeanDefinitionException;
 
@@ -40,12 +41,16 @@ public interface BeanFactory extends Closeable {
      */
     <T> T getBean(String name,Class<T> requiredType) throws BeansException;
 
+    Object getBean(String name, ResolvableType type) throws BeansException;
+
     /**
      * 根据bean的类型来获得实例
      * @param requiredType bean的类型
      * @return bean实例
      */
     <T> T getBean(Class<T> requiredType) throws BeansException;
+
+    Object getBean(ResolvableType requiredType) throws BeansException;
 
 
     /**
