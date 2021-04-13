@@ -1,7 +1,9 @@
-package org.luckyframework.beans;
+package org.luckyframework.beans.create;
 
 import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.utils.reflect.MethodUtils;
+import com.lucky.utils.type.ResolvableType;
+import org.luckyframework.beans.ConstructorValue;
 
 import java.lang.reflect.Method;
 
@@ -11,8 +13,7 @@ import java.lang.reflect.Method;
  * @version 1.0.0
  * @date 2021/4/12 上午12:51
  */
-@SuppressWarnings("unchecked")
-public class StaticFactoryMethodFactoryBean<T> extends AbstractFactoryBean<T>{
+public class StaticFactoryMethodFactoryBean extends AbstractFactoryBean {
 
     private final Class<?> factoryClass;
     private final String methodName;
@@ -27,7 +28,7 @@ public class StaticFactoryMethodFactoryBean<T> extends AbstractFactoryBean<T>{
         this(ClassUtils.getClass(factoryClass),methodName);
     }
 
-    public StaticFactoryMethodFactoryBean(Class<?> factoryClass,String methodName,ConstructorValue[] refValues){
+    public StaticFactoryMethodFactoryBean(Class<?> factoryClass, String methodName, ConstructorValue[] refValues){
         super(refValues);
         this.factoryClass = factoryClass;
         this.methodName = methodName;
@@ -40,9 +41,15 @@ public class StaticFactoryMethodFactoryBean<T> extends AbstractFactoryBean<T>{
     }
 
     @Override
-    public T getBean() {
+    public Object getBean() {
         Method method = ClassUtils.findMethod(factoryClass, methodName, getRealArgsClasses());
-        return (T) MethodUtils.invoke(factoryClass,method,getRealArgs());
+        return MethodUtils.invoke(factoryClass,method,getRealArgs());
+    }
+
+    @Override
+    public ResolvableType getBeanType() {
+        Method method = ClassUtils.findMethod(factoryClass, methodName, getRealArgsClasses());
+        return ResolvableType.forMethodReturnType(method);
     }
 
     @Override

@@ -1,7 +1,11 @@
-package org.luckyframework.beans;
+package org.luckyframework.beans.create;
 
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.reflect.ClassUtils;
+import com.lucky.utils.type.ResolvableType;
+import org.luckyframework.beans.Autowire;
+import org.luckyframework.beans.BeanReference;
+import org.luckyframework.beans.ConstructorValue;
 import org.luckyframework.beans.factory.BeanFactory;
 
 /**
@@ -9,7 +13,7 @@ import org.luckyframework.beans.factory.BeanFactory;
  * @version 1.0.0
  * @date 2021/4/12 上午12:54
  */
-public abstract class AbstractFactoryBean<T> implements FactoryBean<T> {
+public abstract class AbstractFactoryBean implements MightNeedBeanFactoryFactoryBean {
 
     /** BeanFactory */
     protected BeanFactory beanFactory;
@@ -53,41 +57,64 @@ public abstract class AbstractFactoryBean<T> implements FactoryBean<T> {
         this.beanFactory = beanFactory;
     }
 
+    protected Object getObjectByBeanFactory(Object refValue){
+        if(refValue instanceof BeanReference){
+            BeanReference ref = (BeanReference) refValue;
+            if (ref.getAutowire() == Autowire.BY_NAME){
+                return beanFactory.getBean(ref.getBeanName());
+            }else{
+                return beanFactory.getBean(ref.getReferenceType(beanFactory));
+            }
+        }
+        if(refValue instanceof FactoryBean){
+            return ((FactoryBean)refValue).getBean();
+        }
+        return refValue;
+    }
+
+    protected Class<?> getTypeByBeanFactory(Object refValue){
+        if(refValue instanceof BeanReference){
+            return ((BeanReference)refValue).getReferenceType(beanFactory);
+        }
+        if(refValue instanceof FactoryBean){
+            ResolvableType resolvableType = ResolvableType.forInstance(refValue);
+            return resolvableType.getSuperType().resolveGeneric(0);
+        }
+        return refValue.getClass();
+
+    }
+
     protected Object[] getRealArgs() {
         if(realValues == null){
-            realValues = new Object[refValues.length];
-            int i = 0;
-            for (Object refValue : refValues) {
-                if(refValue instanceof BeanReference){
-                    BeanReference ref = (BeanReference) refValue;
-                    if (ref.getAutowire() == Autowire.BY_NAME){
-                        realValues[i++] = beanFactory.getBean(ref.getBeanName());
-                    }else{
-                        realValues[i++] = beanFactory.getBean(ref.getReferenceType(beanFactory));
-                    }
-                }else{
-                    realValues[i++] = refValue;
-                }
-            }
+            realValues = getRealArgs(refValues);
         }
         return realValues;
     }
 
     protected Class<?>[] getRealArgsClasses() {
         if(realClasses == null){
-            realClasses = new Class<?>[refValues.length];
-            int i = 0;
-            for (Object refValue : refValues) {
-                if(refValue instanceof BeanReference){
-                    realClasses[i++] = ((BeanReference)refValue).getReferenceType(beanFactory);
-                }else{
-                    realClasses[i++] = refValue.getClass();
-                }
-            }
+            realClasses = getRealArgsClasses(refValues);
         }
         return realClasses;
     }
 
+    protected Class<?>[] getRealArgsClasses(Object[] refValues){
+        Class<?>[] realClasses = new Class<?>[refValues.length];
+        int i = 0;
+        for (Object refValue : refValues) {
+            realClasses[i++] = getTypeByBeanFactory(refValue);
+        }
+        return realClasses;
+    }
+
+    protected Object[] getRealArgs(Object[] refValues){
+        Object[] realValues = new Object[refValues.length];
+        int i = 0;
+        for (Object refValue : refValues) {
+            realValues[i++] = getObjectByBeanFactory(refValue);
+        }
+        return realValues;
+    }
 
     protected String argsToString(){
         StringBuilder sb = new StringBuilder("(");
@@ -100,9 +127,9 @@ public abstract class AbstractFactoryBean<T> implements FactoryBean<T> {
                 if(ref instanceof BeanReference){
                     BeanReference beanReference = (BeanReference) ref;
                     if(Autowire.BY_NAME == beanReference.getAutowire()){
-                        sb.append("REF_BY_NAME(").append(beanReference.getBeanName()).append("),");
+                        sb.append("REF<").append(beanReference.getBeanName()).append(">,");
                     }else{
-                        sb.append("REF_BY_TYPE(").append(beanReference.getReferenceType(beanFactory)).append("),");
+                        sb.append("REF<").append(beanReference.getReferenceType(beanFactory)).append(">,");
                     }
                 }else {
                     sb.append(ref).append(",");

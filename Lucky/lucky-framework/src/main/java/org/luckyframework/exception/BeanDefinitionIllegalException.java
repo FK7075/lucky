@@ -1,6 +1,6 @@
 package org.luckyframework.exception;
 
-import org.luckyframework.beans.BeanDefinition;
+import org.luckyframework.beans.definition.BeanDefinition;
 
 /**
  * @author fk

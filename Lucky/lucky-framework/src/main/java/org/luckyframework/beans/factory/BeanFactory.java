@@ -41,8 +41,6 @@ public interface BeanFactory extends Closeable {
      */
     <T> T getBean(String name,Class<T> requiredType) throws BeansException;
 
-    Object getBean(String name, ResolvableType type) throws BeansException;
-
     /**
      * 根据bean的类型来获得实例
      * @param requiredType bean的类型
@@ -103,5 +101,7 @@ public interface BeanFactory extends Closeable {
      * @throws NoSuchBeanDefinitionException
      */
     boolean isPrototype(String name) throws NoSuchBeanDefinitionException;
+
+    void invokeAwareMethod(Object instance);
 
 }
