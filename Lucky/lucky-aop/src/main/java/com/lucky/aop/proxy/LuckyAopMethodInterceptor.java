@@ -24,7 +24,7 @@ public class LuckyAopMethodInterceptor implements MethodInterceptor {
 	 */
 	public LuckyAopMethodInterceptor(PointRun...pointRuns) {
 		this.pointRuns=new ArrayList<>();
-		Stream.of(pointRuns).forEach(this.pointRuns::add);
+		this.pointRuns.addAll(Arrays.asList(pointRuns));
 	}
 	
 	/**

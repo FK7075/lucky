@@ -8,7 +8,7 @@ import java.util.List;
 
 public class TransactionSqlActuator extends SqlActuator {
 
-    private Transaction tr;
+    private final Transaction tr;
 
     public Transaction openTransaction() {
         tr.open();

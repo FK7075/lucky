@@ -13,7 +13,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public final class StatementCoreImpl implements StatementCore {
 	
-	private String dbname;
+	private final String dbname;
 
 	private SqlActuator sqlActuator;
 
