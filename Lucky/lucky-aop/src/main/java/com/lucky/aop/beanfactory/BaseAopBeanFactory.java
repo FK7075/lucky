@@ -13,10 +13,6 @@ import com.lucky.framework.container.FusionStrategy;
 import com.lucky.framework.container.Injection;
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.AopBeanFactory;
-import com.lucky.framework.container.factory.Namer;
-import com.lucky.utils.base.Assert;
-import com.lucky.utils.proxy.CglibProxy;
-import com.lucky.utils.proxy.JDKProxy;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
 import org.slf4j.Logger;
@@ -34,13 +30,14 @@ import java.util.Set;
  * @version 1.0
  * @date 2021/3/10 0010 17:43
  */
+@SuppressWarnings("unchecked")
 public abstract class BaseAopBeanFactory extends AopBeanFactory {
 
     private static final Logger log= LoggerFactory.getLogger("c.l.f.beanfactory.BaseAopBeanFactory");
     protected final Set<PointRun> pointRunSet;
     protected final Set<InjectionAopPoint> injectionAopPoints;
 
-    private Class<? extends Annotation>[] ASPECT_ANNOTATIONS=new Class[]{
+    private final Class<? extends Annotation>[] ASPECT_ANNOTATIONS=new Class[]{
             Aspect.class, org.aspectj.lang.annotation.Aspect.class
     };
 
