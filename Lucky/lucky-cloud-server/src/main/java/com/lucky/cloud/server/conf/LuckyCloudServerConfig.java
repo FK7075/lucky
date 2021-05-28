@@ -1,6 +1,7 @@
 package com.lucky.cloud.server.conf;
 
 import com.lucky.boot.conf.ServerConfig;
+import com.lucky.cloud.server.core.Server;
 import com.lucky.framework.confanalysis.LuckyConfig;
 
 /**
@@ -11,11 +12,23 @@ import com.lucky.framework.confanalysis.LuckyConfig;
 public class LuckyCloudServerConfig extends LuckyConfig {
 
     private static LuckyCloudServerConfig serverConfig;
+    /** 服务名*/
     private String name;
+    /** 本机IP*/
     private String ip;
+    /** 监听端口*/
     private Integer port;
+    /** 注册密码*/
+    private String password;
+    /** 合法的ID*/
+    private String[] legalIP;
+    /** 合法的IP段*/
+    private String[] legalIpSection;
+    /** 使用的协议*/
     private String agreement;
+    /** 心跳检测的时间间隔*/
     private long detectionInterval;
+    /** 是注册自己*/
     private boolean registerYourself;
 
     public String getName() {
@@ -66,6 +79,38 @@ public class LuckyCloudServerConfig extends LuckyConfig {
         this.registerYourself = registerYourself;
     }
 
+    public static LuckyCloudServerConfig getServerConfig() {
+        return serverConfig;
+    }
+
+    public static void setServerConfig(LuckyCloudServerConfig serverConfig) {
+        LuckyCloudServerConfig.serverConfig = serverConfig;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String[] getLegalIP() {
+        return legalIP;
+    }
+
+    public void setLegalIP(String[] legalIP) {
+        this.legalIP = legalIP;
+    }
+
+    public String[] getLegalIpSection() {
+        return legalIpSection;
+    }
+
+    public void setLegalIpSection(String[] legalIpSection) {
+        this.legalIpSection = legalIpSection;
+    }
+
     private LuckyCloudServerConfig(){}
 
     public static LuckyCloudServerConfig defaultLuckyCloudServerConfig(){
@@ -74,6 +119,7 @@ public class LuckyCloudServerConfig extends LuckyConfig {
             serverConfig.setRegisterYourself(false);
             serverConfig.setAgreement("HTTP");
             serverConfig.setIp("127.0.0.1");
+            serverConfig.setPassword(Server.DEFAULT_LOGIN_PASSWORD);
             serverConfig.setDetectionInterval(5*1000L);
             serverConfig.setPort(ServerConfig.getServerConfig().getPort());
             serverConfig.setFirst(true);

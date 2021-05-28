@@ -15,6 +15,8 @@
 
      void open(int isolationLevel);
 
+     void setIsolation(int isolation);
+
      void commit();
 
      void rollback();

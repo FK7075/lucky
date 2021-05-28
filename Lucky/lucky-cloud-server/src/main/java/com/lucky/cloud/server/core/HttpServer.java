@@ -25,13 +25,15 @@ public class HttpServer implements Server {
     private final String ip;
     private final Integer port;
     private final Date ctime;
+    private final String loginPassword;
     private final String agreement;
 
-    public HttpServer(String name, String ip, Integer port){
-        this(name,ip,port,"HTTP");
+    public HttpServer(String name, String ip, Integer port,String loginPassword){
+        this(name,ip,port,"HTTP",
+                Assert.isBlankString(loginPassword) ? DEFAULT_LOGIN_PASSWORD : loginPassword);
     }
 
-    public HttpServer(String name, String ip, Integer port, String agreement) {
+    public HttpServer(String name, String ip, Integer port, String agreement,String loginPassword) {
         if(Assert.isBlankString(name)){
             throw new IllegalArgumentException("服务名不合法："+name);
         }
@@ -42,6 +44,7 @@ public class HttpServer implements Server {
             agreement="HTTP";
         }
         Assert.notNull(port,"port不合法："+port);
+        this.loginPassword = loginPassword;
         this.name = name;
         this.ip = ip;
         this.port = port;
@@ -77,6 +80,11 @@ public class HttpServer implements Server {
     @Override
     public String getDomain() {
         return agreement.toLowerCase()+"://"+ip+":"+port;
+    }
+
+    @Override
+    public String getLoginPassword() {
+        return this.loginPassword;
     }
 
     @Override

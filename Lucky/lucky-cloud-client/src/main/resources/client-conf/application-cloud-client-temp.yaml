@@ -1,6 +1,7 @@
 cloud-client:
   application-name: APP-NAME #服务名
   agreement: HTTP/HTTPS #协议
+  password: LUCKY_PA$$W0RD #注册密码
   #注册中心地址
   service-url:
     defaultZone: http://${ip}:${port}/lucky

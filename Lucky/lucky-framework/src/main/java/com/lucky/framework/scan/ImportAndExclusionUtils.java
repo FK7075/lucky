@@ -2,6 +2,7 @@ package com.lucky.framework.scan;
 
 import com.lucky.framework.annotation.Configuration;
 import com.lucky.framework.annotation.LuckyBootApplication;
+import com.lucky.framework.container.factory.BeanFactory;
 import com.lucky.framework.exception.AddJarExpandException;
 import com.lucky.framework.scan.exclusions.Exclusions;
 import com.lucky.framework.scan.imports.Imports;

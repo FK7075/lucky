@@ -26,7 +26,7 @@ import java.util.Map;
 @Controller(id = "LUCKY_CLOUD_SERVER_CONTROLLER")
 public class LuckyCloudHttpServerController extends LuckyController {
 
-    private  static ServerManagement manage=new ServerManagement();
+    private  final static ServerManagement manage=new ServerManagement();
     @Autowired
     private ServerWorkCheck job;
 
@@ -42,13 +42,15 @@ public class LuckyCloudHttpServerController extends LuckyController {
      * @param port 服务对外的端口
      * @param agreement 协议
      */
+    @ResponseBody(Rest.TXT)
     @RequestMapping("lucky")
-    public void register(@Param("serverName") String serverName,
-                         @Param("port") Integer port,
-                         @Param("agreement") String agreement){
+    public String register(@Param("serverName") String serverName,
+                           @Param("port") Integer port,
+                           @Param("agreement") String agreement,
+                           @Param("loginPassword") String loginPassword){
         String ip=model.getIpAddr();
-        Server server=new HttpServer(serverName,ip,port,agreement);
-        manage.register(server);
+        Server server=new HttpServer(serverName,ip,port,agreement,loginPassword);
+        return manage.register(server);
     }
 
     /**
@@ -60,10 +62,11 @@ public class LuckyCloudHttpServerController extends LuckyController {
     @RequestMapping("lucky/logout")
     public void logout(@Param("serverName") String serverName,
                        @Param("port") Integer port,
-                       @Param("agreement") String agreement){
+                       @Param("agreement") String agreement,
+                       @Param("loginPassword") String loginPassword){
         String ip=model.getIpAddr();
-        Server server=new HttpServer(serverName,ip,port,agreement);
-        manage.register(server);
+        Server server=new HttpServer(serverName,ip,port,agreement,loginPassword);
+        manage.remove(server);
     }
 
     @ResponseBody(Rest.TXT)
@@ -121,7 +124,7 @@ public class LuckyCloudHttpServerController extends LuckyController {
     @InitRun
     public void check(){
         LuckyCloudServerConfig server=LuckyCloudServerConfig.getLuckyCloudServerConfig();
-        job.check(server.getDetectionInterval());;
+        job.check(server.getDetectionInterval());
     }
 
     @InitRun(4)

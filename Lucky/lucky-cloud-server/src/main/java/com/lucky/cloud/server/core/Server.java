@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public interface Server {
 
+    String DEFAULT_LOGIN_PASSWORD = "LUCKY_PA$$W0RD";
+
     /**
      * 注册时间
      */
@@ -61,6 +63,15 @@ public interface Server {
      * @return 响应结果
      */
     Object call(String resource, Map<String,Object> param,Object note) throws Exception;
+
+
+    /**
+     * 返回服务注册时携带的密码
+     * @return 密码
+     */
+    default String getLoginPassword(){
+        return DEFAULT_LOGIN_PASSWORD;
+    }
 
     /**
      * 判断两个服务是否等价

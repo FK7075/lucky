@@ -30,47 +30,41 @@ public class TransactionSqlActuator extends SqlActuator {
     public <T> List<T> autoPackageToList(Class<T> c, String sql, Object... obj) {
         SqlAndParams sp=new SqlAndParams(sql,obj);
         SqlOperation sqlOperation=new SqlOperation(tr.getConnection(),dbname,isFullMap);
-        List<T> result = sqlOperation.autoPackageToList(c, sp.precompileSql, sp.params);
-        return result;
+        return sqlOperation.autoPackageToList(c, sp.precompileSql, sp.params);
     }
 
     @Override
     public int update(String sql, Object... obj) {
         SqlAndParams sp=new SqlAndParams(sql,obj);
         SqlOperation sqlOperation=new SqlOperation(tr.getConnection(),dbname,isFullMap);
-        int result = sqlOperation.setSql(sp.precompileSql, sp.params);
-        return result;
+        return sqlOperation.setSql(sp.precompileSql, sp.params);
     }
 
     @Override
     public <T> List<T> autoPackageToListMethod(Class<T> c, Method method, String sql, Object[] obj) {
         SqlAndParams sp=new SqlAndParams(method,sql,obj);
         SqlOperation sqlOperation=new SqlOperation(tr.getConnection(),dbname,isFullMap);
-        List<T> result = sqlOperation.autoPackageToList(c, sp.precompileSql, sp.params);
-        return result;
+        return sqlOperation.autoPackageToList(c, sp.precompileSql, sp.params);
     }
 
     @Override
     public int updateMethod(Method method, String sql, Object[] obj) {
         SqlAndParams sp=new SqlAndParams(method,sql,obj);
         SqlOperation sqlOperation=new SqlOperation(tr.getConnection(),dbname,isFullMap);
-        int result = sqlOperation.setSql(sp.precompileSql, sp.params);
-        return result;
+        return sqlOperation.setSql(sp.precompileSql, sp.params);
     }
 
     @Override
     public int[] updateBatch(String sql, Object[][] obj) {
         SqlOperation sqlOperation=new SqlOperation(tr.getConnection(),dbname,isFullMap);
-        int[] result = sqlOperation.setSqlBatch(sql, obj);
-        return result;
+        return sqlOperation.setSqlBatch(sql, obj);
     }
 
     @Override
     public int[] updateBatch(String... completeSqls) {
         if(completeSqls.length!=0){
             SqlOperation sqlOperation=new SqlOperation(tr.getConnection(),dbname,isFullMap);
-            int[] result = sqlOperation.setSqlBatch(completeSqls);
-            return result;
+            return sqlOperation.setSqlBatch(completeSqls);
         }
         return new int[0];
     }

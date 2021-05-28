@@ -5,6 +5,7 @@ import com.lucky.utils.config.ConfigUtils;
 import com.lucky.utils.config.YamlConfAnalysis;
 import com.lucky.utils.conversion.JavaConversion;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,6 +58,41 @@ public abstract class YamlParsing {
                 server.setDetectionInterval((Long) di);
             }else if(di!=null){
                 server.setDetectionInterval((Long) JavaConversion.strToBasic(get(di.toString()).toString(),long.class,true));
+            }
+
+            Object password = serverMap.get("password");
+            if(password != null){
+                server.setPassword(get(password.toString()).toString());
+            }
+
+            Object legalIps = serverMap.get("legal-ips");
+            if(legalIps instanceof List){
+                List<String> ipList = (List<String>) legalIps;
+                String[] ipArray = new String[ipList.size()];
+                int i = 0;
+                for (String ip : ipList) {
+                    ipArray[i++] = get(ip).toString().trim();
+                }
+                server.setLegalIP(ipArray);
+            }else if(legalIps instanceof String){
+                String ip = (String) legalIps;
+                String[] ipArray = {ip};
+                server.setLegalIP(ipArray);
+            }
+
+            Object legalIpSection = serverMap.get("legal-ip-section");
+            if(legalIpSection instanceof List){
+                List<String> ipList = (List<String>) legalIpSection;
+                String[] ipArray = new String[ipList.size()];
+                int i = 0;
+                for (String ip : ipList) {
+                    ipArray[i++] = get(ip).toString().trim();
+                }
+                server.setLegalIpSection(ipArray);
+            }else if(legalIpSection instanceof String){
+                String ip = (String) legalIpSection;
+                String[] ipArray = {ip};
+                server.setLegalIpSection(ipArray);
             }
 
         }

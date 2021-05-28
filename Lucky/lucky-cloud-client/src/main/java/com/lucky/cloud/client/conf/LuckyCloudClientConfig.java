@@ -17,12 +17,16 @@ import java.util.Map;
  */
 public class LuckyCloudClientConfig extends LuckyConfig {
 
+    public static final  String DEFAULT_LOGIN_PASSWORD = "LUCKY_PA$$W0RD";
+
+
     private static final Logger log = LoggerFactory.getLogger("c.l.c.c.c.LuckyCloudClientConfig");
     private static LuckyCloudClientConfig clientConfig;
     private final Map<String,String> zones;
     private String name;
     private Integer port;
     private String agreement;
+    private String password;
 
     public Map<String, String> getZones() {
         return zones;
@@ -32,6 +36,14 @@ public class LuckyCloudClientConfig extends LuckyConfig {
     public void addZone(String key,String zone){
         zone=zone.endsWith("/")?zone.substring(0,zone.length()-1):zone;
         zones.put(key,zone);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {
@@ -66,6 +78,7 @@ public class LuckyCloudClientConfig extends LuckyConfig {
         if(clientConfig==null){
             clientConfig=new LuckyCloudClientConfig();
             clientConfig.setAgreement("HTTP");
+            clientConfig.setPassword(DEFAULT_LOGIN_PASSWORD);
             clientConfig.setPort(ServerConfig.getServerConfig().getPort());
             clientConfig.setFirst(true);
         }

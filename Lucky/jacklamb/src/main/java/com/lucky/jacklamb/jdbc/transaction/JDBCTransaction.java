@@ -34,14 +34,20 @@ public class JDBCTransaction implements Transaction {
     }
 
     @Override
-    public void open(int isolationLevel) {
+    public void setIsolation(int isolation) {
         try {
-            getConnection().setTransactionIsolation(isolationLevel);
-            open();
+            getConnection().setTransactionIsolation(isolation);
         } catch (SQLException e) {
-            log.error("设置隔离级别失败！[(ERROR)TRANSACTION_ISOLATION : "+isolationLevel+"]",e);
+            log.error("设置隔离级别失败！[(ERROR)TRANSACTION_ISOLATION : "+isolation+"]",e);
             throw new LuckyTransactionException("设置隔离级别失败！",e);
         }
+    }
+
+    @Override
+    public void open(int isolationLevel) {
+        setIsolation(isolationLevel);
+        open();
+
     }
 
     @Override

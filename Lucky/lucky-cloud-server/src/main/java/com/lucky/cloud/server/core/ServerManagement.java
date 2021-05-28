@@ -2,6 +2,7 @@ package com.lucky.cloud.server.core;
 
 import com.lucky.cloud.server.conf.LuckyCloudServerConfig;
 import com.lucky.utils.base.Assert;
+import com.lucky.web.utils.IpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,11 @@ import java.util.stream.Collectors;
 public class ServerManagement {
 
     private static final Logger log= LoggerFactory.getLogger(ServerManagement.class);
-    private static Map<String, List<Server>> serverPool=new ConcurrentHashMap<>(256);
+    private static final Map<String, List<Server>> serverPool=new ConcurrentHashMap<>(256);
+
+    private static final String FAILED = "FAILED";
+    private static final String SUCCESS = "SUCCESS";
+
 
     /**
      * 返回所有已经注册的服务
@@ -32,7 +37,10 @@ public class ServerManagement {
      * 注册一个服务
      * @param server 服务
      */
-    public void register(Server server){
+    public String register(Server server){
+        if(!registerCheck(server)){
+            return FAILED;
+        }
         String name=server.getServerName();
         List<Server> servers = serverPool.get(name);
         if(Assert.isEmptyCollection(servers)){
@@ -40,6 +48,7 @@ public class ServerManagement {
             servers.add(server);
             serverPool.put(name,servers);
             log.info("Service `{}` registered successfully!",server);
+            return SUCCESS;
         }else{
             boolean isAdd=true;
             for (Server s : servers) {
@@ -51,14 +60,54 @@ public class ServerManagement {
             if(isAdd){
                 servers.add(server);
                 log.info("Service `{}` registered successfully!",server);
+                return SUCCESS;
             }
+            return FAILED;
         }
     }
+
+    private boolean registerCheck(Server server){
+        String serverMame = server.getServerName();
+        LuckyCloudServerConfig config=LuckyCloudServerConfig.getLuckyCloudServerConfig();
+        String serverIp = server.getIp();
+        String[] legalIP = config.getLegalIP();
+
+        //密码校验
+        String password = config.getPassword();
+        if(!password.equals(server.getLoginPassword())){
+            log.warn("The service '{}' registration is abnormal, and the registration password of the current registration service is incorrect!",serverMame);
+            return false;
+        }
+
+        //IP校验
+        if(!Assert.isEmptyArray(legalIP)){
+            for (String ip : legalIP) {
+                if (ip.equals(serverIp)) {
+                    return true;
+                }
+            }
+        }
+
+        //IP段校验
+        String[] legalIpSection = config.getLegalIpSection();
+        if(!Assert.isEmptyArray(legalIpSection)){
+            for (String ipSection : legalIpSection) {
+                if(IpUtil.ipExistsInRange(serverIp,ipSection)){
+                    return true;
+                }
+            }
+            log.warn("Service '{}' registration is abnormal, the IP of the currently registered service is illegal!",serverMame);
+            return false;
+        }else{
+            return true;
+        }
+    }
+
 
     public void registerYourself(){
         LuckyCloudServerConfig server=LuckyCloudServerConfig.getLuckyCloudServerConfig();
         if(server.isRegisterYourself()){
-            HttpServer httpServer = new HttpServer(server.getName(), server.getIp(), server.getPort(), server.getAgreement());
+            HttpServer httpServer = new HttpServer(server.getName(), server.getIp(), server.getPort(), server.getAgreement(),server.getPassword());
             register(httpServer);
         }
     }
@@ -68,10 +117,15 @@ public class ServerManagement {
      * @param server 服务
      */
     public void remove(Server server){
+        String password = LuckyCloudServerConfig.getLuckyCloudServerConfig().getPassword();
+        if(!password.equals(server.getLoginPassword())){
+            log.warn("Wrong logout password: [{}]",server.getLoginPassword());
+            return;
+        }
         String name=server.getServerName();
         List<Server> servers = serverPool.get(name);
         if(servers==null){
-            log.warn("服务`{}`不存在，移除失败！",name);
+            log.warn("Service `{}` does not exist, removal failed!",name);
             return;
         }
         servers.removeIf(s->s.isEqual(server));

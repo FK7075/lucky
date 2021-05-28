@@ -43,6 +43,12 @@ public abstract class YamlParsing {
             if(serverUrl instanceof String){
                 client.addZone("defaultZone", (String) get(serverUrl.toString()));
             }
+
+            Object password = clientMap.get("password");
+            if(password != null){
+                client.setPassword(get(password).toString());
+            }
+
             if(serverUrl instanceof Map){
                 Map<String,String> serverUrls= (Map<String, String>) serverUrl;
                 for (Map.Entry<String,String> entry:serverUrls.entrySet()){

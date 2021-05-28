@@ -4,3 +4,9 @@ cloud-server:
   agreement: HTTP/HTTPS #协议
   register-yourself: false #是否向注册中心注册自己
   detection-interval: 1000*5 #心跳检测的时间间隔(单位:ms)
+  password: LUCKY_PA$$W0RD #注册密码，只有提供了正确密码的服务才能注册到注册中心
+  legal-ips:  #合法IP，只有这些IP的服务才能正常注册
+    - 127.0.0.1
+    - 127.0.0.2
+  legal-ip-section: #合法IP段，只有处于这些IP段的的服务才能正常注册
+    - 0.0.0.0 - 225.225.225

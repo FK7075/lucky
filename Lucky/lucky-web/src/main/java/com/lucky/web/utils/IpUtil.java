@@ -35,7 +35,6 @@ public class IpUtil {
 		long ip2 = Integer.parseInt(ips[1]);
 		long ip3 = Integer.parseInt(ips[2]);
 		long ip4 = Integer.parseInt(ips[3]);
-		long ip2long = 1L * ip1 * 256 * 256 * 256 + ip2 * 256 * 256 + ip3 * 256 + ip4;
-		return ip2long;
+		return ip1 * 256 * 256 * 256 + ip2 * 256 * 256 + ip3 * 256 + ip4;
 	}
 }

@@ -10,4 +10,8 @@ public class ServiceRegistrationException extends RuntimeException{
     public ServiceRegistrationException(String zoneKey,String zone,Throwable e){
         super(String.format("Service registration exception！Failed to access [%s]`%s`",zoneKey,zone),e);
     }
+
+    public ServiceRegistrationException(String zoneKey,String zone){
+        super(String.format("Service registration exception！Your registration certificate is incorrect, or you do not have the right to register! [%s]`%s`",zoneKey,zone));
+    }
 }

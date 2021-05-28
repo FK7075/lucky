@@ -24,7 +24,7 @@ public class SqlOperation {
 	private String dbname;
 	public static Map<String, Cache<String,List<Map<String,Object>>>> resultCache =new HashMap<>();
 	private boolean isCache;
-	private boolean isFullMap=false;
+	private boolean isFullMap;
 
 	public void setFullMap(boolean fullMap) {
 		isFullMap = fullMap;
@@ -80,9 +80,9 @@ public class SqlOperation {
 				int[] result={ps.executeUpdate()};
 				return result;
 			}else {
-				for(int i=0;i<obj.length;i++) {
-					for(int j=0,count=obj[i].length;j<count;j++) {
-						ps.setObject(j+1, obj[i][j]);
+				for (Object[] objects : obj) {
+					for (int j = 0, count = objects.length; j < count; j++) {
+						ps.setObject(j + 1, objects[j]);
 					}
 					ps.addBatch();
 				}
@@ -118,6 +118,7 @@ public class SqlOperation {
 			throw new LuckySqlOperationException(sqls,e);
 		}finally {
 			try {
+				assert ps != null;
 				ps.close();
 			} catch (SQLException e) {
 				e.printStackTrace();

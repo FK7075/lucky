@@ -24,6 +24,9 @@ public class ServiceCall {
     private static final Logger log = LoggerFactory.getLogger("c.l.c.c.c.ServiceCall");
     private static final LuckyCloudClientConfig client=LuckyCloudClientConfig.getLuckyCloudClientConfig();
 
+    private static final String FAILED = "FAILED";
+    private static final String SUCCESS = "SUCCESS";
+
     /**
      * 注册一个服务
      */
@@ -32,8 +35,12 @@ public class ServiceCall {
         Map<String, String> zones = client.getZones();
         for(Map.Entry<String,String> zone:zones.entrySet()){
             try {
-                HttpClientCall.getCall(zone.getValue(),getParamMap());
-                log.info("Service `{}` has been successfully registered to {}",client.getName(),zone.getValue());
+                String start = HttpClientCall.getCall(zone.getValue(), getParamMap());
+                if(SUCCESS.equals(start)){
+                    log.info("Service `{}` has been successfully registered to {}",client.getName(),zone.getValue());
+                } else {
+                    throw new ServiceRegistrationException(zone.getKey(),zone.getValue());
+                }
             }catch (Exception e){
                 throw new ServiceRegistrationException(zone.getKey(),zone.getValue(),e);
             }
@@ -49,6 +56,7 @@ public class ServiceCall {
         params.put("serverName", client.getName());
         params.put("port", client.getPort());
         params.put("agreement", client.getAgreement());
+        params.put("loginPassword",client.getPassword());
         return params;
     }
 
