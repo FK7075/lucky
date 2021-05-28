@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.github.fk7075</groupId>
     <artifactId>lucky</artifactId>
-    <version>2.0.0</version>
+    <version>V2-TEST</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>lucky-datasource</artifactId>
@@ -40,9 +40,9 @@
     </dependency>
 
     <dependency>
-      <groupId>com.lucky.jacklamb</groupId>
+      <groupId>com.github.fk7075</groupId>
       <artifactId>lucky-utils</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${lucky.version}</version>
     </dependency>
   </dependencies>
 

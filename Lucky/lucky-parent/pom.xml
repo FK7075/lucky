@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.github.fk7075</groupId>
         <artifactId>lucky</artifactId>
-        <version>2.0.0</version>
+        <version>V2-TEST</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -22,7 +22,6 @@
         <postgresql.driver.version>42.2.18</postgresql.driver.version>
         <oracle.driver.version>11.2.0.3</oracle.driver.version>
         <hutool.version>5.4.2</hutool.version>
-        <lucky.version>2.0.0</lucky.version>
         <tomcat.version>9.0.36</tomcat.version>
         <lombok.version>1.18.12</lombok.version>
         <source.encoding>UTF-8</source.encoding>

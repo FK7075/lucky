@@ -6,9 +6,9 @@
 
     <groupId>com.github.fk7075</groupId>
     <artifactId>lucky</artifactId>
-    <version>2.0.0</version>
+    <version>V2-TEST</version>
     <packaging>pom</packaging>
-    <name>lucky</name>
+    <name>lucky-v2</name>
 
     <description>Lucky是一个全场景轻量级分布式的JavaEE框架</description>
     <url>https://github.com/FK7075/lucky</url>
@@ -42,7 +42,7 @@
     <properties>
         <java.version>1.8</java.version>
         <source.encoding>UTF-8</source.encoding>
-        <lucky.version>1.0-SNAPSHOT</lucky.version>
+        <lucky.version>V2-TEST</lucky.version>
         <project.build.sourceEncoding>${source.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${source.encoding}</project.reporting.outputEncoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
