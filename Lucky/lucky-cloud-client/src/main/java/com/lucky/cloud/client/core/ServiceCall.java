@@ -2,8 +2,9 @@ package com.lucky.cloud.client.core;
 
 import com.lucky.cloud.client.conf.LuckyCloudClientConfig;
 import com.lucky.utils.base.Assert;
+import com.lucky.utils.dm5.MD5Utils;
 import com.lucky.web.enums.RequestMethod;
-import com.lucky.web.httpclient.HttpClientCall;
+import com.lucky.web.httpclient.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,7 @@ public class ServiceCall {
         Map<String, String> zones = client.getZones();
         for(Map.Entry<String,String> zone:zones.entrySet()){
             try {
-                String start = HttpClientCall.getCall(zone.getValue(), getParamMap());
+                String start = HttpUtils.getString(zone.getValue(), getParamMap());
                 if(SUCCESS.equals(start)){
                     log.info("Service `{}` has been successfully registered to {}",client.getName(),zone.getValue());
                 } else {
@@ -56,7 +57,7 @@ public class ServiceCall {
         params.put("serverName", client.getName());
         params.put("port", client.getPort());
         params.put("agreement", client.getAgreement());
-        params.put("loginPassword",client.getPassword());
+        params.put("loginPassword", MD5Utils.md5UpperCase(client.getPassword(),"LUCKY_SALT_XFL_FK",21));
         return params;
     }
 
@@ -75,7 +76,7 @@ public class ServiceCall {
         String serverAreaURL=registryArea+"/serverArea";
         Map<String,Object> serverAreaParamMap=new HashMap<>(1);
         serverAreaParamMap.put("serverName",serverName);
-        return HttpClientCall.call(serverAreaURL, RequestMethod.GET,serverAreaParamMap);
+        return HttpUtils.getString(serverAreaURL,serverAreaParamMap);
     }
 
     /**

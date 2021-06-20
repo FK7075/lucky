@@ -2,6 +2,8 @@ package com.lucky.utils.serializable.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,5 +123,18 @@ public class LSON {
 	public Object fromJson(TypeToken typeToken,Reader reader){
 		gson = gsonBuilder.create();
 		return gson.fromJson(reader,typeToken.getType());
+	}
+
+	public static boolean validate(String jsonStr){
+		JsonElement jsonElement;
+		try {
+			jsonElement = new JsonParser().parse(jsonStr);
+		}catch (Exception e){
+			return false;
+		}
+		if(jsonElement == null){
+			return false;
+		}
+		return jsonElement.isJsonObject();
 	}
 }

@@ -54,6 +54,11 @@ public class RegisterMachine {
     }
 
     public static RegisterMachine getRegisterMachine(){
+        return getRegisterMachine(false);
+    }
+
+    public static RegisterMachine getRegisterMachine(boolean adverbRefresh){
+        if(adverbRefresh) registerMachine = null;
         if(registerMachine==null){
             registerMachine=new RegisterMachine();
         }

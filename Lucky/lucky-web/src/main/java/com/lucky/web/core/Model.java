@@ -25,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -439,7 +440,7 @@ public class Model {
      */
     public void writer(Object info) {
         try {
-            getOutputStream().write(info.toString().getBytes("UTF-8"));
+            getOutputStream().write(info.toString().getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
            log.error("IOException :Model.writer() Exception",e);
         }

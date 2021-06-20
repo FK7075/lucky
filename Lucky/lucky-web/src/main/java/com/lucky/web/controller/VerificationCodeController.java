@@ -17,7 +17,7 @@ import java.io.IOException;
 public abstract class VerificationCodeController extends LuckyController{
 
     /** 图片验证码生成工具*/
-    private static VerificationCode vcCode=new VerificationCode();
+    private static final VerificationCode vcCode=new VerificationCode();
 
     /**
      * 生成图片验证码

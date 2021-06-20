@@ -14,6 +14,8 @@ import java.net.URISyntaxException;
 public class PackageScan extends Scan {
 
 	private static final Logger log= LoggerFactory.getLogger(PackageScan.class);
+	private static final String TEST_CLASSES = "test-classes/";
+	private static final String CLASSES = "classes/";
 	//Wim: E:/project  Mac: /User/loca
 	private String rootPath;
 	//Win: E:/project/ Mac: /User/loca/
@@ -30,8 +32,20 @@ public class PackageScan extends Scan {
 		}else {
 			rootPath=applicationBootClass.getResource("").toURI().getPath();
 		}
-		rootPath=rootPath.replaceAll("/test-classes/","/classes/");
-		projectPath=projectPath.replaceAll("/test-classes/","/classes/");
+
+		//单元测试启动
+		if(projectPath.endsWith(TEST_CLASSES)){
+			log.info("Start from unit test: [{}]",projectPath);
+			String suffix = rootPath.substring(projectPath.length());
+			projectPath = projectPath.substring(0,projectPath.length()-TEST_CLASSES.length())+CLASSES;
+			rootPath = projectPath+suffix;
+			log.info("The root directory of the component scan is: [{}]",rootPath);
+		}else{
+			log.info("Normal start :[{}]",projectPath);
+			log.info("The root directory of the component scan is: [{}]",rootPath);
+		}
+//		rootPath=rootPath.replaceAll("/test-classes/","/classes/");
+//		projectPath=projectPath.replaceAll("/test-classes/","/classes/");
 	}
 
 	@Override

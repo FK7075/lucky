@@ -2,6 +2,7 @@ package com.lucky.framework;
 
 import com.lucky.framework.container.Module;
 import com.lucky.framework.container.factory.Destroy;
+import com.lucky.utils.type.ResolvableType;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -47,4 +48,8 @@ public interface ApplicationContext extends Destroy {
     Module getModuleByField(Class<?> beanClass, Class<?> autowiredClass);
 
     Object getBeanByField(Class<?> beanClass, Class<?> autowiredClass);
+
+    Module getModuleByResolvableType(ResolvableType resolvableType);
+
+    Object getBeanByResolvableType(ResolvableType resolvableType);
 }

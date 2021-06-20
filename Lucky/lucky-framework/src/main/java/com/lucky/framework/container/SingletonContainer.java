@@ -1,9 +1,11 @@
 package com.lucky.framework.container;
 
 import com.lucky.framework.exception.LuckyBeanCreateException;
+import com.lucky.utils.annotation.NonNull;
 import com.lucky.utils.base.Assert;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
+import com.lucky.utils.type.ResolvableType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +24,7 @@ public class SingletonContainer implements Map<String, Module> {
     private static final Logger log= LoggerFactory.getLogger("c.l.f.container.SingletonContainer");
 
     /** 单例池*/
-    private Map<String,Module> singletonPool=new ConcurrentHashMap<>(256);
+    private final Map<String,Module> singletonPool=new ConcurrentHashMap<>(256);
 
     public Map<String, Module> getSingletonPool() {
         return singletonPool;
@@ -98,21 +100,25 @@ public class SingletonContainer implements Map<String, Module> {
     }
 
     @Override
+    @NonNull
     public Set<String> keySet() {
         return singletonPool.keySet();
     }
 
     @Override
+    @NonNull
     public Collection<Module> values() {
         return singletonPool.values();
     }
 
     @Override
+    @NonNull
     public Set<Entry<String, Module>> entrySet() {
         return singletonPool.entrySet();
     }
 
     @Override
+    @NonNull
     public boolean equals(Object o) {
         return singletonPool.equals(o);
     }
@@ -150,6 +156,40 @@ public class SingletonContainer implements Map<String, Module> {
                 .collect(Collectors.toList());
     }
 
+    public List<Module> getModulesByResolvableType(ResolvableType resolvableType){
+        List<Module> list = new ArrayList<>();
+        for (Entry<String, Module> entry : singletonPool.entrySet()) {
+            Module module = entry.getValue();
+            if (resolvableType.isInstance(module.getComponent())) {
+                list.add(module);
+                continue;
+            }
+            ResolvableType beanResolvableType = module.getResolvableType();
+            if(resolvableType.hasGenerics()){
+                if(resolvableType.toString().equals(beanResolvableType.toString())){
+                    list.add(module);
+                }
+            }else{
+                if(resolvableType.resolve().isAssignableFrom(beanResolvableType.resolve())){
+                    list.add(module);
+                }
+            }
+        }
+        return list;
+    }
+
+    public Module getModuleByResolvableType(ResolvableType resolvableType){
+        List<Module> modules = getModulesByResolvableType(resolvableType);
+        return Assert.isEmptyCollection(modules)?null:modules.get(0);
+    }
+
+    public Object getBeanByResolvableType(ResolvableType resolvableType){
+        Module module = getModuleByResolvableType(resolvableType);
+        return module == null?null:module.getComponent();
+    }
+
+
+
     public Module getBeanByField(Class<?> beanClass, Class<?> autowiredClass){
         List<Module> modules = getBeanByClass(autowiredClass);
         if(Assert.isEmptyCollection(modules)){
@@ -169,6 +209,7 @@ public class SingletonContainer implements Map<String, Module> {
                 }
             }
             for (Module module : modules) {
+                assert genericType != null;
                 if(genericType.isAssignableFrom(module.getOriginalType())){
                     filterBeans.add(module);
                 }

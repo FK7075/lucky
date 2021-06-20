@@ -503,28 +503,22 @@ public class MethodParameter {
         Type paramType = this.genericParameterType;
         if (paramType == null) {
             if (this.parameterIndex < 0) {
-                Method method = getMethod();
-                paramType = (method != null ?
-                        (KotlinDetector.isKotlinReflectPresent() && KotlinDetector.isKotlinType(getContainingClass()) ?
-                                KotlinDelegate.getGenericReturnType(method) : method.getGenericReturnType()) : void.class);
-            }
-            else {
+                Method method = this.getMethod();
+                paramType = method != null ? method.getGenericReturnType() : Void.TYPE;
+            } else {
                 Type[] genericParameterTypes = this.executable.getGenericParameterTypes();
                 int index = this.parameterIndex;
-                if (this.executable instanceof Constructor &&
-                        ClassUtils.isInnerClass(this.executable.getDeclaringClass()) &&
-                        genericParameterTypes.length == this.executable.getParameterCount() - 1) {
-                    // Bug in javac: type array excludes enclosing instance parameter
-                    // for inner classes with at least one generic constructor parameter,
-                    // so access it with the actual parameter index lowered by 1
+                if (this.executable instanceof Constructor && ClassUtils.isInnerClass(this.executable.getDeclaringClass()) && genericParameterTypes.length == this.executable.getParameterCount() - 1) {
                     index = this.parameterIndex - 1;
                 }
-                paramType = (index >= 0 && index < genericParameterTypes.length ?
-                        genericParameterTypes[index] : computeParameterType());
+
+                paramType = index >= 0 && index < genericParameterTypes.length ? genericParameterTypes[index] : this.getParameterType();
             }
-            this.genericParameterType = paramType;
+
+            this.genericParameterType = (Type)paramType;
         }
-        return paramType;
+
+        return (Type)paramType;
     }
 
     private Class<?> computeParameterType() {

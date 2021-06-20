@@ -18,6 +18,7 @@ import com.lucky.utils.jexl.JexlEngineUtil;
 import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.utils.reflect.FieldUtils;
+import com.lucky.utils.type.ResolvableType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,17 +82,17 @@ public abstract class Injection implements Namer {
             //类型注入
             else{
                 Class<?> fieldType = field.getType();
-                List<Module> modules = singletonPool.getBeanByClass(fieldType);
+                List<Module> modules = singletonPool.getModulesByResolvableType(ResolvableType.forField(field,beanClass));
                 if(Assert.isEmptyCollection(modules)){
                     AutowiredException lex=new AutowiredException("无法为【组件ID："+mod.getId()+"】\""+beanClass+"\" 注入【属性名称："+field.getName()+"】类型为 \""+fieldType+"\" 的属性，因为在IOC容器中没有找到该类型的组件！");
                     log.error("AutowiredException",lex);
                     throw lex;
                 }else if(modules.size()!=1){
-                    Module beanByField = singletonPool.getBeanByField(beanClass, fieldType);
-                    if(beanByField!=null){
-                        FieldUtils.setValue(bean,field,beanByField.getComponent());
-                        continue;
-                    }
+//                    Module beanByField = singletonPool.getBeanByField(beanClass, fieldType);
+//                    if(beanByField!=null){
+//                        FieldUtils.setValue(bean,field,beanByField.getComponent());
+//                        continue;
+//                    }
                     AutowiredException lex=new AutowiredException("无法为【组件ID："+mod.getId()+"】\""+beanClass+"\" 注入【属性名称："+field.getName()+"】类型为 \""+field.getType()+"\" 的属性，因为在IOC容器中存在多个该类型的组件！建议您使用@Autowired注解的value属性来指定该属性组件的ID");
                     log.error("AutowiredException",lex);
                     throw lex;

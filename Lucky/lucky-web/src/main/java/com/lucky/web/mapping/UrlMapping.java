@@ -9,7 +9,7 @@ import com.lucky.web.authority.AuthorityCheck;
 import com.lucky.web.core.Model;
 import com.lucky.web.enums.RequestMethod;
 import com.lucky.web.enums.Rest;
-import com.lucky.web.httpclient.HttpClientCall;
+import com.lucky.web.httpclient.HttpUtils;
 import com.lucky.web.utils.IpUtil;
 import com.lucky.web.webfile.WebFileUtils;
 
@@ -396,7 +396,7 @@ public class UrlMapping extends Mapping{
             path = model.getRealPath("") + dl.docPath();
         } else if (!Assert.isBlankString(dl.url())) {
             String url = dl.url();
-            byte[] buffer = HttpClientCall.getCallByte(url, new HashMap<>());
+            byte[] buffer = HttpUtils.getByte(url);
             String fileName = model.getResponse().getHeader("Content-Disposition");
             if (fileName == null) {
                 fileName = "lucky_" + BaseUtils.getRandomNumber() + url.substring(url.lastIndexOf("."));
@@ -421,7 +421,7 @@ public class UrlMapping extends Mapping{
                 path = filePath.substring(4) + file;//绝对路径写法
             } else if (filePath.startsWith("http:")) {//暴露一个网络上的文件库
                 String url = filePath + file;
-                byte[] buffer = HttpClientCall.getCallByte(url, new HashMap<>());
+                byte[] buffer = HttpUtils.getByte(url);
                 WebFileUtils.download(model.getResponse(), buffer, file);
                 return;
             } else {

@@ -35,6 +35,8 @@ public class EmbeddedTomcat {
         tomcat=new Tomcat();
     }
 
+
+
     /**
      * 启动服务
      */
@@ -43,6 +45,10 @@ public class EmbeddedTomcat {
         conf();
         init();
         start();
+    }
+    
+    public void stop() throws LifecycleException {
+        tomcat.stop();
     }
 
     /**

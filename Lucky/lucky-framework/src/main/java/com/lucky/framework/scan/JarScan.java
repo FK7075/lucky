@@ -29,6 +29,7 @@ public class JarScan extends Scan {
 				jarpath=jarpath.substring(0, jarpath.indexOf(".jar!")+4);
 			}
 		}
+		log.info("Start from the Jar file :[{}]",jarpath);
 	}
 
 	@Override

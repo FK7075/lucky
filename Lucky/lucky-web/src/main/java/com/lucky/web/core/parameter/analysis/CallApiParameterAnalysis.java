@@ -8,7 +8,7 @@ import com.lucky.web.core.Model;
 import com.lucky.web.enums.Rest;
 import com.lucky.web.exception.NotFindRequestException;
 import com.lucky.web.exception.NotFoundCallUrlException;
-import com.lucky.web.httpclient.HttpClientCall;
+import com.lucky.web.httpclient.HttpUtils;
 import com.lucky.web.httpclient.callcontroller.Api;
 
 import java.io.IOException;
@@ -56,7 +56,7 @@ public class CallApiParameterAnalysis implements ParameterAnalysis {
         Class<?> controllerClass=method.getDeclaringClass();
         String api = getCallApi(controllerClass, method);
         Map<String, Object> requestMap = getHttpClientRequestParam(model,method);
-        callResult = HttpClientCall.call(api, model.getRequestMethod(), requestMap);
+        callResult = HttpUtils.executeReturnString(api, model.getRequestMethod(), requestMap);
         return callRestAndBody(model,currParameter,genericParameterType, callResult);
     }
 

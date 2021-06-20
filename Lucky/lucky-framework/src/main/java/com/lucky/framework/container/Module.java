@@ -1,6 +1,7 @@
 package com.lucky.framework.container;
 
 import com.lucky.framework.container.lifecycle.BeanLifecycle;
+import com.lucky.utils.type.ResolvableType;
 
 /**
  * IOC模型
@@ -18,20 +19,45 @@ public class Module {
     private Class<?> originalType;
     /** 组件实例*/
     private Object component;
+    /** ResolvableType*/
+    private ResolvableType resolvableType;
     /** 是否已经注入属性*/
     private boolean injection;
 
     public Module(String id, Object component) {
+        this(id,"component",component);
+    }
+
+    public Module(String id, String type,Object component, ResolvableType resolvableType,boolean isCompose) {
+        this.type = type;
         this.id = id;
         this.component = component;
-        this.originalType=component.getClass();
+        this.originalType = component.getClass();
+        if(isCompose){
+            this.resolvableType = ResolvableType.forClass(resolvableType.getRawClass(),originalType);
+        }else {
+            this.resolvableType = resolvableType;
+        }
+    }
+
+    public Module(String id, String type,Object component, ResolvableType resolvableType){
+        this(id, type, component,resolvableType,false);
     }
 
     public Module(String id, String type, Object component) {
-        this.id = id;
-        this.component = component;
-        this.type = type;
-        this.originalType=component.getClass();
+        this(id,type,component,ResolvableType.forRawClass(component.getClass()));
+    }
+
+    public void setOriginalType(Class<?> originalType) {
+        this.originalType = originalType;
+    }
+
+    public ResolvableType getResolvableType() {
+        return resolvableType;
+    }
+
+    public void setResolvableType(ResolvableType resolvableType) {
+        this.resolvableType = resolvableType;
     }
 
     public boolean isInjection() {

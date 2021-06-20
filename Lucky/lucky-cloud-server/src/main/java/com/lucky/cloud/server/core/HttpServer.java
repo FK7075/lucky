@@ -1,13 +1,11 @@
 package com.lucky.cloud.server.core;
 
 import com.lucky.utils.base.Assert;
+import com.lucky.utils.dm5.MD5Utils;
 import com.lucky.web.enums.RequestMethod;
-import com.lucky.web.httpclient.HttpClientCall;
+import com.lucky.web.httpclient.HttpUtils;
 import com.lucky.web.httpclient.HttpProxyUtils;
-import com.lucky.web.httpclient.callcontroller.CallControllerMethodInterceptor;
-import com.lucky.web.webfile.MultipartFile;
 
-import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.HashMap;
@@ -106,10 +104,7 @@ public class HttpServer implements Server {
         Assert.notNull(resource,"未指定请求的资源！resource is null");
         String resourceURL=getResourceURL(resource);
         RequestMethod requestMethod= (RequestMethod) method;
-        if(HttpProxyUtils.isMultipartFileMap(param)){
-            return HttpClientCall.uploadFile(resourceURL, param);
-        }
-        return HttpClientCall.call(resourceURL, requestMethod, param);
+        return HttpUtils.executeReturnString(resourceURL, requestMethod, param);
     }
 
     private String getResourceURL(String resource){

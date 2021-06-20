@@ -8,6 +8,7 @@ import com.lucky.framework.scan.JarExpandChecklist;
 import com.lucky.framework.scan.Scan;
 import com.lucky.framework.scan.ScanFactory;
 import com.lucky.framework.welcome.JackLamb;
+import com.lucky.utils.type.ResolvableType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -47,6 +48,20 @@ public class AutoScanApplicationContext implements ApplicationContext{
     }
 
     public static AutoScanApplicationContext create(){
+        return create(false);
+    }
+
+    public static AutoScanApplicationContext create(Class<?> applicationBootClass){
+        return create(applicationBootClass,false);
+    }
+
+    public static AutoScanApplicationContext create(boolean adverbRefresh){
+        if(adverbRefresh){
+            if(autoScanApplicationContext != null){
+                autoScanApplicationContext.destroy();
+                autoScanApplicationContext = null;
+            }
+        }
         if(autoScanApplicationContext==null){
             autoScanApplicationContext=new AutoScanApplicationContext();
         }
@@ -54,7 +69,13 @@ public class AutoScanApplicationContext implements ApplicationContext{
     }
 
 
-    public static AutoScanApplicationContext create(Class<?> applicationBootClass){
+    public static AutoScanApplicationContext create(Class<?> applicationBootClass,boolean adverbRefresh){
+        if(adverbRefresh){
+            if(autoScanApplicationContext != null){
+                autoScanApplicationContext.destroy();
+                autoScanApplicationContext = null;
+            }
+        }
         if(autoScanApplicationContext==null){
             autoScanApplicationContext=new AutoScanApplicationContext(applicationBootClass);
         }
@@ -74,11 +95,19 @@ public class AutoScanApplicationContext implements ApplicationContext{
         JackLamb.welcome();
         log.info("IOC container starts to initialize！ROOT-CLASS => `{}`",applicationBootClass);
         Scan scan= ScanFactory.createScan(applicationBootClass);
-        registerMachine=RegisterMachine.getRegisterMachine();
+        registerMachine=RegisterMachine.getRegisterMachine(true);
         registerMachine.setScan(scan);
         registerMachine.init();
         singletonPool=registerMachine.getSingletonPool();
         isInit=true;
+    }
+
+    private void destroy(){
+        applicationBootClass = null;
+        registerMachine = null;
+        singletonPool = null;
+        isInit = false;
+        autoScanApplicationContext = null;
     }
 
     @Override
@@ -192,5 +221,15 @@ public class AutoScanApplicationContext implements ApplicationContext{
                 e.printStackTrace();
             }
         });
+    }
+
+    @Override
+    public Module getModuleByResolvableType(ResolvableType resolvableType) {
+        return singletonPool.getModuleByResolvableType(resolvableType);
+    }
+
+    @Override
+    public Object getBeanByResolvableType(ResolvableType resolvableType) {
+        return singletonPool.getBeanByResolvableType(resolvableType);
     }
 }

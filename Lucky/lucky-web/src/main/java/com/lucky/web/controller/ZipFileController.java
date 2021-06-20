@@ -64,7 +64,7 @@ public class ZipFileController extends FileController{
      * @throws IOException
      */
     protected void downloadZipByPath(List<String> srcFilePath,String zipFileName) throws IOException {
-        List<File> srcFile = srcFilePath.stream().map(p -> new File(p)).collect(Collectors.toList());
+        List<File> srcFile = srcFilePath.stream().map(File::new).collect(Collectors.toList());
         downloadZip(srcFile,zipFileName);
     }
 
@@ -103,7 +103,7 @@ public class ZipFileController extends FileController{
      * @throws IOException
      */
     protected void downloadJarByPath(List<String> srcFilePath,String jarFileName) throws IOException {
-        List<File> srcFile = srcFilePath.stream().map(p -> new File(p)).collect(Collectors.toList());
+        List<File> srcFile = srcFilePath.stream().map(File::new).collect(Collectors.toList());
         downloadJar(srcFile,jarFileName);
     }
 

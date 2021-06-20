@@ -3,6 +3,7 @@ package com.lucky.cloud.server.conf;
 import com.lucky.boot.conf.ServerConfig;
 import com.lucky.cloud.server.core.Server;
 import com.lucky.framework.confanalysis.LuckyConfig;
+import com.lucky.utils.dm5.MD5Utils;
 
 /**
  * @author fk7075
@@ -92,7 +93,7 @@ public class LuckyCloudServerConfig extends LuckyConfig {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = MD5Utils.md5UpperCase(password,"LUCKY_SALT_XFL_FK",21);
     }
 
     public String[] getLegalIP() {

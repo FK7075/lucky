@@ -65,13 +65,15 @@ public class LuckyCloudClientMethodInterceptor implements MethodInterceptor {
         if(isFileRequest(method)){
             return false;
         }
+        // 从注册中心获取IP然后直接访问对应的服务
         if(method.isAnnotationPresent(ServerRequest.class)){
             return false;
         }
+        // 注册中心转发，注册中心直接访问对应的服务，然后将结果返回调用方
         if(method.isAnnotationPresent(RegistryRequest.class)){
             return true;
         }
-        return !targetClass.isAnnotationPresent(ServerRequest.class);
+        return targetClass.isAnnotationPresent(RegistryRequest.class);
     }
 
     private String getResource(Class<?> targetClass,Method method){

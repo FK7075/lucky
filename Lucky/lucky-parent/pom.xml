@@ -50,7 +50,6 @@
             <groupId>com.github.fk7075</groupId>
             <artifactId>lucky-junit</artifactId>
             <version>${lucky.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -211,6 +210,25 @@
     </dependencyManagement>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+        <!--单元测试时引用src/main/resources下的资源文件-->
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>src/main/resources</directory>
+            </testResource>
+        </testResources>
+
         <pluginManagement>
             <plugins>
                 <!-- 设置编译版本为1.8 ， 添加编译参数-parameters -->

@@ -66,12 +66,12 @@ public abstract class HttpProxyUtils {
      */
     public static Object call(String apiURL, RequestMethod method, Map<String,Object> param, int callType) throws IOException, URISyntaxException {
         if(STRING==callType){
-            return HttpClientCall.call(apiURL, method, param);
+            return HttpUtils.executeReturnString(apiURL, method, param);
         }
         if(MULTIPART_FILE==callType){
-            return HttpClientCall.uploadFile(apiURL, param);
+            return HttpUtils.executeReturnString(apiURL,method, param);
         }
-        byte[] data = HttpClientCall.callByte(apiURL, method, param);
+        byte[] data = HttpUtils.executeReturnByte(apiURL, method, param);
         if(BYTE_ARRAY==callType){
             return data;
         }

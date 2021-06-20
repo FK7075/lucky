@@ -12,6 +12,7 @@ import com.lucky.utils.reflect.AnnotationUtils;
 import com.lucky.utils.reflect.ClassUtils;
 import com.lucky.utils.reflect.MethodUtils;
 import com.lucky.utils.reflect.ParameterUtils;
+import com.lucky.utils.type.ResolvableType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,22 +52,23 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
         //执行@Configuration 的无参@Bean方法，并收集所有非空返回结果（等待注册）
         for (Object conf : configBeans) {
             Class<?> confClass=conf.getClass();
-            ClassUtils.getMethodByAnnotation(confClass, Bean.class)
-                    .stream().filter((m)-> MethodUtils.getParameter(m).length == 0)
-                    .sorted(Comparator.comparing(m->AnnotationUtils.strengthenGet(m,Bean.class).get(0).priority()))
-                    .forEach((method)-> {
-                        Class<?> returnType = method.getReturnType();
-                        String beanName = getBeanId(confClass, method);
-                        String beanType = getBeanType(method);
-                        if(returnType!=void.class){
-                            lifecycleMange.beforeCreatingInstance(returnType,beanName,beanType);
-                        }
-                        Object invoke = MethodUtils.invoke(conf, method);
-                        if(Assert.isNotNull(invoke)){
-                            Module mod=new Module(beanName,beanType,invoke);
-                            list.add(mod);
-                        }
-                    });
+            List<Method> collect = ClassUtils.getMethodByAnnotation(confClass, Bean.class)
+                    .stream().filter((m) -> MethodUtils.getParameter(m).length == 0)
+                    .sorted(Comparator.comparing(m -> AnnotationUtils.strengthenGet(m, Bean.class).get(0).priority()))
+                    .collect(Collectors.toList());
+            for (Method method : collect) {
+                Class<?> returnType = method.getReturnType();
+                String beanName = getBeanId(confClass, method);
+                String beanType = getBeanType(method);
+                if(returnType!=void.class){
+                    lifecycleMange.beforeCreatingInstance(returnType,beanName,beanType);
+                }
+                Object invoke = MethodUtils.invoke(conf, method);
+                if(Assert.isNotNull(invoke)){
+                    Module mod=new Module(beanName,beanType,invoke,ResolvableType.forMethodReturnType(method,confClass));
+                    list.add(mod);
+                }
+            }
         }
 
         //执行@Configuration 的有参@Bean方法，并收集所有非空返回结果（等待注册）
@@ -105,7 +107,7 @@ public class ConfigurationBeanFactory extends IOCBeanFactory{
                 }
                 Object invoke=MethodUtils.invoke(conf,beanMethod,params);
                 if(Assert.isNotNull(invoke)){
-                    list.add(new Module(beanId,beanType,invoke));
+                    list.add(new Module(beanId,beanType,invoke, ResolvableType.forMethodReturnType(beanMethod,confClass)));
                 }
             }
         }
