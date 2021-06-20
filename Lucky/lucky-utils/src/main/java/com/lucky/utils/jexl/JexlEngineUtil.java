@@ -7,6 +7,7 @@ import org.apache.commons.jexl3.JexlContext;
 import org.apache.commons.jexl3.MapContext;
 import org.apache.commons.jexl3.internal.Engine;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,14 +18,29 @@ import java.util.Map;
  */
 public class JexlEngineUtil {
 
+    private static final Map<String,Object> jvmMap = new HashMap<>();
+    private static final Map<String,Object> evnMap = new HashMap<>();
+
     private static final String PREFIX="$LUCKY";
     private final Engine engine=new Engine();
     private final JexlContext context=new MapContext();
 
-    public JexlEngineUtil(Map<String,Object> confMap){
-        Assert.notNull(confMap,"confMap is null!");
-        context.set(PREFIX,confMap);
+    static {
+        initSystemConfig();
     }
+
+    public JexlEngineUtil(Map<String,Object> currConfMap){
+        Assert.notNull(currConfMap,"confMap is null!");
+        jvmMap.forEach(currConfMap::put);
+        evnMap.forEach(currConfMap::put);
+        context.set(PREFIX,currConfMap);
+    }
+
+    private static void initSystemConfig(){
+        System.getenv().forEach(evnMap::put);
+        System.getProperties().forEach((k,v)->{jvmMap.put(k.toString(),v.toString());});
+    }
+
 
     public Object getProperties(Object key) {
         if(key instanceof String){
